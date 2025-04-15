@@ -28,8 +28,8 @@ class StoreManualRequest extends FormRequest
             'modelo_id' => ['nullable', 'integer', Rule::exists('modelos', 'id')],
             'descricao' => ['nullable', 'string'],
             'equipamentos' => ['nullable', 'string', 'max:255'],
-            // Arquivo é obrigatório na criação, PDF, máx 20MB (20480 KB)
-            'arquivo' => ['required', 'file', 'mimes:pdf', 'max:20480'],
+            // Arquivo é obrigatório na criação, PDF, máx 128MB (131072 KB)
+            'arquivo' => ['required', 'file', 'mimes:pdf', 'max:131072'],
             'publico' => ['sometimes', 'boolean'],
         ];
     }
@@ -51,7 +51,7 @@ class StoreManualRequest extends FormRequest
             'modelo_id.exists' => 'O modelo selecionado é inválido.',
             'arquivo.required' => 'O arquivo PDF é obrigatório.',
             'arquivo.mimes' => 'O arquivo deve ser do tipo PDF.',
-            'arquivo.max' => 'O arquivo PDF não pode ser maior que 20MB.',
+            'arquivo.max' => 'O arquivo PDF não pode ser maior que 128MB.',
         ];
     }
 }

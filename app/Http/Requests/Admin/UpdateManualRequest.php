@@ -27,8 +27,8 @@ class UpdateManualRequest extends FormRequest
             'modelo_id' => ['nullable', 'integer', Rule::exists('modelos', 'id')],
             'descricao' => ['nullable', 'string'],
             'equipamentos' => ['nullable', 'string', 'max:255'],
-            // Arquivo é opcional na atualização, mas se enviado, deve ser PDF, máx 20MB
-            'arquivo' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
+            // Arquivo é opcional na atualização, mas se enviado, deve ser PDF, máx 128MB
+            'arquivo' => ['nullable', 'file', 'mimes:pdf', 'max:131072'],
             'publico' => ['sometimes', 'boolean'],
         ];
     }
@@ -49,7 +49,7 @@ class UpdateManualRequest extends FormRequest
             'nome.required' => 'O nome do manual é obrigatório.',
             'modelo_id.exists' => 'O modelo selecionado é inválido.',
             'arquivo.mimes' => 'O arquivo deve ser do tipo PDF.',
-            'arquivo.max' => 'O arquivo PDF não pode ser maior que 20MB.',
+            'arquivo.max' => 'O arquivo PDF não pode ser maior que 128MB.',
         ];
     }
 }
