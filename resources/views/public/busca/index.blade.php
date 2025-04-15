@@ -28,6 +28,24 @@
                 </div>
             </div>
 
+             {{-- SEÇÃO DE MODELOS ENCONTRADOS --}}
+            <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Modelos Encontrados ({{ $modelos->count() }})</h2>
+                @if ($modelos->isNotEmpty())
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                        @foreach ($modelos as $modelo)
+                            <li>
+                                <a href="{{ route('modelos.show', $modelo) }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                    {{ $modelo->nome }} ({{ $modelo->marca->nome ?? 'Marca desconhecida' }})
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-gray-500 dark:text-gray-400">Nenhum modelo encontrado.</p>
+                @endif
+            </div>
+
             {{-- Seção de Manuais --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -64,6 +82,24 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado.</p>
                     @endif
                 </div>
+            </div>
+
+            {{-- SEÇÃO DE MARCAS ENCONTRADAS --}}
+            <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Marcas Encontradas ({{ $marcas->count() }})</h2>
+                @if ($marcas->isNotEmpty())
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                        @foreach ($marcas as $marca)
+                            <li>
+                                <a href="{{ route('marcas.show', $marca) }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                    {{ $marca->nome }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-gray-500 dark:text-gray-400">Nenhuma marca encontrada.</p>
+                @endif
             </div>
 
             {{-- Link Voltar (opcional) --}}

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\CodigoErro;
 use App\Models\Manual;
+use App\Models\Marca;
+use App\Models\Modelo;
 use Illuminate\Support\Str;
 
 class BuscaController extends Controller
@@ -21,6 +23,8 @@ class BuscaController extends Controller
         // Inicializa coleções vazias
         $codigosErro = collect();
         $manuais = collect();
+        $marcas = collect();
+        $modelos = collect();
 
         // Só executa a busca se o termo não estiver vazio
         if (!empty($query)) {
@@ -42,9 +46,20 @@ class BuscaController extends Controller
                         // ->orWhere('descricao', 'LIKE', $searchTerm)
                         ->orderBy('nome') // Ordena por nome
                         ->get();
+
+            // Busca em Marcas (pelo nome)
+            $marcas = Marca::where('nome', 'LIKE', $searchTerm)
+                        ->orderBy('nome')
+                        ->get();
+
+            // Busca em Modelos (pelo nome)
+            $modelos = Modelo::with('marca:id,nome') // Carrega a marca para exibir na view
+                        ->where('nome', 'LIKE', $searchTerm)
+                        ->orderBy('nome')
+                        ->get();
         }
 
         // Passa os resultados e o termo de busca para a view
-        return view('public.busca.index', compact('codigosErro', 'manuais', 'query'));
+        return view('public.busca.index', compact('codigosErro', 'manuais', 'marcas', 'modelos', 'query'));
     }
 }

@@ -33,7 +33,21 @@ class StoreSolucaoRequest extends FormRequest
             'titulo' => ['required', 'string', 'max:255'],
             // descrição é opcional, mas se presente, deve ser string
             'descricao' => ['nullable', 'string'],
-            // TODO: Adicionar validação para upload de imagens/vídeos se for feito junto
+
+            // Validação para imagens (array, cada item é imagem, max 10MB)
+            'imagens' => ['nullable', 'array'], // Permite não enviar imagens
+            'imagens.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'], // max:10240 = 10MB
+
+            // Validação para vídeos (array, cada item é vídeo, max 50MB - ajustar se necessário)
+            'videos' => ['nullable', 'array'], // Permite não enviar vídeos
+            'videos.*' => ['file', 'mimetypes:video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv', 'max:51200'], // max:51200 = 50MB
+
+             // Validação para link do YouTube (opcional, deve ser URL válida do youtube)
+            'youtube_link' => ['nullable', 'string', 'url', function ($attribute, $value, $fail) {
+                if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_\-]+)/i', $value)) {
+                    $fail('O campo :attribute deve ser um link válido do YouTube (youtube.com ou youtu.be).');
+                }
+            }],
         ];
     }
 
@@ -49,6 +63,19 @@ class StoreSolucaoRequest extends FormRequest
             'codigo_erro_id.exists' => 'O código de erro selecionado é inválido.',
             'titulo.required' => 'O campo título é obrigatório.',
             'titulo.max' => 'O título não pode ter mais que 255 caracteres.',
+
+            // Mensagens para imagens
+            'imagens.*.image' => 'O arquivo enviado em imagens deve ser uma imagem válida.',
+            'imagens.*.mimes' => 'A imagem deve ser de um dos tipos: jpeg, png, jpg, gif, webp.',
+            'imagens.*.max' => 'Cada imagem não pode ter mais que 10MB.',
+
+            // Mensagens para vídeos
+            'videos.*.file' => 'O arquivo enviado em vídeos deve ser um arquivo válido.',
+            'videos.*.mimetypes' => 'O vídeo deve ser de um dos tipos: mp4, mov, avi, wmv.',
+            'videos.*.max' => 'Cada vídeo não pode ter mais que 50MB.',
+
+            // Mensagens para link do YouTube
+            'youtube_link.url' => 'O link do YouTube deve ser uma URL válida.',
         ];
     }
 }

@@ -12,16 +12,19 @@ Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento 
     *   Listagem de Vídeos (público).
     *   Sistema de Comentários (com anexos: imagens, pdf, vídeo mp4, link youtube) nos Códigos de Erro para usuários logados.
     *   Sistema de Busca Global (em Códigos de Erro e Manuais).
+    *   **Funcionalidade de Busca:**
+        *   Busca global na página inicial por Códigos de Erro, Manuais, Marcas e Modelos.
+        *   Página dedicada de resultados (`/busca`).
 *   **Área Administrativa (requer login de admin):**
     *   Dashboard com visão geral.
     *   CRUD completo para Técnicos (usuários com role 'tecnico').
     *   CRUD completo para Marcas.
     *   CRUD completo para Modelos (associando a Marcas).
     *   CRUD completo para Códigos de Erro (associando a Modelos).
-    *   CRUD completo para Soluções (associando a Códigos de Erro).
+    *   CRUD completo para Soluções (associando a Códigos de Erro, com upload de imagens/vídeos/link YouTube).
     *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo).
-    *   Gerenciamento de Imagens (upload e associação a Códigos de Erro, Soluções, etc. - Polimórfico).
-    *   Gerenciamento de Vídeos (upload de arquivo ou link, associação a Códigos de Erro, Soluções, etc. - Polimórfico).
+    *   Gerenciamento de Imagens (upload e associação polimórfica).
+    *   Gerenciamento de Vídeos (upload de arquivo ou link, associação polimórfica).
     *   Gerenciamento de Comentários (exclusão).
 *   **Autenticação:**
     *   Login/Registro/Logout (usando Laravel Breeze).

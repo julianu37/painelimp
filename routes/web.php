@@ -73,6 +73,9 @@ Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verifi
         ->where('comentavel_id', '[0-9]+') // Garante que o ID é numérico
         ->where('comentavel_type', '[a-z_]+'); // Garante que o tipo é uma string (ex: codigo_erro)
 
+    // Exclusão de Comentários (qualquer usuário autenticado pode tentar, permissão no controller)
+    Route::delete('/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'destroy'])->name('comentarios.destroy');
+
     // Download de Manuais (requer autenticação)
     Route::get('/manuais/download/{manual}', [App\Http\Controllers\ManualController::class, 'download'])->name('manuais.download');
 });
@@ -93,8 +96,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Códigos de Erro
     Route::resource('codigos', AdminCodigoErroController::class);
 
-    // CRUD de Soluções
-    Route::resource('solucoes', AdminSolucaoController::class);
+    // CRUD de Soluções - Especifica o nome do parâmetro como 'solucao'
+    Route::resource('solucoes', AdminSolucaoController::class)->parameters([
+        'solucoes' => 'solucao' // Garante que o parâmetro seja {solucao}
+    ]);
 
     // CRUD de Manuais - Especifica o nome do parâmetro como 'manual'
     Route::resource('manuais', AdminManualController::class)->parameters([
@@ -106,7 +111,4 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // CRUD de Vídeos (sem create/store autônomo)
     Route::resource('videos', AdminVideoController::class)->except(['create', 'store', 'show']);
-
-    // Exclusão de Comentários (APENAS ADMIN PODE EXCLUIR PELA ROTA)
-    Route::delete('/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'destroy'])->name('comentarios.destroy');
 });

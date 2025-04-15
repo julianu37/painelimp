@@ -123,12 +123,12 @@ class CodigoErro extends Model
     }
 
     /**
-    * Define a chave de rota para usar o 'slug' em vez do 'id'.
+    * Define a chave de rota para usar o 'codigo' em vez do 'id' ou 'slug'.
     *
     * @return string
     */
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return 'codigo'; // Usa a coluna 'codigo' para binding
     }
 }

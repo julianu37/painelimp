@@ -71,7 +71,7 @@ class CodigoErroController extends Controller
     /**
      * Exibe os detalhes de um código de erro, incluindo soluções, imagens, vídeos e comentários.
      */
-    public function show(CodigoErro $codigoErro): View
+    public function show(CodigoErro $codigo): View
     {
         // Carrega os relacionamentos necessários:
         // - solucoes: Soluções associadas
@@ -80,7 +80,7 @@ class CodigoErroController extends Controller
         // - comentarios: Comentários associados
         // - comentarios.user: O usuário que fez cada comentário
         // - comentarios.midias: As mídias (arquivos/youtube) de cada comentário
-        $codigoErro->load([
+        $codigo->load([
             'solucoes',
             'imagens',
             'videos',
@@ -88,7 +88,7 @@ class CodigoErroController extends Controller
                 $query->with(['user', 'midias'])->orderBy('created_at', 'desc'); // Carrega user e midias, ordena por mais recentes
             }
         ]);
-        return view('admin.codigos_erro.show', compact('codigoErro'));
+        return view('admin.codigos_erro.show', compact('codigo'));
     }
 
     /**

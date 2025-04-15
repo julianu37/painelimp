@@ -7,12 +7,12 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">Imagens Associadas</h3>
-                        {{-- <a href="{{ route('admin.imagens.create', ['attachable_type' => App\Models\CodigoErro::class, 'attachable_id' => $codigoErro->id]) }}" class="text-sm text-blue-600 hover:underline">Adicionar Imagem</a> --}}
+                        {{-- <a href="{{ route('admin.imagens.create', ['attachable_type' => App\Models\CodigoErro::class, 'attachable_id' => $codigo->id]) }}" class="text-sm text-blue-600 hover:underline">Adicionar Imagem</a> --}}
                          <span class="text-xs text-gray-500">(Funcionalidade Adicionar Pendente)</span>
                     </div>
-                    @if ($codigoErro->imagens->isNotEmpty())
+                    @if ($codigo->imagens->isNotEmpty())
                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            @foreach ($codigoErro->imagens as $imagem)
+                            @foreach ($codigo->imagens as $imagem)
                                 <div class="relative group">
                                     <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-32 object-cover rounded-md shadow-md">
                                     <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300 rounded-md">
@@ -37,12 +37,12 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                      <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">Vídeos Associados</h3>
-                         {{-- <a href="{{ route('admin.videos.create', ['attachable_type' => App\Models\CodigoErro::class, 'attachable_id' => $codigoErro->id]) }}" class="text-sm text-blue-600 hover:underline">Adicionar Vídeo</a> --}}
+                         {{-- <a href="{{ route('admin.videos.create', ['attachable_type' => App\Models\CodigoErro::class, 'attachable_id' => $codigo->id]) }}" class="text-sm text-blue-600 hover:underline">Adicionar Vídeo</a> --}}
                           <span class="text-xs text-gray-500">(Funcionalidade Adicionar Pendente)</span>
                     </div>
-                    @if ($codigoErro->videos->isNotEmpty())
+                    @if ($codigo->videos->isNotEmpty())
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                             @foreach ($codigoErro->videos as $video)
+                             @foreach ($codigo->videos as $video)
                                 <li class="py-3 flex justify-between items-center">
                                    <span>
                                         {{ $video->titulo ?? ($video->tipo === 'link' ? $video->url_ou_path : 'Arquivo de Vídeo') }}
@@ -73,7 +73,7 @@
                     <h3 class="text-lg font-medium mb-4">Comentários Técnicos</h3>
 
                     {{-- Formulário para Novo Comentário --}}
-                    <form action="{{ route('admin.comentarios.store', ['comentavel_type' => 'codigo_erro', 'comentavel_id' => $codigoErro->id]) }}" method="POST" enctype="multipart/form-data" class="mb-6 p-4 border rounded-md dark:border-gray-700">
+                    <form action="{{ route('comentarios.store', ['comentavel_type' => 'codigo_erro', 'comentavel_id' => $codigo->id]) }}" method="POST" enctype="multipart/form-data" class="mb-6 p-4 border rounded-md dark:border-gray-700">
                         @csrf
                         <div class="mb-4">
                             <label for="conteudo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adicionar Comentário:</label>
@@ -112,7 +112,7 @@
 
                     {{-- Lista de Comentários Existentes --}}
                     <div class="space-y-6">
-                        @forelse ($codigoErro->comentarios->sortByDesc('created_at') as $comentario) {{-- Carregar comentarios com user e midias no Controller --}}
+                        @forelse ($codigo->comentarios->sortByDesc('created_at') as $comentario) {{-- Carregar comentarios com user e midias no Controller --}}
                             <div class="p-4 border rounded-md dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="font-semibold text-sm text-gray-800 dark:text-gray-200">{{ $comentario->user->name ?? 'Usuário desconhecido' }}</span>
@@ -164,3 +164,80 @@
             {{-- FIM DA SEÇÃO DE COMENTÁRIOS --}}
 
              {{-- Botão Voltar --}} 
+
+            {{-- SEÇÃO DE SOLUÇÕES --}}
+            <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-lg font-medium mb-4">Soluções Associadas</h3>
+                    @if ($codigo->solucoes->isNotEmpty())
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {{-- Carregar as mídias aqui para evitar N+1 query --}}
+                            @foreach ($codigo->solucoes->load('imagens', 'videos') as $solucao)
+                                <li class="py-4">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-gray-800 dark:text-gray-200">{{ $solucao->titulo }}</p>
+                                            @if($solucao->descricao)
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap mt-1">{{ $solucao->descricao }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="ml-4 flex-shrink-0 space-x-2">
+                                            <a href="{{ route('admin.solucoes.edit', $solucao) }}" class="text-sm text-indigo-600 hover:underline">Editar</a>
+                                            <form action="{{ route('admin.solucoes.destroy', $solucao) }}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir esta solução e todas as suas mídias?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">Excluir</button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    {{-- Exibição das Mídias da Solução --}}
+                                    @if ($solucao->imagens->isNotEmpty() || $solucao->videos->isNotEmpty())
+                                        <div class="mt-3 border-t pt-3 dark:border-gray-600">
+                                            <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Mídias da Solução:</p>
+
+                                             {{-- Imagens --}}
+                                            @if ($solucao->imagens->isNotEmpty())
+                                                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mb-3">
+                                                    @foreach ($solucao->imagens as $imagem)
+                                                        <a href="{{ $imagem->url }}" target="_blank" title="{{ $imagem->titulo ?? $imagem->nome_original }}" class="block relative">
+                                                            <img src="{{ $imagem->url }}" alt="{{ $imagem->titulo ?? 'Imagem anexa' }}" class="w-full h-16 object-cover rounded shadow-sm border dark:border-gray-700">
+                                                            <p class="text-[10px] text-center mt-0.5 truncate text-gray-500 dark:text-gray-400" title="{{ $imagem->titulo ?? $imagem->nome_original }}">{{ $imagem->titulo ?? $imagem->nome_original }}</p>
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
+                                            {{-- Vídeos --}}
+                                            @if ($solucao->videos->isNotEmpty())
+                                                <div class="space-y-2">
+                                                    @foreach ($solucao->videos as $video)
+                                                        <div>
+                                                            @if ($video->tipo === 'link')
+                                                                <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-xs text-blue-600 hover:underline dark:text-blue-400">
+                                                                     <svg class="w-3 h-3 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                                                                    {{ $video->titulo ?? $video->url_ou_path }}
+                                                                </a> (Link YouTube)
+                                                            @else
+                                                                <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-xs text-blue-600 hover:underline dark:text-blue-400">
+                                                                    <svg class="w-3 h-3 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                                                                    {{ $video->titulo ?? $video->nome_original }}
+                                                                </a> (Upload)
+                                                                 {{-- Player para vídeos locais pode ser adicionado aqui se desejado --}}
+                                                                {{-- <video controls width="200" class="mt-1"><source src="{{ $video->url_ou_path }}" type="video/mp4"></video> --}}
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhuma solução associada a este código de erro.</p>
+                    @endif
+                </div>
+            </div>
+            {{-- FIM DA SEÇÃO DE SOLUÇÕES --}} 

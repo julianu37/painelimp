@@ -43,7 +43,13 @@
 {{-- Arquivo PDF --}}
 <div class="mt-4">
     <x-input-label for="arquivo" :value="__('Arquivo PDF')" />
-    <input id="arquivo" name="arquivo" type="file" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+    {{-- Input file estilizado como os outros --}}
+    <input id="arquivo" name="arquivo" type="file" class="block w-full text-sm text-gray-500 dark:text-gray-300
+        border border-gray-300 dark:border-gray-700 rounded-md shadow-sm cursor-pointer
+        focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500
+        file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold
+        file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300
+        hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50"
            accept=".pdf" {{ isset($manual) ? '' : 'required' }}>
      <x-input-error :messages="$errors->get('arquivo')" class="mt-2" />
      <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Apenas arquivos PDF. Máx 20MB.</p> {{-- TODO: Validar tamanho no backend --}}

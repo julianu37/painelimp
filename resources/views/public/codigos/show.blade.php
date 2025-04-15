@@ -82,50 +82,62 @@
                     <h3 class="text-xl font-semibold mb-6">Possíveis Soluções</h3>
                     @if ($codigoErro->solucoes->isNotEmpty())
                         <div class="space-y-8">
-                            @foreach ($codigoErro->solucoes as $index => $solucao)
+                            @foreach ($codigoErro->solucoes->load('imagens', 'videos') as $index => $solucao)
                                 {{-- Card da Solução Individual --}}
                                 <div class="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                                     <h4 class="text-lg font-bold mb-2 text-indigo-700 dark:text-indigo-400">Solução {{ $index + 1 }}: {{ $solucao->titulo }}</h4>
                                     <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-5">{{ $solucao->descricao }}</p>
 
-                                    {{-- Imagens da Solução --}}
-                                    @if ($solucao->imagens->isNotEmpty())
-                                        <h5 class="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">Imagens Detalhadas:</h5>
-                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
-                                            @foreach ($solucao->imagens as $imagem)
-                                                 <div class="group text-center">
-                                                    <a href="{{ Storage::url($imagem->path) }}" target="_blank" data-lightbox="solucao-{{ $solucao->id }}" data-title="{{ $imagem->titulo }}">
-                                                        <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-24 object-cover rounded-md border border-gray-300 dark:border-gray-600 shadow-sm hover:opacity-80 transition duration-150">
-                                                    </a>
-                                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate" title="{{ $imagem->titulo }}">{{ $imagem->titulo }}</p>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
+                                    {{-- Exibição das Mídias da Solução --}}
+                                    @if ($solucao->imagens->isNotEmpty() || $solucao->videos->isNotEmpty())
+                                        <div class="mt-3 border-t pt-3 dark:border-gray-600">
+                                            <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Mídias da Solução:</p>
 
-                                    {{-- Vídeos da Solução --}}
-                                    @if ($solucao->videos->isNotEmpty())
-                                        <h5 class="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">Vídeos Demonstrativos:</h5>
-                                        <ul class="space-y-2 text-sm mb-4">
-                                            @foreach ($solucao->videos as $video)
-                                                <li class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-600">
-                                                    <span class="font-medium truncate pr-3" title="{{ $video->titulo ?? 'Vídeo sem título' }}">{{ $video->titulo ?? 'Vídeo sem título' }}</span>
-                                                     @if ($video->tipo === 'link')
-                                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
-                                                            Assistir <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                             {{-- Imagens --}}
+                                            @if ($solucao->imagens->isNotEmpty())
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-3">
+                                                    @foreach ($solucao->imagens as $imagem)
+                                                        <a href="{{ $imagem->url }}" target="_blank" title="{{ $imagem->titulo ?? $imagem->nome_original }}" class="block relative group">
+                                                            <img src="{{ $imagem->url }}" alt="{{ $imagem->titulo ?? 'Imagem anexa' }}" class="w-full h-20 object-cover rounded-md shadow border dark:border-gray-700 group-hover:opacity-80 transition-opacity">
+                                                            <p class="text-xs text-center mt-1 truncate text-gray-500 dark:text-gray-400" title="{{ $imagem->titulo ?? $imagem->nome_original }}">{{ $imagem->titulo ?? $imagem->nome_original }}</p>
                                                         </a>
-                                                    @elseif ($video->tipo === 'youtube')
-                                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-red-600 dark:text-red-400 hover:underline font-semibold whitespace-nowrap">
-                                                            Ver no YouTube <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                                        </a>
-                                                    @else
-                                                         <a href="{{ Storage::url($video->url_ou_path) }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
-                                                            Ver Vídeo <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                                        </a>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
+                                            {{-- Vídeos --}}
+                                            @if ($solucao->videos->isNotEmpty())
+                                                <div class="space-y-2">
+                                                    @foreach ($solucao->videos as $video)
+                                                        <div>
+                                                            @if ($video->tipo === 'link' && Str::contains($video->url_ou_path, ['youtube.com', 'youtu.be']))
+                                                                {{-- Player Embutido YouTube --}}
+                                                                @php
+                                                                    parse_str(parse_url($video->url_ou_path, PHP_URL_QUERY), $query);
+                                                                    $videoId = $query['v'] ?? Str::afterLast($video->url_ou_path, '/');
+                                                                @endphp
+                                                                <div class="aspect-w-16 aspect-h-9 max-w-sm mb-1">
+                                                                     <iframe src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-md shadow border dark:border-gray-700"></iframe>
+                                                                </div>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $video->titulo ?? 'Vídeo YouTube' }}</p>
+                                                             @elseif ($video->tipo === 'upload')
+                                                                {{-- Player Embutido Upload --}}
+                                                                <video controls preload="metadata" class="max-w-sm w-full rounded-md shadow border dark:border-gray-700 bg-black mb-1">
+                                                                    <source src="{{ $video->url_ou_path }}#t=0.1" type="{{ Storage::disk('public')->mimeType($video->path) ?? 'video/mp4' }}"> {{-- #t=0.1 for thumbnail --}}
+                                                                    Seu navegador não suporta o vídeo.
+                                                                </video>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $video->titulo ?? $video->nome_original }} (Upload)</p>
+                                                             @else {{-- Outros tipos de link ou fallback --}}
+                                                                <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-xs text-blue-600 hover:underline dark:text-blue-400">
+                                                                    <svg class="w-3 h-3 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                                                                    {{ $video->titulo ?? $video->url_ou_path }}
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             @endforeach

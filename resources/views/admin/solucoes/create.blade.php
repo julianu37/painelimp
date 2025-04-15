@@ -11,19 +11,81 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <x-alert-messages />
 
-                    <form method="POST" action="{{ route('admin.solucoes.store') }}">
+                    <form action="{{ route('admin.solucoes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        {{-- Passa a variável $codigosErro para o form --}}
-                        @include('admin.solucoes._form', ['codigosErro' => $codigosErro])
+                        {{-- Código de Erro --}}
+                        <div class="mb-4">
+                            <label for="codigo_erro_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Código de Erro Associado <span class="text-red-500">*</span></label>
+                            <select name="codigo_erro_id" id="codigo_erro_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                                <option value="">Selecione um Código</option>
+                                @foreach ($codigosErro as $id => $codigo)
+                                    <option value="{{ $id }}" {{ old('codigo_erro_id', $selectedCodigoErroId) == $id ? 'selected' : '' }}>{{ $codigo }}</option>
+                                @endforeach
+                            </select>
+                             @error('codigo_erro_id')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                        <div class="flex items-center justify-end mt-6">
-                             <a href="{{ route('admin.solucoes.index') }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 mr-4">
+                        {{-- Título --}}
+                        <div class="mb-4">
+                            <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título <span class="text-red-500">*</span></label>
+                            <input type="text" name="titulo" id="titulo" value="{{ old('titulo') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                            @error('titulo')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Descrição --}}
+                        <div class="mb-4">
+                            <label for="descricao" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição Detalhada</label>
+                            <textarea name="descricao" id="descricao" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">{{ old('descricao') }}</textarea>
+                             @error('descricao')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Upload de Mídias --}}
+                        <div class="border-t dark:border-gray-700 pt-4 mt-6">
+                             <h3 class="text-md font-medium mb-4">Adicionar Mídias (Opcional)</h3>
+
+                             {{-- Imagens --}}
+                             <div class="mb-4">
+                                <label for="imagens" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload de Imagens (JPG, PNG, GIF, WEBP - Máx 10MB cada)</label>
+                                <input type="file" name="imagens[]" id="imagens" multiple accept="image/jpeg,image/png,image/gif,image/webp" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600">
+                                @error('imagens.*')
+                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Vídeos (Upload) --}}
+                            <div class="mb-4">
+                                <label for="videos" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload de Vídeos (MP4, MOV, AVI, WMV - Máx 50MB cada)</label>
+                                <input type="file" name="videos[]" id="videos" multiple accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600">
+                                @error('videos.*')
+                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                             {{-- Link YouTube --}}
+                             <div class="mb-4">
+                                <label for="youtube_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ou Link do YouTube:</label>
+                                <input type="url" name="youtube_link" id="youtube_link" placeholder="https://www.youtube.com/watch?v=..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="{{ old('youtube_link') }}">
+                                @error('youtube_link')
+                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Botões de Ação --}}
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <a href="{{ route('admin.solucoes.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 Cancelar
                             </a>
-                            <x-primary-button>
-                                {{ __('Salvar Solução') }}
-                            </x-primary-button>
+                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                Salvar Solução
+                            </button>
                         </div>
                     </form>
                 </div>
