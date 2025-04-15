@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Modelo extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
 
     /**
      * Os atributos que podem ser atribuídos em massa.
@@ -21,7 +22,22 @@ class Modelo extends Model
     protected $fillable = [
         'marca_id',
         'nome',
+        'slug',
     ];
+
+    /**
+     * Configuração para o Sluggable.
+     *
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'nome'
+            ]
+        ];
+    }
 
     /**
      * Define o relacionamento onde um modelo pertence a uma marca.
@@ -62,5 +78,15 @@ class Modelo extends Model
     public function videos(): MorphMany
     {
         return $this->morphMany(Video::class, 'videoable');
+    }
+
+    /**
+     * Obtém o nome da chave de rota para o modelo.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

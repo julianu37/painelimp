@@ -13,9 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'role' => RoleMiddleware::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Adicionar outros middlewares globais ou grupos aqui, se necessário
     })
+    ->withCommands([
+        // Adiciona o novo comando ao array
+        \App\Console\Commands\GenerateSlugs::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

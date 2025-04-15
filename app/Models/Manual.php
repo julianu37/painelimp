@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Manual extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable;
 
     /**
      * O nome da tabela associada ao modelo.
@@ -24,13 +25,16 @@ class Manual extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'modelo_id',
         'nome',
+        'slug',
         'descricao',
         'equipamentos',
         'arquivo_path',
         'arquivo_nome_original',
+        'arquivo_mime_type',
+        'arquivo_tamanho',
         'publicado',
-        'modelo_id',
     ];
 
     /**
@@ -41,6 +45,20 @@ class Manual extends Model
     protected $casts = [
         'publicado' => 'boolean',
     ];
+
+    /**
+     * Configuração para o Sluggable.
+     *
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'nome'
+            ]
+        ];
+    }
 
     /**
      * Define o relacionamento onde um manual pertence a um modelo.
@@ -64,5 +82,15 @@ class Manual extends Model
     public function videos(): MorphMany
     {
         return $this->morphMany(Video::class, 'videoable');
+    }
+
+    /**
+     * Obtém o nome da chave de rota para o modelo.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }
