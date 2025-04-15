@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\CodigoErro;
 use App\Models\Manual;
 use App\Models\Comentario;
+use App\Models\Marca;
+use App\Models\Modelo;
+use App\Models\Solucao;
 
 class DashboardController extends Controller
 {
@@ -22,13 +25,30 @@ class DashboardController extends Controller
         $totalCodigos = CodigoErro::count();
         $totalManuais = Manual::count();
         $totalComentarios = Comentario::count();
+        $totalMarcas = Marca::count();
+        $totalModelos = Modelo::count();
+        $totalSolucoes = Solucao::count();
 
-        // Retorna a view do dashboard admin (precisará ser criada)
+        // Busca os 5 últimos códigos de erro adicionados
+        $ultimosCodigos = CodigoErro::orderBy('created_at', 'desc')->take(5)->get();
+
+        // Busca os 5 últimos comentários adicionados (com usuário e item comentado)
+        $ultimosComentarios = Comentario::with(['user:id,name', 'comentavel'])
+                                ->orderBy('created_at', 'desc')
+                                ->take(5)
+                                ->get();
+
+        // Retorna a view do dashboard admin
         return view('admin.dashboard', compact(
             'totalTecnicos',
             'totalCodigos',
             'totalManuais',
-            'totalComentarios'
+            'totalComentarios',
+            'totalMarcas',
+            'totalModelos',
+            'totalSolucoes',
+            'ultimosCodigos',
+            'ultimosComentarios'
         ));
     }
 }

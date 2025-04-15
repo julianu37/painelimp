@@ -9,6 +9,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ProfileController; // Controller do Breeze
 use App\Http\Controllers\BuscaController; // Importa o novo controller
+use App\Http\Controllers\TecnicoDashboardController; // Importa o controller do dashboard do técnico
 // Importa os controllers do Admin (atenção aos namespaces)
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\TecnicoController as AdminTecnicoController;
@@ -49,18 +50,18 @@ Route::get('/manuais/view/{manual}', [ManualController::class, 'viewPdf'])->name
 // Rotas de autenticação geradas pelo Breeze (não mexer diretamente aqui)
 require __DIR__.'/auth.php';
 
+// Rota do Dashboard (com middleware de autenticação)
+Route::get('/dashboard', function () {
+    // Redireciona admin para o painel admin
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+    // Chama o controller do dashboard do técnico
+    return app(TecnicoDashboardController::class)->index();
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 // Área protegida (usuário logado - admin ou tecnico)
 Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verified' se usar verificação de email
-    // Rota do dashboard padrão do Breeze
-    Route::get('/dashboard', function () {
-        // Redireciona admin para o painel admin, técnico para o dashboard normal
-        if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
-        // TODO: Criar view para dashboard do técnico
-        return view('dashboard');
-    })->name('dashboard');
-
     // Rotas de perfil (gerenciadas pelo Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
