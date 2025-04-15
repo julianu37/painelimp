@@ -88,10 +88,18 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">{{ __('Log in') }}</a>
+                     {{-- Botão Login --}}
+                    <a href="{{ route('login') }}"
+                       class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
+                       {{ __('Log in') }}
+                    </a>
 
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">{{ __('Registrar') }}</a>
+                         {{-- Botão Registrar --}}
+                         <a href="{{ route('register') }}"
+                           class="ml-4 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition ease-in-out duration-150">
+                            {{ __('Registrar') }}
+                        </a>
                     @endif
                 @endauth
             </div>
@@ -180,13 +188,17 @@
         @else
              <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                  <div class="mt-3 space-y-1">
-                     <x-responsive-nav-link :href="route('login')">
-                        {{ __('Log in') }}
-                    </x-responsive-nav-link>
+                    {{-- Link/Botão Login Responsivo --}}
+                     <a href="{{ route('login') }}"
+                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                         {{ __('Log in') }}
+                    </a>
                     @if (Route::has('register'))
-                        <x-responsive-nav-link :href="route('register')">
+                         {{-- Link/Botão Registrar Responsivo --}}
+                         <a href="{{ route('register') }}"
+                            class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
                              {{ __('Registrar') }}
-                        </x-responsive-nav-link>
+                        </a>
                     @endif
                  </div>
             </div>
