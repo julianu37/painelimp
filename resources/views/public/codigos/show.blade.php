@@ -1,34 +1,44 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Código de Erro:') }} {{ $codigoErro->codigo }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Código de Erro:') }} {{ $codigoErro->codigo }}
+            </h2>
+            {{-- Botão Voltar no Cabeçalho --}}
+            <a href="{{ url()->previous() ?? route('codigos.index') }}"
+               class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                Voltar
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-             <x-alert-messages /> {{-- Para mensagens de erro/sucesso (ex: postar comentário) --}}
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            <x-alert-messages />
 
             {{-- Detalhes do Código --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-2">Descrição do Erro</h3>
-                    <p class="whitespace-pre-wrap">{{ $codigoErro->descricao }}</p>
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-2xl font-bold mb-1 text-indigo-700 dark:text-indigo-400">{{ $codigoErro->titulo ?: $codigoErro->codigo }}</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Código: {{ $codigoErro->codigo }}</p>
+                    <h4 class="text-lg font-semibold mb-2">Descrição do Problema</h4>
+                    <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $codigoErro->descricao }}</p>
                 </div>
             </div>
 
             {{-- Imagens Associadas ao Código --}}
             @if ($codigoErro->imagens->isNotEmpty())
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-4">Imagens Relacionadas ao Código</h3>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                    <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-xl font-semibold mb-4">Imagens Relacionadas ao Código</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             @foreach ($codigoErro->imagens as $imagem)
-                                <div class="group">
+                                <div class="group text-center">
                                     <a href="{{ Storage::url($imagem->path) }}" target="_blank" data-lightbox="codigo-{{ $codigoErro->id }}" data-title="{{ $imagem->titulo }}">
-                                        <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-32 object-cover rounded-md shadow-md hover:opacity-75 transition duration-150">
+                                        <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-32 object-cover rounded-md border border-gray-200 dark:border-gray-700 shadow-md hover:opacity-80 transition duration-150">
                                     </a>
-                                     <p class="text-xs text-center mt-1 truncate" title="{{ $imagem->titulo }}">{{ $imagem->titulo }}</p>
+                                     <p class="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate" title="{{ $imagem->titulo }}">{{ $imagem->titulo }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -38,20 +48,27 @@
 
             {{-- Vídeos Associados ao Código --}}
             @if ($codigoErro->videos->isNotEmpty())
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-4">Vídeos Relacionados ao Código</h3>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                    <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-xl font-semibold mb-4">Vídeos Relacionados ao Código</h3>
+                        <ul class="space-y-3">
                             @foreach ($codigoErro->videos as $video)
-                                <li class="py-3">
-                                   <span class="font-medium">{{ $video->titulo ?? 'Vídeo sem título' }}</span>
-                                   @if ($video->tipo === 'link')
-                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="ml-2 text-sm text-blue-600 hover:underline">(Assistir Link Externo)</a>
-                                   @else
-                                       {{-- Player de vídeo embutido ou link para download/página do vídeo --}}
-                                       {{-- Simplificado por enquanto: link para o arquivo --}}
-                                        <a href="{{ Storage::url($video->url_ou_path) }}" target="_blank" class="ml-2 text-sm text-blue-600 hover:underline">(Ver Vídeo)</a>
-                                   @endif
+                                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                                    <span class="font-medium text-sm truncate pr-4" title="{{ $video->titulo ?? 'Vídeo sem título' }}">{{ $video->titulo ?? 'Vídeo sem título' }}</span>
+                                    @if ($video->tipo === 'link')
+                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
+                                            Assistir <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        </a>
+                                    @elseif ($video->tipo === 'youtube')
+                                        {{-- Poderia adicionar um modal para abrir o vídeo ou link direto --}}
+                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-red-600 dark:text-red-400 hover:underline font-semibold whitespace-nowrap">
+                                            Ver no YouTube <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        </a>
+                                    @else
+                                        <a href="{{ Storage::url($video->url_ou_path) }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
+                                            Ver Vídeo <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        </a>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
@@ -60,26 +77,27 @@
             @endif
 
             {{-- Soluções --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Possíveis Soluções</h3>
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-xl font-semibold mb-6">Possíveis Soluções</h3>
                     @if ($codigoErro->solucoes->isNotEmpty())
                         <div class="space-y-8">
-                            @foreach ($codigoErro->solucoes as $solucao)
-                                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                                    <h4 class="text-md font-semibold mb-2">{{ $solucao->titulo }}</h4>
-                                    <p class="text-sm whitespace-pre-wrap mb-4">{{ $solucao->descricao }}</p>
+                            @foreach ($codigoErro->solucoes as $index => $solucao)
+                                {{-- Card da Solução Individual --}}
+                                <div class="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <h4 class="text-lg font-bold mb-2 text-indigo-700 dark:text-indigo-400">Solução {{ $index + 1 }}: {{ $solucao->titulo }}</h4>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-5">{{ $solucao->descricao }}</p>
 
                                     {{-- Imagens da Solução --}}
                                     @if ($solucao->imagens->isNotEmpty())
-                                        <h5 class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Imagens da Solução:</h5>
+                                        <h5 class="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">Imagens Detalhadas:</h5>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
                                             @foreach ($solucao->imagens as $imagem)
-                                                 <div class="group">
+                                                 <div class="group text-center">
                                                     <a href="{{ Storage::url($imagem->path) }}" target="_blank" data-lightbox="solucao-{{ $solucao->id }}" data-title="{{ $imagem->titulo }}">
-                                                        <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-24 object-cover rounded-md shadow-sm hover:opacity-75 transition duration-150">
+                                                        <img src="{{ Storage::url($imagem->path) }}" alt="{{ $imagem->titulo }}" class="w-full h-24 object-cover rounded-md border border-gray-300 dark:border-gray-600 shadow-sm hover:opacity-80 transition duration-150">
                                                     </a>
-                                                     <p class="text-xs text-center mt-1 truncate" title="{{ $imagem->titulo }}">{{ $imagem->titulo }}</p>
+                                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate" title="{{ $imagem->titulo }}">{{ $imagem->titulo }}</p>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -87,15 +105,23 @@
 
                                     {{-- Vídeos da Solução --}}
                                     @if ($solucao->videos->isNotEmpty())
-                                        <h5 class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Vídeos da Solução:</h5>
-                                        <ul class="list-disc list-inside space-y-1 text-sm mb-4">
+                                        <h5 class="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">Vídeos Demonstrativos:</h5>
+                                        <ul class="space-y-2 text-sm mb-4">
                                             @foreach ($solucao->videos as $video)
-                                                <li>
-                                                    <span class="font-medium">{{ $video->titulo ?? 'Vídeo sem título' }}</span>
-                                                    @if ($video->tipo === 'link')
-                                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="ml-1 text-blue-600 hover:underline">(Assistir Link Externo)</a>
+                                                <li class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-md border dark:border-gray-600">
+                                                    <span class="font-medium truncate pr-3" title="{{ $video->titulo ?? 'Vídeo sem título' }}">{{ $video->titulo ?? 'Vídeo sem título' }}</span>
+                                                     @if ($video->tipo === 'link')
+                                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
+                                                            Assistir <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                        </a>
+                                                    @elseif ($video->tipo === 'youtube')
+                                                        <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-sm text-red-600 dark:text-red-400 hover:underline font-semibold whitespace-nowrap">
+                                                            Ver no YouTube <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                        </a>
                                                     @else
-                                                         <a href="{{ Storage::url($video->url_ou_path) }}" target="_blank" class="ml-1 text-blue-600 hover:underline">(Ver Vídeo)</a>
+                                                         <a href="{{ Storage::url($video->url_ou_path) }}" target="_blank" class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold whitespace-nowrap">
+                                                            Ver Vídeo <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                                        </a>
                                                     @endif
                                                 </li>
                                             @endforeach
@@ -105,43 +131,48 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhuma solução cadastrada para este código de erro.</p>
+                        <div class="text-center py-6">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Nenhuma solução encontrada</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ainda não há soluções cadastradas para este código.</p>
+                        </div>
                     @endif
                 </div>
             </div>
 
              {{-- Comentários --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Comentários Técnicos</h3>
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-xl font-semibold mb-6">Comentários Técnicos</h3>
 
-                    {{-- Formulário para Novo Comentário (Apenas Logado) --}}
+                    {{-- Formulário para Novo Comentário --}}
                     @auth
-                        {{-- FORMULÁRIO ATUALIZADO com upload e youtube --}}
-                        <form action="{{ route('comentarios.store', ['comentavel_type' => 'codigo_erro', 'comentavel_id' => $codigoErro->id]) }}" method="POST" enctype="multipart/form-data" class="mb-6 p-4 border rounded-md dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                        <form action="{{ route('comentarios.store', ['comentavel_type' => 'codigo_erro', 'comentavel_id' => $codigoErro->id]) }}" method="POST" enctype="multipart/form-data" class="mb-8 p-5 border rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 shadow-sm">
                             @csrf
                             <div class="mb-4">
-                                <label for="conteudo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adicionar Comentário:</label>
-                                <textarea name="conteudo" id="conteudo" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>{{ old('conteudo') }}</textarea>
-                                @error('conteudo')
-                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
+                                <label for="conteudo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deixe seu comentário ou sugestão:</label>
+                                <textarea id="conteudo" name="conteudo" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>{{ old('conteudo') }}</textarea>
+                                <x-input-error :messages="$errors->get('conteudo')" class="mt-2" />
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <div>
-                                    <label for="midias" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Anexar Arquivos (JPG, PNG, GIF, PDF, MP4 - Máx 10MB cada):</label>
-                                    <input type="file" name="midias[]" id="midias" multiple class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600">
-                                    {{-- Exibe erros gerais de midias e específicos de cada arquivo --}}
-                                    @error('midias') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-                                    @error('midias.*') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                                    <label for="midias" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Anexar Arquivos <span class="text-xs">(Imagens, PDF, Vídeo Curto)</span></label>
+                                    <input type="file" name="midias[]" id="midias" multiple class="block w-full text-sm text-gray-500 dark:text-gray-300
+                                        border border-gray-300 dark:border-gray-700 rounded-md shadow-sm cursor-pointer
+                                        focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500
+                                        file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold
+                                        file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300
+                                        hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50">
+                                    <x-input-error :messages="$errors->get('midias')" class="mt-2" />
+                                    <x-input-error :messages="$errors->get('midias.*')" class="mt-2" />
                                 </div>
                                 <div>
-                                    <label for="youtube_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ou Link do YouTube:</label>
-                                    <input type="url" name="youtube_link" id="youtube_link" placeholder="https://www.youtube.com/watch?v=..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="{{ old('youtube_link') }}">
-                                    @error('youtube_link')
-                                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                                    @enderror
+                                    <label for="youtube_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link do YouTube</label>
+                                    <x-text-input id="youtube_link" type="url" name="youtube_link" class="mt-1 block w-full" placeholder="https://www.youtube.com/watch?v=..." :value="old('youtube_link')"></x-text-input>
+                                    <x-input-error :messages="$errors->get('youtube_link')" class="mt-2" />
                                 </div>
                             </div>
 
@@ -152,79 +183,126 @@
                             </div>
                         </form>
                     @else
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                            <a href="{{ route('login') }}" class="underline text-indigo-600 dark:text-indigo-400">Faça login</a> ou <a href="{{ route('register') }}" class="underline text-indigo-600 dark:text-indigo-400">registre-se</a> para deixar um comentário.
-                        </p>
+                        <div class="text-center border rounded-lg p-6 bg-gray-50 dark:bg-gray-700/50 dark:border-gray-700 mb-8">
+                             <p class="text-sm text-gray-700 dark:text-gray-300">
+                                Para comentar ou adicionar anexos, por favor
+                                <a href="{{ route('login') }}" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">faça login</a> ou
+                                <a href="{{ route('register') }}" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">registre-se</a>.
+                            </p>
+                        </div>
                     @endauth
 
-                    {{-- Lista de Comentários Existentes (ATUALIZADA com mídias) --}}
-                    <h4 class="text-md font-medium mb-4 border-t dark:border-gray-700 pt-4">Histórico de Comentários</h4>
+                    {{-- Lista de Comentários Existentes --}}
+                    <h4 class="text-lg font-semibold mb-4">Histórico de Comentários</h4>
                     @if ($codigoErro->comentarios->isNotEmpty())
                         <div class="space-y-6">
                             @foreach ($codigoErro->comentarios as $comentario)
-                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="font-semibold text-sm text-gray-800 dark:text-gray-200">{{ $comentario->user->name ?? 'Usuário desconhecido' }}</span>
-                                        <span class="text-xs text-gray-500 dark:text-gray-400" title="{{ $comentario->created_at->format('d/m/Y H:i:s') }}">{{ $comentario->created_at->diffForHumans() }}</span>
+                                {{-- Card do Comentário Individual --}}
+                                <div class="p-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <span class="font-semibold text-sm text-gray-800 dark:text-gray-200">{{ $comentario->user->name ?? 'Usuário Anônimo' }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ $comentario->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        {{-- @if (Auth::check() && Auth::user()->isAdmin()) --}}
+                                        @if (Auth::user()?->isAdmin())
+                                            <form action="{{ route('comentarios.destroy', $comentario) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este comentário?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 text-xs" title="Excluir Comentário">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
-                                    <p class="text-gray-700 dark:text-gray-300 mb-3 whitespace-pre-wrap">{{ $comentario->conteudo }}</p>
+                                    <p class="text-gray-700 dark:text-gray-300 mb-4 whitespace-pre-wrap text-sm">{{ $comentario->conteudo }}</p>
 
                                     {{-- Exibição das Mídias --}}
                                     @if ($comentario->midias->isNotEmpty())
-                                        <div class="mt-3 border-t pt-3 dark:border-gray-600">
-                                            <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Anexos:</p>
+                                        <div class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                            <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Anexos:</p>
                                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                                 @foreach ($comentario->midias as $midia)
-                                                    <div>
+                                                    <div class="bg-gray-50 dark:bg-gray-700/50 p-2 rounded border dark:border-gray-600">
                                                         @if ($midia->is_imagem)
-                                                            <a href="{{ $midia->url }}" target="_blank" title="{{ $midia->nome_original ?? 'Ver imagem' }}">
-                                                                <img src="{{ $midia->url }}" alt="{{ $midia->nome_original ?? 'Imagem anexa' }}" class="max-h-40 w-auto rounded-md shadow-sm mb-1 object-contain border dark:border-gray-700">
+                                                            <a href="{{ $midia->url }}" target="_blank" data-lightbox="comentario-{{ $comentario->id }}" data-title="{{ $midia->nome_original ?? 'Ver imagem' }}" class="block hover:opacity-80 transition">
+                                                                <img src="{{ $midia->url }}" alt="{{ $midia->nome_original ?? 'Imagem anexa' }}" class="max-h-32 w-full rounded shadow-sm mb-1 object-contain border dark:border-gray-600">
                                                             </a>
                                                         @elseif ($midia->is_video_mp4)
-                                                            <video controls class="max-h-40 w-auto rounded-md shadow-sm mb-1 border dark:border-gray-700 bg-black">
+                                                            <video controls class="max-h-40 w-full rounded shadow-sm mb-1 border dark:border-gray-600 bg-black">
                                                                 <source src="{{ $midia->url }}" type="video/mp4">
                                                                 Seu navegador não suporta o vídeo MP4.
                                                             </video>
                                                         @elseif ($midia->is_video_youtube)
                                                             <div class="aspect-w-16 aspect-h-9 mb-1">
-                                                                <iframe src="{{ $midia->url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-md shadow-sm border dark:border-gray-700"></iframe>
+                                                                <iframe src="{{ $midia->url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded shadow-sm border dark:border-gray-600"></iframe>
                                                             </div>
                                                         @elseif ($midia->is_pdf)
-                                                            <a href="{{ $midia->url }}" target="_blank" class="inline-flex items-center text-sm text-blue-600 hover:underline dark:text-blue-400">
-                                                                <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4 0a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6.5A1.5 1.5 0 0 0 16.5 5h-5A1.5 1.5 0 0 1 10 .5V0H4zm8 6v4h4V6h-4zm-2 8H6v-2h4v2zm4 0h-2v-2h2v2zm0-3H6V9h8v2z"/></svg>
-                                                                {{ $midia->nome_original ?? 'Abrir PDF' }}
+                                                            <a href="{{ $midia->url }}" target="_blank" class="inline-flex items-center text-sm text-blue-600 hover:underline dark:text-blue-400 bg-white dark:bg-gray-800 px-2 py-1 rounded border dark:border-gray-600">
+                                                                <svg class="w-4 h-4 mr-1.5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4 0a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6.5A1.5 1.5 0 0 0 16.5 5h-5A1.5 1.5 0 0 1 10 .5V0H4zm8 6v4h4V6h-4zm-2 8H6v-2h4v2zm4 0h-2v-2h2v2zm0-3H6V9h8v2z"/></svg>
+                                                                Ver PDF
                                                             </a>
                                                         @endif
-                                                        <p class="text-xs text-gray-500 truncate" title="{{ $midia->nome_original }}">{{ $midia->nome_original }}</p>
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title="{{ $midia->nome_original }}">{{ $midia->nome_original }}</p>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
                                     @endif
-                                     {{-- TODO: Adicionar botão de excluir apenas se Auth::user()->isAdmin() --}}
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum comentário técnico adicionado ainda.</p>
+                        <div class="text-center py-6 border-t dark:border-gray-700">
+                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                              </svg>
+                            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Sem comentários</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ainda não há comentários ou sugestões para este código.</p>
+                        </div>
                     @endif
                 </div>
             </div>
 
-            {{-- Botão Voltar --}}
-            <div class="mt-6">
-                 <a href="{{ route('codigos.index') }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    &laquo; Voltar para Lista de Códigos
-                </a>
-            </div>
-
         </div>
     </div>
-    {{-- Incluir JS do Lightbox2 se quiser usar --}}
-    {{-- @push('scripts')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    {{-- Incluir JS/CSS do Lightbox2 se for usar --}}
+    @push('scripts')
+        {{-- Certifique-se de que o jQuery esteja carregado ANTES do Lightbox --}}
+        {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js" integrity="sha512-k2GFCTbp9rQU412BStrcD/rlwv1PYec9SNrkbQlo6RZCf75l6KcC3UwDY8H5n5hl4v77IDtIPwOk9Dqjs/mMBQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            // Opções do Lightbox (opcional)
+            lightbox.option({
+              'resizeDuration': 200,
+              'wrapAround': true,
+              'fadeDuration': 300
+            })
+        </script>
     @endpush
     @push('styles')
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
-    @endpush --}}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" integrity="sha512-ZKX+BvQihRJPA8CROKBhDNvoc2aDMOdAlcm7TUQY+35XYtrd3yh95QOOhsPDQY9noQE0ZAEps4hfPNEAXMlguw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            /* Ajustes para o tema escuro do lightbox, se necessário */
+            .lb-dataContainer {
+                background-color: rgba(31, 41, 55, 0.9); /* bg-gray-800 com alpha */
+            }
+            .lb-data .lb-details {
+                color: #d1d5db; /* text-gray-300 */
+            }
+            .lb-data .lb-caption {
+                 color: #e5e7eb; /* text-gray-200 */
+            }
+            .lb-data .lb-close {
+                filter: invert(1) grayscale(100%) brightness(200%);
+            }
+            .lb-nav a.lb-prev, .lb-nav a.lb-next {
+                 opacity: 0.6;
+                 transition: opacity 0.2s ease-in-out;
+            }
+            .lb-nav a.lb-prev:hover, .lb-nav a.lb-next:hover {
+                opacity: 1;
+            }
+        </style>
+    @endpush
 </x-app-layout> 

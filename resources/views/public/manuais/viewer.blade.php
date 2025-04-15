@@ -32,67 +32,7 @@
         <div id="viewer" class="pdfViewer"></div>
     </div>
 
-    {{-- Carrega as bibliotecas PDF.js via import ES6 module --}}
-    <script type="module">
-        // Importa os componentes necessários diretamente dos módulos CDN
-        import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs';
-        import * as pdfjsViewer from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf_viewer.mjs';
+    {{-- Script pdf-viewer.js já é carregado pelo @vite no head --}}
 
-        // Define o caminho para o worker
-        const pdfjsWorkerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.mjs`;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
-
-        // URL do PDF passada pelo controller
-        const pdfUrl = @json($pdfUrl);
-        // Log da URL para depuração
-        console.log("URL do PDF para carregar:", pdfUrl);
-
-        const container = document.getElementById('viewerContainer');
-        const eventBus = new pdfjsViewer.EventBus();
-
-        // Inicializa o visualizador PDF
-        const pdfViewer = new pdfjsViewer.PDFViewer({
-            container: container,
-            eventBus: eventBus,
-            removePageBorders: true,
-        });
-
-        // Link service para navegação interna/externa
-        const pdfLinkService = new pdfjsViewer.PDFLinkService({ eventBus });
-        pdfLinkService.setViewer(pdfViewer);
-
-        // Função assíncrona para carregar o documento PDF
-        async function loadPdf() {
-            try {
-                 // Tenta criar uma instância do worker explicitamente
-                // const worker = new pdfjsLib.PDFWorker();
-
-                // Passa a URL diretamente como string ou objeto { url: ... }
-                const loadingTask = pdfjsLib.getDocument({ url: pdfUrl /*, worker: worker*/ });
-                console.log("Iniciando carregamento...");
-                const pdfDocument = await loadingTask.promise;
-                console.log("Documento carregado:", pdfDocument);
-
-                pdfViewer.setDocument(pdfDocument);
-                pdfLinkService.setDocument(pdfDocument, null);
-                 console.log("Documento definido no viewer.");
-
-            } catch (reason) {
-                console.error(`Erro ao carregar PDF (${reason?.name || 'Error'}): ${reason?.message || reason}`);
-                alert("Erro ao carregar o PDF. Verifique o console para mais detalhes.");
-            }
-        }
-
-        // Ajusta a escala inicial quando as páginas são inicializadas
-        eventBus.on('pagesinit', function () {
-            console.log("Páginas inicializadas, ajustando escala.");
-            pdfViewer.currentScaleValue = 'page-width';
-        });
-
-        // Inicia o carregamento do PDF
-        console.log("Chamando loadPdf()...");
-        loadPdf();
-
-    </script>
 </body>
 </html>
