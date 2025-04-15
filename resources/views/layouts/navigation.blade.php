@@ -18,11 +18,29 @@
                     <x-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')">
                         {{ __('Códigos de Erro') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')">
+                        {{ __('Marcas') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')">
+                        {{ __('Modelos') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')">
                         {{ __('Manuais') }}
                     </x-nav-link>
                      {{-- TODO: Adicionar link para Vídeos se houver listagem pública --}}
                 </div>
+            </div>
+
+            {{-- Formulário de Busca --}}
+            <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <form method="GET" action="{{ route('busca.index') }}" class="flex items-center">
+                    <input type="search" name="q" placeholder="Buscar..." required
+                           value="{{ request('q') }}" 
+                           class="block w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <button type="submit" class="ml-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </form>
             </div>
 
             <!-- Settings Dropdown or Login/Register Links -->
@@ -98,6 +116,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')">
                 {{ __('Códigos de Erro') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')">
+                {{ __('Marcas') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')">
+                {{ __('Modelos') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')">
                 {{ __('Manuais') }}

@@ -8,6 +8,7 @@ use App\Http\Controllers\ManualController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ProfileController; // Controller do Breeze
+use App\Http\Controllers\BuscaController; // Importa o novo controller
 // Importa os controllers do Admin (atenção aos namespaces)
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\TecnicoController as AdminTecnicoController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\Admin\ComentarioController as AdminComentarioController;
 use App\Http\Controllers\Admin\MarcaController as AdminMarcaController;
 use App\Http\Controllers\Admin\ModeloController as AdminModeloController;
+use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\ModeloController;
 // Nota: Os controllers de Código de Erro, Manual e Vídeo do Admin usarão os mesmos controllers
 // da área pública, mas dentro do grupo de rotas admin.
 
@@ -29,6 +32,16 @@ Route::get('/codigos', [CodigoErroController::class, 'index'])->name('codigos.in
 Route::get('/codigo/{codigoErro}', [CodigoErroController::class, 'show'])->name('codigos.show');
 Route::get('/manuais', [ManualController::class, 'index'])->name('manuais.index'); // Rota pública para listar manuais
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index'); // Rota pública para listar vídeos
+// Rota para a página de resultados da busca
+Route::get('/busca', [BuscaController::class, 'index'])->name('busca.index');
+
+// Rotas públicas para Marcas
+Route::get('/marcas', [MarcaController::class, 'index'])->name('marcas.index');
+Route::get('/marcas/{marca}', [MarcaController::class, 'show'])->name('marcas.show'); // Usará o slug se configurado no model
+
+// Rotas públicas para Modelos
+Route::get('/modelos', [ModeloController::class, 'index'])->name('modelos.index');
+Route::get('/modelos/{modelo}', [ModeloController::class, 'show'])->name('modelos.show'); // Usará o slug se configurado no model
 
 // Rotas de autenticação geradas pelo Breeze (não mexer diretamente aqui)
 require __DIR__.'/auth.php';

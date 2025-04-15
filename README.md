@@ -1,38 +1,60 @@
-# PainelIMP - Painel Interno de Manuais e Procedimentos
+# Painel Impressoras - Base de Conhecimento
 
-Este projeto é um painel web desenvolvido em Laravel 12 para gerenciar códigos de erro, soluções, manuais técnicos, imagens e vídeos relacionados a equipamentos.
+Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento sobre códigos de erro, soluções, manuais e informações relacionadas a impressoras e multifuncionais.
 
-## Funcionalidades Principais
+## Escopo do Projeto
 
-*   **Autenticação:** Sistema de login e registro usando Laravel Breeze.
-*   **Perfis de Usuário:**
-    *   **Visitante:** Visualiza códigos de erro públicos, manuais públicos (sem download), imagens e vídeos.
-    *   **Técnico:** Acessa todo conteúdo técnico, comenta em códigos de erro, faz download de manuais e edita seu perfil.
-    *   **Administrador:** Acesso total ao sistema, gerenciamento de técnicos, conteúdos (códigos, soluções, manuais, mídias) e comentários.
-*   **Gerenciamento de Conteúdo:** CRUD completo para códigos de erro, soluções, manuais, imagens e vídeos através do painel administrativo.
-*   **Comentários:** Técnicos podem adicionar comentários em códigos de erro (sem moderação, apenas exclusão pelo admin).
-*   **Uploads:** Armazenamento local de manuais (PDF, etc.), imagens e vídeos (MP4) com validação.
-*   **Vídeos:** Suporte para links do YouTube ou upload de arquivos.
-*   **Tecnologias:** Laravel 12.x, TailwindCSS, Blade, MySQL.
+*   **Área Pública:**
+    *   Listagem e visualização de Códigos de Erro (com soluções, imagens e vídeos associados).
+    *   Listagem e visualização de Marcas.
+    *   Listagem e visualização de Modelos (com códigos de erro e manuais associados).
+    *   Listagem de Manuais (download requer login).
+    *   Listagem de Vídeos (público).
+    *   Sistema de Comentários (com anexos: imagens, pdf, vídeo mp4, link youtube) nos Códigos de Erro para usuários logados.
+    *   Sistema de Busca Global (em Códigos de Erro e Manuais).
+*   **Área Administrativa (requer login de admin):**
+    *   Dashboard com visão geral.
+    *   CRUD completo para Técnicos (usuários com role 'tecnico').
+    *   CRUD completo para Marcas.
+    *   CRUD completo para Modelos (associando a Marcas).
+    *   CRUD completo para Códigos de Erro (associando a Modelos).
+    *   CRUD completo para Soluções (associando a Códigos de Erro).
+    *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo).
+    *   Gerenciamento de Imagens (upload e associação a Códigos de Erro, Soluções, etc. - Polimórfico).
+    *   Gerenciamento de Vídeos (upload de arquivo ou link, associação a Códigos de Erro, Soluções, etc. - Polimórfico).
+    *   Gerenciamento de Comentários (exclusão).
+*   **Autenticação:**
+    *   Login/Registro/Logout (usando Laravel Breeze).
+    *   Diferenciação de papéis (Admin vs Técnico).
+*   **Tecnologias:**
+    *   Laravel 12.x
+    *   PHP 8.2+
+    *   MySQL
+    *   Tailwind CSS (via Breeze)
+    *   Alpine.js (via Breeze)
 
-## Estrutura Inicial
+## TODO / Próximos Passos
 
-*   Projeto Laravel 12 criado.
-*   Laravel Breeze instalado e configurado (Blade stack).
-*   Banco de dados MySQL configurado (`painelimp`).
-*   Migrations criadas e executadas para as tabelas: `users` (com `role` e `avatar`), `codigos_erro`, `solucoes`, `comentarios`, `manuais`, `imagens`, `videos`.
-*   Models Eloquent criados com relacionamentos definidos (`User`, `CodigoErro`, `Solucao`, `Comentario`, `Manual`, `Imagem`, `Video`).
-*   Seeders criados e executados para popular o banco com dados iniciais (usuário admin, técnico, exemplos de códigos, soluções, comentários e manuais).
-*   Storage link criado (`php artisan storage:link`).
-*   Middleware `RoleMiddleware` criado e registrado (`role:admin`).
-*   Controllers básicos gerados.
-*   Estrutura de rotas definida em `routes/web.php`.
+*   Implementar listagem pública de Vídeos.
+*   Adicionar dashboard específico para Técnicos.
+*   Melhorar sistema de busca (ex: Full-Text Search, mais campos).
+*   Implementar sistema de permissões mais granular (se necessário).
+*   Adicionar testes automatizados.
 
-## Próximos Passos
+## Instalação (Ambiente de Desenvolvimento com XAMPP)
 
-*   Implementar a lógica nos Controllers.
-*   Criar as Views (Blade) para as áreas pública, de técnico e administrativa.
-*   Implementar a lógica de upload de arquivos (manuais, imagens, vídeos) com validação.
-*   Desenvolver a interface do usuário com TailwindCSS.
-*   Refinar validações (Request classes).
-*   Implementar testes.
+1.  Clone o repositório.
+2.  Configure o XAMPP (Apache, MySQL).
+3.  Crie um banco de dados MySQL (ex: `painelimp`).
+4.  Copie `.env.example` para `.env`.
+5.  Configure as variáveis de ambiente no `.env`, especialmente `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
+6.  Execute `composer install`.
+7.  Execute `php artisan key:generate`.
+8.  Execute `php artisan migrate --seed` para criar as tabelas e popular com dados iniciais.
+9.  Execute `npm install && npm run dev` (para compilar assets do frontend).
+10. Configure seu Virtual Host no Apache ou use `php artisan serve`.
+
+## Credenciais Padrão (Após Seed)
+
+*   **Admin:** `admin@example.com` / `password`
+*   **Técnico:** `tecnico@example.com` / `password`
