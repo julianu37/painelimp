@@ -24,10 +24,12 @@
                 {{-- Sidebar (Menu Lateral Fixo) --}}
                 <aside class="w-64 bg-white dark:bg-gray-800 shadow h-screen sticky top-0 overflow-y-auto">
                     <div class="p-4">
-                        {{-- Logo ou Nome do App --}}
-                        <a href="{{ route('admin.dashboard') }}">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                        </a>
+                        <!-- Logo -->
+                        <div class="shrink-0 flex items-center">
+                            <a href="{{ route('admin.dashboard') }}">
+                                <x-application-logo class="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                            </a>
+                        </div>
                     </div>
                     <nav class="mt-5">
                         <ul>
