@@ -15,35 +15,35 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if ($manuais->isNotEmpty())
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nome do Manual</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modelo Associado</th>
-                                        <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">Download</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach ($manuais as $manual)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 dark:text-white">{{ $manual->nome }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $manual->modelo->marca->nome ?? '' }} {{ $manual->modelo->nome ?? 'Genérico' }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                {{-- Link de Download (requer login) --}}
-                                                <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                                     Download
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @foreach ($manuais as $manual)
+                                <li class="py-4 flex flex-col sm:flex-row justify-between sm:items-center">
+                                    <div>
+                                        <span class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $manual->nome }}</span>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400" title="{{ $manual->arquivo_nome_original }}">
+                                            Arquivo: {{ Str::limit($manual->arquivo_nome_original, 50) }}
+                                        </p>
+                                         {{-- Mostrar Modelo/Marca --}}
+                                        @if($manual->modelo)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                Modelo: <a href="{{ route('modelos.show', $manual->modelo) }}" class="hover:underline">{{ $manual->modelo->nome }}</a>
+                                                @if($manual->modelo->marca)
+                                                (<a href="{{ route('marcas.show', $manual->modelo->marca) }}" class="hover:underline">{{ $manual->modelo->marca->nome }}</a>)
+                                                @endif
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="mt-2 sm:mt-0 sm:ml-4 flex space-x-3">
+                                        <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="text-sm text-green-600 dark:text-green-400 hover:underline">Visualizar</a>
+                                        @auth
+                                            <a href="{{ route('manuais.download', $manual) }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Download</a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">(Login p/ Download)</span>
+                                        @endauth
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
 
                         <div class="mt-6">
                             {{ $manuais->links() }} {{-- Links de paginação --}}

@@ -43,6 +43,9 @@ Route::get('/marcas/{marca}', [MarcaController::class, 'show'])->name('marcas.sh
 Route::get('/modelos', [ModeloController::class, 'index'])->name('modelos.index');
 Route::get('/modelos/{modelo}', [ModeloController::class, 'show'])->name('modelos.show'); // Usará o slug se configurado no model
 
+// Rota pública para visualizar PDF do Manual
+Route::get('/manuais/view/{manual}', [ManualController::class, 'viewPdf'])->name('manuais.view');
+
 // Rotas de autenticação geradas pelo Breeze (não mexer diretamente aqui)
 require __DIR__.'/auth.php';
 
@@ -71,7 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verifi
         ->where('comentavel_type', '[a-z_]+'); // Garante que o tipo é uma string (ex: codigo_erro)
 
     // Download de Manuais (requer autenticação)
-    Route::get('/manuais/download/{manual}', [App\Http\Controllers\Admin\ManualController::class, 'download'])->name('manuais.download'); // Corrigido para usar AdminController que tem o método
+    Route::get('/manuais/download/{manual}', [App\Http\Controllers\ManualController::class, 'download'])->name('manuais.download');
 });
 
 // Área administrativa (apenas admin logado)
@@ -93,10 +96,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Soluções
     Route::resource('solucoes', AdminSolucaoController::class);
 
-    // CRUD de Manuais
-    Route::resource('manuais', AdminManualController::class);
-    // Adicionar rota de download separada, pois não é padrão do resource
-    Route::get('manuais/download/{manual}', [AdminManualController::class, 'download'])->name('manuais.download');
+    // CRUD de Manuais - Especifica o nome do parâmetro como 'manual'
+    Route::resource('manuais', AdminManualController::class)->parameters([
+        'manuais' => 'manual' // Garante que o parâmetro seja {manual} e não {manuai}
+    ]);
 
     // CRUD de Imagens (sem create/store autônomo)
     Route::resource('imagens', AdminImagemController::class)->except(['create', 'store', 'show']);

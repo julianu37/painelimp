@@ -35,18 +35,28 @@
                      @if ($manuais->isNotEmpty())
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($manuais as $manual)
-                                <li class="py-3">
-                                    {{-- Link para download se logado, ou apenas mostra o nome --}}
-                                    @auth
-                                    <a href="{{ route('manuais.download', $manual) }}" class="hover:underline">
-                                        {{-- Corrigido para exibir nome --}}
-                                        {{ $manual->nome }} {{-- Adicionar modelo/marca se útil --}}
-                                    </a>
-                                    @else
-                                    {{-- Corrigido para exibir nome --}}
-                                    <span>{{ $manual->nome }}</span>
-                                    @endauth
-                                     <p class="text-xs text-gray-500" title="{{ $manual->arquivo_nome_original }}">({{ Str::limit($manual->arquivo_nome_original, 40) }})</p> {{-- Mostra nome original do arquivo --}}
+                                <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
+                                    <div>
+                                        <span class="text-base font-medium text-gray-900 dark:text-gray-100">{{ $manual->nome }}</span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" title="{{ $manual->arquivo_nome_original }}">({{ Str::limit($manual->arquivo_nome_original, 40) }})</p>
+                                         {{-- Mostrar Modelo/Marca se carregado --}}
+                                        @if($manual->modelo)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                Modelo: <a href="{{ route('modelos.show', $manual->modelo) }}" class="hover:underline">{{ $manual->modelo->nome }}</a>
+                                                @if($manual->modelo->marca)
+                                                (<a href="{{ route('marcas.show', $manual->modelo->marca) }}" class="hover:underline">{{ $manual->modelo->marca->nome }}</a>)
+                                                @endif
+                                            </p>
+                                        @endif
+                                    </div>
+                                   <div class="mt-2 sm:mt-0 sm:ml-4 flex space-x-3">
+                                        <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="text-sm text-green-600 dark:text-green-400 hover:underline">Visualizar</a>
+                                        @auth
+                                            <a href="{{ route('manuais.download', $manual) }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Download</a>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">(Login p/ Download)</span>
+                                        @endauth
+                                    </div>
                                 </li>
                             @endforeach
                         </ul>

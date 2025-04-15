@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage; // Para interagir com o Storage
 use Symfony\Component\HttpFoundation\StreamedResponse; // Para download
+use Symfony\Component\HttpFoundation\BinaryFileResponse; // Para view
 use Symfony\Component\HttpFoundation\RedirectResponse; // Para redirecionamento
+use Illuminate\Support\Facades\Auth; // Para checar auth no download
 
 class ManualController extends Controller
 {
@@ -26,22 +28,41 @@ class ManualController extends Controller
     }
 
     /**
-     * Permite o download do arquivo de um manual para usuários autenticados.
+     * Exibe uma view com o visualizador PDF.js embutido.
+     * Acessível publicamente.
      */
-    public function download(Manual $manual): StreamedResponse|RedirectResponse
+    public function viewPdf(Manual $manual): View|RedirectResponse
     {
-        // Verifica se o arquivo existe no storage
+        // Verifica se o arquivo existe no storage público
         if (!Storage::disk('public')->exists($manual->arquivo_path)) {
-            // Se não existir, redireciona de volta com erro
-            // Idealmente, voltar para a página anterior ou para a lista de manuais
             return back()->with('error', 'Arquivo do manual não encontrado.');
         }
 
-        // Retorna o download do arquivo
-        // Usa o nome original do arquivo se disponível, senão um nome genérico
-        $nomeArquivoDownload = $manual->arquivo_nome_original ?? basename($manual->arquivo_path);
+        // Obtém a URL pública do arquivo PDF
+        $pdfUrl = Storage::disk('public')->url($manual->arquivo_path);
 
-        return Storage::disk('public')->download($manual->arquivo_path, $nomeArquivoDownload);
+        // Retorna a view do visualizador, passando a URL e o nome do manual
+        return view('public.manuais.viewer', [
+            'manual' => $manual,      // Para exibir o nome, etc.
+            'pdfUrl' => $pdfUrl, // URL para o PDF.js carregar
+        ]);
+    }
+
+    /**
+     * Força o download do arquivo do manual.
+     * Protegido pelo middleware 'auth' na rota.
+     */
+    public function download(Manual $manual): StreamedResponse|RedirectResponse
+    {
+        // Verifica se o arquivo existe no storage público
+        if (!Storage::disk('public')->exists($manual->arquivo_path)) {
+            // Log::error("Arquivo PDF do manual não encontrado para download: ID {$manual->id}, Path: {$manual->arquivo_path}");
+            return back()->with('error', 'Arquivo do manual não encontrado.'); // Ou abort(404)
+        }
+
+        // Usa o método download do Storage para forçar o download
+        // Passa o nome original do arquivo para o navegador
+        return Storage::disk('public')->download($manual->arquivo_path, $manual->arquivo_nome_original);
     }
 
     /**

@@ -46,8 +46,8 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $manual->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            {{-- Link de Download --}}
-                                            <a href="{{ route('admin.manuais.download', $manual) }}" target="_blank" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-3">Baixar</a>
+                                            {{-- Link de Download (usa a rota pública/autenticada) --}}
+                                            <a href="{{ route('manuais.download', $manual) }}" target="_blank" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-3">Baixar</a>
                                             {{-- Link Ver Detalhes --}}
                                             <a href="{{ route('admin.manuais.show', $manual) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">Ver</a>
                                             <a href="{{ route('admin.manuais.edit', $manual) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">Editar</a>
