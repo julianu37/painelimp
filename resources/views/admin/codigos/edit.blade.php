@@ -6,11 +6,9 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <x-alert-messages />
-
                     {{-- Formulário de edição de código de erro --}}
                     {{-- Passando o objeto $codigoErro diretamente, mas a rota agora espera {codigo_erro} --}}
                     <form method="POST" action="{{ route('admin.codigos.update', ['codigo_erro' => $codigoErro]) }}">

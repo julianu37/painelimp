@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\MarcaController as AdminMarcaController;
 use App\Http\Controllers\Admin\ModeloController as AdminModeloController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;
+use App\Http\Controllers\LikeController;
 // Nota: Os controllers de Código de Erro, Manual e Vídeo do Admin usarão os mesmos controllers
 // da área pública, mas dentro do grupo de rotas admin.
 
@@ -79,6 +80,13 @@ Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verifi
 
     // Download de Manuais (requer autenticação)
     Route::get('/manuais/download/{manual}', [App\Http\Controllers\ManualController::class, 'download'])->name('manuais.download');
+
+    // Rotas para Likes/Unlikes de Comentários
+    // Usa Route Model Binding para injetar o Comentario
+    Route::post('/comentarios/{comentario}/like', [LikeController::class, 'like'])
+        ->name('comments.like'); // Rota para curtir
+    Route::delete('/comentarios/{comentario}/unlike', [LikeController::class, 'unlike'])
+        ->name('comments.unlike'); // Rota para descurtir
 });
 
 // Área administrativa (apenas admin logado)

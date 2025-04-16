@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth; // Importar a facade Auth
 // Importa os modelos relacionados
 use App\Models\User;
 use App\Models\CodigoErro;
@@ -80,5 +82,35 @@ class Comentario extends Model
     public function midias(): HasMany
     {
         return $this->hasMany(MidiaComentario::class);
+    }
+
+    /**
+     * Define o relacionamento com os usuários que curtiram o comentário.
+     *
+     * @return BelongsToMany
+     */
+    public function likers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'comentario_user_likes')
+            ->withTimestamps();
+    }
+
+    /**
+     * Verifica se o usuário autenticado atualmente curtiu este comentário.
+     *
+     * @return bool
+     */
+    public function isLikedByAuthUser(): bool
+    {
+        // Verifica se há um usuário autenticado
+        if (!Auth::check()) {
+            return false;
+        }
+
+        // Verifica se a relação 'likers' já foi carregada com o ID do usuário autenticado
+        // Ou faz uma consulta para verificar se o like existe na tabela pivot
+        return $this->relationLoaded('likers')
+            ? $this->likers->contains(Auth::user())
+            : $this->likers()->where('user_id', Auth::id())->exists();
     }
 }

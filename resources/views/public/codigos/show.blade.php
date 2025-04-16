@@ -15,8 +15,6 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-            <x-alert-messages />
-
             {{-- Detalhes do Código --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
@@ -261,6 +259,54 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                    {{-- Ações do Comentário: Like/Unlike e talvez Excluir (se permitido publicamente) --}}
+                                    <div class="mt-3 border-t pt-2 dark:border-gray-600 flex justify-between items-center">
+                                        {{-- Like/Unlike --}}
+                                        <div class="flex items-center space-x-2">
+                                            @auth {{-- Apenas para usuários logados --}}
+                                                @if ($comentario->isLikedByAuthUser())
+                                                    {{-- Formulário UNLIKE --}}
+                                                    <form action="{{ route('comments.unlike', $comentario) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="flex items-center text-xs text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400" title="Remover Curtida">
+                                                            {{-- Ícone Coração Preenchido (Heroicons solid) --}}
+                                                            <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            Descurtir
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    {{-- Formulário LIKE --}}
+                                                    <form action="{{ route('comments.like', $comentario) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500" title="Curtir Comentário">
+                                                            {{-- Ícone Coração Contorno (Heroicons outline) --}}
+                                                            <svg class="w-4 h-4 mr-1 fill-none stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                                            </svg>
+                                                            Curtir
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @endauth
+                                            {{-- Contagem de Likes --}}
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                                                ({{ $comentario->likers_count ?? 0 }} curtida{{ ($comentario->likers_count ?? 0) != 1 ? 's' : '' }})
+                                            </span>
+                                        </div>
+
+                                        {{-- Botão Excluir (Se permitido publicamente - verificar política) --}}
+                                        {{-- Por ora, vamos omitir o botão de excluir na área pública --}}
+                                        {{-- @can ('delete', $comentario)
+                                            <form action="{{ route('comentarios.destroy', $comentario) }}" method="POST" onsubmit="return confirm('Tem certeza?');" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="text-xs text-red-600 hover:text-red-800">Excluir</button>
+                                            </form>
+                                        @endcan --}}
+                                    </div>
                                 </div>
                             @endforeach
                         </div>

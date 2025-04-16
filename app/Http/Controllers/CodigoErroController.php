@@ -39,16 +39,16 @@ class CodigoErroController extends Controller
 
         // Carrega os relacionamentos necessários para exibição
         $codigoErro->load([
-            'solucoes' => function ($query) {
-                // Carrega imagens e vídeos de cada solução
-                $query->with(['imagens', 'videos']);
-            },
-            'comentarios' => function ($query) {
-                // Carrega o usuário de cada comentário e ordena pelos mais recentes
-                $query->with(['user', 'midias'])->orderBy('created_at', 'desc');
-            },
-            'imagens', // Imagens diretamente associadas ao código de erro
-            'videos' // Vídeos diretamente associados ao código de erro
+            'solucoes' => fn($q) => $q->with(['imagens', 'videos']), // Carrega mídias das soluções
+            'modelos', // Carrega modelos associados ao código
+            'imagens', // Carrega imagens do código
+            'videos', // Carrega vídeos do código
+            'comentarios' => function ($query) { // Carrega comentários
+                $query->with(['user', 'midias']) // Com usuário e mídias
+                      ->withCount('likers') // Adiciona contagem de likes
+                      ->orderByDesc('likers_count') // Ordena por likes
+                      ->orderByDesc('created_at'); // Depois por data
+            }
         ]);
 
         // Retorna a view de detalhes pública (precisará ser criada)

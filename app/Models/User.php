@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 // Importa a classe Comentario
 use App\Models\Comentario;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -67,5 +68,13 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Os comentários que o usuário curtiu.
+     */
+    public function likedComments(): BelongsToMany
+    {
+        return $this->belongsToMany(Comentario::class, 'comentario_user_likes', 'user_id', 'comentario_id');
     }
 }

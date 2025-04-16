@@ -89,7 +89,10 @@ class CodigoErroController extends Controller
             'imagens',
             'videos',
             'comentarios' => function ($query) {
-                $query->with(['user', 'midias'])->orderBy('created_at', 'desc'); // Carrega user e midias, ordena por mais recentes
+                $query->with(['user', 'midias']) // Carrega relacionamentos do comentário
+                      ->withCount('likers') // Adiciona a contagem de likes (likers_count)
+                      ->orderByDesc('likers_count') // Ordena por mais curtidos primeiro
+                      ->orderByDesc('created_at'); // Depois por mais recentes
             }
         ]);
         return view('admin.codigos_erro.show', compact('codigo'));
@@ -101,9 +104,15 @@ class CodigoErroController extends Controller
     public function edit(CodigoErro $codigoErro): View
     {
         $modelosAgrupados = $this->getModelosAgrupados();
+        // Carrega os modelos associados (apenas o ID é necessário para o form)
         $codigoErro->load('modelos:id');
 
-        return view('admin.codigos.edit', compact('codigoErro', 'modelosAgrupados'));
+        // Extrai os IDs dos modelos carregados para passar para o form
+        // Isso garante que os checkboxes corretos sejam marcados inicialmente
+        $selectedModelosIds = $codigoErro->modelos->pluck('id')->toArray();
+
+        // Passa o código, os modelos agrupados e os IDs selecionados para a view
+        return view('admin.codigos.edit', compact('codigoErro', 'modelosAgrupados', 'selectedModelosIds'));
     }
 
     /**

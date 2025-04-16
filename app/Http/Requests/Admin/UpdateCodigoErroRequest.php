@@ -22,10 +22,17 @@ class UpdateCodigoErroRequest extends FormRequest
      */
     public function rules(): array
     {
-        $codigoErroId = $this->route('codigoErro')->id;
+        $codigoErroModel = $this->route('codigo_erro');
+
+        $codigoErroId = $codigoErroModel ? $codigoErroModel->id : null;
 
         return [
-            'codigo' => ['required', 'string', 'max:50', Rule::unique('codigos_erro')->ignore($codigoErroId)],
+            'codigo' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('codigos_erro')->ignore($codigoErroId)
+            ],
             'descricao' => ['required', 'string'],
             'modelos' => ['nullable', 'array'],
             'modelos.*' => ['integer', Rule::exists('modelos', 'id')],

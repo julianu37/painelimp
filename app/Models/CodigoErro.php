@@ -14,10 +14,12 @@ use App\Models\Comentario;
 use App\Models\Imagem;
 use App\Models\Video;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class CodigoErro extends Model
+class CodigoErro extends Model implements HasMedia
 {
-    use HasFactory, Sluggable;
+    use HasFactory, Sluggable, InteractsWithMedia;
 
     /**
      * O nome da tabela associada ao modelo.
@@ -122,9 +124,13 @@ class CodigoErro extends Model
         });
     }
 
-    // Descomentado para usar 'codigo' como chave de rota
+    /**
+     * Get the route key for the model.
+     * Implicit Route Model Binding: Usa 'codigo' em vez de 'id'
+     * COMENTADO TEMPORARIAMENTE PARA TESTAR BINDING POR ID NA EXCLUSÃO - REATIVANDO AGORA
+     */
     public function getRouteKeyName(): string
     {
-        return 'codigo'; // Usa a coluna 'codigo' para binding
+        return 'codigo'; // ou 'slug' se tiver um campo slug
     }
 }
