@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class="bg-gray-800 border-b border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -6,25 +6,25 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        <x-application-logo class="block h-12 w-auto fill-current text-gray-200" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Home') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')">
+                    <x-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Códigos de Erro') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')">
+                    <x-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Marcas') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')">
+                    <x-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Modelos') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')">
+                    <x-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Manuais') }}
                     </x-nav-link>
                      {{-- TODO: Adicionar link para Vídeos se houver listagem pública --}}
@@ -35,9 +35,9 @@
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <form method="GET" action="{{ route('busca.index') }}" class="flex items-center">
                     <input type="search" name="q" placeholder="Buscar..." required
-                           value="{{ request('q') }}" 
-                           class="block w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <button type="submit" class="ml-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                           value="{{ request('q') }}"
+                           class="block w-full px-3 py-1.5 text-sm border rounded-md shadow-sm focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
+                    <button type="submit" class="ml-2 p-2 text-gray-400 hover:text-gray-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </form>
@@ -48,7 +48,7 @@
                  @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-300 bg-gray-800 hover:text-white focus:outline-none transition ease-in-out duration-150">
                                 <div>{{ Auth::user()->name }}</div>
 
                                 <div class="ml-1">
@@ -59,19 +59,19 @@
                             </button>
                         </x-slot>
 
-                        <x-slot name="content">
+                        <x-slot name="content" class="bg-gray-800">
                             {{-- Link para o Dashboard correto (Admin ou Técnico) --}}
                              @if (Auth::user()->isAdmin())
-                                <x-dropdown-link :href="route('admin.dashboard')">
+                                <x-dropdown-link :href="route('admin.dashboard')" class="text-gray-300 hover:bg-gray-700">
                                     {{ __('Painel Admin') }}
                                 </x-dropdown-link>
                             @else
-                                <x-dropdown-link :href="route('dashboard')">
+                                <x-dropdown-link :href="route('dashboard')" class="text-gray-300 hover:bg-gray-700">
                                     {{ __('Meu Painel') }} {{-- Ou Dashboard Técnico --}}
                                 </x-dropdown-link>
                             @endif
 
-                            <x-dropdown-link :href="route('profile.edit')">
+                            <x-dropdown-link :href="route('profile.edit')" class="text-gray-300 hover:bg-gray-700">
                                 {{ __('Meu Perfil') }}
                             </x-dropdown-link>
 
@@ -81,23 +81,24 @@
 
                                 <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
+                                                    this.closest('form').submit();"
+                                        class="text-gray-300 hover:bg-gray-700">
                                     {{ __('Sair') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
                     </x-dropdown>
                 @else
-                     {{-- Botão Login --}}
+                     {{-- Botão Login - Alterado para Cyan para destaque no tema --}}
                     <a href="{{ route('login') }}"
-                       class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
+                       class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:border-cyan-900 focus:ring ring-cyan-300 disabled:opacity-25 transition ease-in-out duration-150">
                        {{ __('Log in') }}
                     </a>
 
                     @if (Route::has('register'))
-                         {{-- Botão Registrar --}}
+                         {{-- Botão Registrar - Ajustado para fundo escuro --}}
                          <a href="{{ route('register') }}"
-                           class="ml-4 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition ease-in-out duration-150">
+                           class="ml-4 inline-flex items-center px-4 py-2 bg-gray-700 border border-gray-600 rounded-md font-semibold text-xs text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 transition ease-in-out duration-150">
                             {{ __('Registrar') }}
                         </a>
                     @endif
@@ -106,7 +107,7 @@
 
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-300 hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-gray-300 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -117,33 +118,33 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-800">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Home') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')">
+            <x-responsive-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Códigos de Erro') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')">
+            <x-responsive-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Marcas') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')">
+            <x-responsive-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Modelos') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')">
+            <x-responsive-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Manuais') }}
             </x-responsive-nav-link>
              {{-- TODO: Adicionar link responsivo para Vídeos --}}
         </div>
 
         {{-- Formulário de Busca Responsivo --}}
-        <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-600 px-4">
+        <div class="pt-4 pb-3 border-t border-gray-700 px-4">
              <form method="GET" action="{{ route('busca.index') }}" class="flex items-center">
                 <input type="search" name="q" placeholder="Buscar..." required
                         value="{{ request('q') }}"
-                        class="block w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <button type="submit" class="ml-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        class="block w-full px-3 py-1.5 text-sm border rounded-md shadow-sm focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
+                <button type="submit" class="ml-2 p-2 text-gray-400 hover:text-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </button>
             </form>
@@ -151,25 +152,25 @@
 
         <!-- Responsive Settings Options -->
         @auth
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+            <div class="pt-4 pb-1 border-t border-gray-700">
                 <div class="px-4">
-                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-base text-gray-200">{{ Auth::user()->name }}</div>
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
 
                 <div class="mt-3 space-y-1">
                      {{-- Link para o Dashboard correto --}}
                      @if (Auth::user()->isAdmin())
-                        <x-responsive-nav-link :href="route('admin.dashboard')">
+                        <x-responsive-nav-link :href="route('admin.dashboard')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                             {{ __('Painel Admin') }}
                         </x-responsive-nav-link>
                     @else
-                        <x-responsive-nav-link :href="route('dashboard')">
+                        <x-responsive-nav-link :href="route('dashboard')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                              {{ __('Meu Painel') }}
                         </x-responsive-nav-link>
                     @endif
 
-                    <x-responsive-nav-link :href="route('profile.edit')">
+                    <x-responsive-nav-link :href="route('profile.edit')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                         {{ __('Meu Perfil') }}
                     </x-responsive-nav-link>
 
@@ -179,24 +180,25 @@
 
                         <x-responsive-nav-link :href="route('logout')"
                                 onclick="event.preventDefault();
-                                            this.closest('form').submit();">
+                                            this.closest('form').submit();"
+                                class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                             {{ __('Sair') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>
             </div>
         @else
-             <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+             <div class="pt-4 pb-1 border-t border-gray-700">
                  <div class="mt-3 space-y-1">
                     {{-- Link/Botão Login Responsivo --}}
                      <a href="{{ route('login') }}"
-                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-600 focus:outline-none focus:text-white focus:bg-gray-700 focus:border-gray-600 transition duration-150 ease-in-out">
                          {{ __('Log in') }}
                     </a>
                     @if (Route::has('register'))
                          {{-- Link/Botão Registrar Responsivo --}}
                          <a href="{{ route('register') }}"
-                            class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                            class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-600 focus:outline-none focus:text-white focus:bg-gray-700 focus:border-gray-600 transition duration-150 ease-in-out">
                              {{ __('Registrar') }}
                         </a>
                     @endif

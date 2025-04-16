@@ -15,12 +15,12 @@
         <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 flex flex-col">
             <?php echo $__env->make('layouts.navigation', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
             <!-- Page Heading -->
             <?php if(isset($header)): ?>
-                <header class="bg-white shadow">
+                <header class="bg-cyan-50 shadow border-b border-gray-200">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         <?php echo e($header); ?>
 
@@ -29,7 +29,7 @@
             <?php endif; ?>
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-grow">
                 
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <?php if (isset($component)) { $__componentOriginal23d008af6b2bbad4d7f1d91e2d40a6d9 = $component; } ?>
@@ -58,6 +58,12 @@
                 <?php echo e($slot); ?>
 
             </main>
+
+            <footer class="bg-gray-800 text-white text-center p-4 mt-8">
+                <div class="max-w-7xl mx-auto">
+                    Feito com ❤️ por JM
+                </div>
+            </footer>
         </div>
     </body>
 </html>

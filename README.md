@@ -37,6 +37,16 @@ Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento 
     *   Tailwind CSS (via Breeze)
     *   Alpine.js (via Breeze)
 
+## Tema Visual
+
+O layout público da aplicação (`resources/views/layouts/app.blade.php`) utiliza um tema visual chamado "Printers", caracterizado por:
+
+*   Fundo principal: `bg-gray-100`
+*   Cabeçalho: Fundo azul claro (`bg-cyan-50`)
+*   Rodapé: Fundo escuro (`bg-gray-800`) com texto branco.
+*   Barra de Navegação: Fundo escuro (`bg-gray-800`), texto cinza claro (`text-gray-300`), links ativos com destaque em ciano (`border-cyan-400`, `text-white`), e botão de login principal em ciano (`bg-cyan-600`).
+*   Outros elementos podem seguir esta paleta de cores (cinzas, ciano, branco).
+
 ## TODO / Próximos Passos
 
 *   Implementar listagem pública de Vídeos.
