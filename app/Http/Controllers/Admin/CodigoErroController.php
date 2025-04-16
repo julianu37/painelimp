@@ -102,6 +102,7 @@ class CodigoErroController extends Controller
     {
         $modelosAgrupados = $this->getModelosAgrupados();
         $codigoErro->load('modelos:id');
+
         return view('admin.codigos.edit', compact('codigoErro', 'modelosAgrupados'));
     }
 

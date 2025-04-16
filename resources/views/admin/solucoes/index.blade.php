@@ -23,7 +23,7 @@
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-6 py-3">Título</th>
-                                <th scope="col" class="px-6 py-3">Código Associado</th>
+                                <th scope="col" class="px-6 py-3">Código(s) de Erro Associado(s)</th>
                                 <th scope="col" class="px-6 py-3">Criada em</th>
                                 <th scope="col" class="px-6 py-3 text-right">Ações</th>
                             </tr>
@@ -34,10 +34,8 @@
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         {{ $solucao->titulo }}
                                     </th>
-                                    <td class="px-6 py-4">
-                                        <a href="{{ route('admin.codigos.show', $solucao->codigoErro) }}" class="underline hover:text-indigo-500 dark:hover:text-indigo-400" title="Ver código {{ $solucao->codigoErro->codigo ?? '' }}">
-                                            {{ $solucao->codigoErro->codigo ?? 'N/A' }}
-                                        </a>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $solucao->codigos_erro_count ?: 0 }} código(s)
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ $solucao->created_at->format('d/m/Y') }}

@@ -24,55 +24,50 @@ class SolucaoController extends Controller
      */
     public function index(): View
     {
-        $solucoes = Solucao::with('codigoErro')->orderBy('titulo')->paginate(15);
+        $solucoes = Solucao::withCount('codigosErro')->orderBy('titulo')->paginate(15);
 
         return view('admin.solucoes.index', compact('solucoes'));
     }
 
     /**
      * Mostra o formulário para criar uma nova solução.
-     * Recebe opcionalmente o ID do código de erro via query string.
      */
     public function create(Request $request): View
     {
-        $codigosErro = CodigoErro::orderBy('codigo')->pluck('codigo', 'id');
-        // Pega o ID do código de erro da query string, se existir
-        $selectedCodigoErroId = $request->query('codigo_erro_id');
-        return view('admin.solucoes.create', compact('codigosErro', 'selectedCodigoErroId'));
+        $codigosErro = CodigoErro::orderBy('codigo')->get(['id', 'codigo']);
+        $selectedCodigosErroIds = old('codigos_erro', []);
+        return view('admin.solucoes.create', compact('codigosErro', 'selectedCodigosErroIds'));
     }
 
     /**
-     * Salva uma nova solução no banco de dados.
-     *
-     * @param \App\Http\Requests\Admin\StoreSolucaoRequest $formRequest
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Salva uma nova solução e sincroniza os códigos de erro associados.
      */
-    public function store(StoreSolucaoRequest $formRequest, Request $request): RedirectResponse
+    public function store(StoreSolucaoRequest $formRequest): RedirectResponse
     {
         $validatedData = $formRequest->validated();
+        $codigosErroIds = $validatedData['codigos_erro'] ?? [];
+        unset($validatedData['codigos_erro']);
 
         try {
-            // Cria a solução primeiro para obter o ID
             $solucao = Solucao::create($validatedData);
 
-            // Processa e salva imagens
-            if ($request->hasFile('imagens')) {
-                foreach ($request->file('imagens') as $imagemFile) {
+            $solucao->codigosErro()->sync($codigosErroIds);
+
+            if ($formRequest->hasFile('imagens')) {
+                foreach ($formRequest->file('imagens') as $imagemFile) {
                     $nomeOriginal = $imagemFile->getClientOriginalName();
                     $path = $imagemFile->store('solucoes/' . $solucao->id . '/imagens', 'public');
                     $solucao->imagens()->create([
                         'path' => $path,
                         'url' => Storage::disk('public')->url($path),
                         'nome_original' => $nomeOriginal,
-                        'titulo' => Str::beforeLast($nomeOriginal, '.') // Usa nome original como título padrão
+                        'titulo' => Str::beforeLast($nomeOriginal, '.')
                     ]);
                 }
             }
 
-            // Processa e salva vídeos (upload)
-            if ($request->hasFile('videos')) {
-                foreach ($request->file('videos') as $videoFile) {
+            if ($formRequest->hasFile('videos')) {
+                foreach ($formRequest->file('videos') as $videoFile) {
                     $nomeOriginal = $videoFile->getClientOriginalName();
                     $path = $videoFile->store('solucoes/' . $solucao->id . '/videos', 'public');
                     $solucao->videos()->create([
@@ -85,20 +80,17 @@ class SolucaoController extends Controller
                 }
             }
 
-            // Processa link do YouTube
-            if ($request->filled('youtube_link')) {
+            if ($formRequest->filled('youtube_link')) {
                 $solucao->videos()->create([
                     'tipo' => 'link',
-                    'url_ou_path' => $request->input('youtube_link'),
-                    'titulo' => 'Vídeo YouTube' // Título padrão para link
+                    'url_ou_path' => $formRequest->input('youtube_link'),
+                    'titulo' => 'Vídeo YouTube'
                 ]);
             }
 
             return redirect()->route('admin.solucoes.index')->with('success', 'Solução criada com sucesso!');
         } catch (\Exception $e) {
-            // Se deu erro, tenta remover a solução criada (se houver ID)
             if (isset($solucao) && $solucao->id) {
-                // Tentar remover diretório e a própria solução
                 Storage::disk('public')->deleteDirectory('solucoes/' . $solucao->id);
                 $solucao->delete();
             }
@@ -115,36 +107,36 @@ class SolucaoController extends Controller
      */
     public function show(Solucao $solucao): View
     {
-        $solucao->load('codigoErro', 'imagens', 'videos');
+        $solucao->load('codigosErro', 'imagens', 'videos');
 
         return view('admin.solucoes.show', compact('solucao'));
     }
 
     /**
      * Mostra o formulário para editar uma solução existente.
-     *
-     * @param \App\Models\Solucao $solucao Route Model Binding
-     * @return \Illuminate\View\View
      */
     public function edit(Solucao $solucao): View
     {
-        return view('admin.solucoes.edit', compact('solucao'));
+        $codigosErro = CodigoErro::orderBy('codigo')->get(['id', 'codigo']);
+        $solucao->load('codigosErro:id');
+        $selectedCodigosErroIds = old('codigos_erro', $solucao->codigosErro->pluck('id')->toArray());
+
+        return view('admin.solucoes.edit', compact('solucao', 'codigosErro', 'selectedCodigosErroIds'));
     }
 
     /**
-     * Atualiza uma solução existente no banco de dados.
-     *
-     * @param \App\Http\Requests\Admin\UpdateSolucaoRequest $request
-     * @param \App\Models\Solucao $solucao Route Model Binding
-     * @return \Illuminate\Http\RedirectResponse
+     * Atualiza uma solução existente e sincroniza os códigos de erro.
      */
-    public function update(UpdateSolucaoRequest $formRequest, Request $request, Solucao $solucao): RedirectResponse
+    public function update(UpdateSolucaoRequest $formRequest, Solucao $solucao): RedirectResponse
     {
         $validatedData = $formRequest->validated();
+        $codigosErroIds = $validatedData['codigos_erro'] ?? null;
+        if (array_key_exists('codigos_erro', $validatedData)) {
+             unset($validatedData['codigos_erro']);
+        }
 
         try {
-            // 1. Remover mídias marcadas para exclusão
-            $imagensParaRemover = $request->input('remover_imagens', []);
+            $imagensParaRemover = $formRequest->input('remover_imagens', []);
             if (!empty($imagensParaRemover)) {
                 $imagens = Imagem::whereIn('id', $imagensParaRemover)
                                 ->where('imageable_id', $solucao->id)
@@ -156,7 +148,7 @@ class SolucaoController extends Controller
                 }
             }
 
-            $videosParaRemover = $request->input('remover_videos', []);
+            $videosParaRemover = $formRequest->input('remover_videos', []);
             if (!empty($videosParaRemover)) {
                 $videos = Video::whereIn('id', $videosParaRemover)
                                ->where('videoable_id', $solucao->id)
@@ -170,12 +162,14 @@ class SolucaoController extends Controller
                 }
             }
 
-            // 2. Atualizar dados da solução
             $solucao->update($validatedData);
 
-            // 3. Processar e salvar novas imagens (mesma lógica do store)
-            if ($request->hasFile('imagens')) {
-                foreach ($request->file('imagens') as $imagemFile) {
+            if ($codigosErroIds !== null) {
+                $solucao->codigosErro()->sync($codigosErroIds);
+            }
+
+            if ($formRequest->hasFile('imagens')) {
+                foreach ($formRequest->file('imagens') as $imagemFile) {
                     $nomeOriginal = $imagemFile->getClientOriginalName();
                     $path = $imagemFile->store('solucoes/' . $solucao->id . '/imagens', 'public');
                     $solucao->imagens()->create([
@@ -187,9 +181,8 @@ class SolucaoController extends Controller
                 }
             }
 
-            // 4. Processar e salvar novos vídeos (upload - mesma lógica do store)
-            if ($request->hasFile('videos')) {
-                foreach ($request->file('videos') as $videoFile) {
+            if ($formRequest->hasFile('videos')) {
+                foreach ($formRequest->file('videos') as $videoFile) {
                     $nomeOriginal = $videoFile->getClientOriginalName();
                     $path = $videoFile->store('solucoes/' . $solucao->id . '/videos', 'public');
                     $solucao->videos()->create([
@@ -202,23 +195,16 @@ class SolucaoController extends Controller
                 }
             }
 
-            // 5. Processar link do YouTube (sobrescreve/cria novo - mesma lógica do store)
-            //    -> Poderia refinar para atualizar o link existente se já houver um
-            if ($request->filled('youtube_link')) {
-                 // Remove link antigo, se existir e se um novo link for fornecido
-                 $solucao->videos()->where('tipo', 'link')->delete();
-
-                 // Cria o novo link
-                 $solucao->videos()->create([
+            if ($formRequest->filled('youtube_link')) {
+                $solucao->videos()->where('tipo', 'link')->delete();
+                $solucao->videos()->create([
                     'tipo' => 'link',
-                    'url_ou_path' => $request->input('youtube_link'),
+                    'url_ou_path' => $formRequest->input('youtube_link'),
                     'titulo' => 'Vídeo YouTube'
                 ]);
-            } elseif ($request->has('youtube_link') && $request->input('youtube_link') === null) {
-                 // Se o campo foi enviado como vazio/null, remove o link existente
-                 $solucao->videos()->where('tipo', 'link')->delete();
+            } elseif ($formRequest->has('youtube_link') && $formRequest->input('youtube_link') === null) {
+                $solucao->videos()->where('tipo', 'link')->delete();
             }
-            // Se o campo youtube_link não for enviado no request, não faz nada com links existentes.
 
             return redirect()->route('admin.solucoes.index')->with('success', 'Solução atualizada com sucesso!');
         } catch (\Exception $e) {
@@ -237,13 +223,11 @@ class SolucaoController extends Controller
     public function destroy(Solucao $solucao): RedirectResponse
     {
         try {
-             // 1. Excluir imagens associadas (arquivo e registro)
             foreach ($solucao->imagens as $imagem) {
                 Storage::disk('public')->delete($imagem->path);
                 $imagem->delete();
             }
 
-            // 2. Excluir vídeos associados (arquivo e registro - apenas tipo 'upload')
             foreach ($solucao->videos as $video) {
                 if ($video->tipo === 'upload') {
                     Storage::disk('public')->delete($video->path);
@@ -251,10 +235,8 @@ class SolucaoController extends Controller
                 $video->delete();
             }
 
-            // 3. Excluir diretório da solução no storage
             Storage::disk('public')->deleteDirectory('solucoes/' . $solucao->id);
 
-            // 4. Excluir a própria solução
             $solucao->delete();
 
             return redirect()->route('admin.solucoes.index')->with('success', 'Solução e mídias associadas excluídas com sucesso!');

@@ -22,6 +22,7 @@ Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento 
     *   CRUD completo para Modelos (associando a Marcas).
     *   CRUD completo para Códigos de Erro (associando a Modelos).
     *   CRUD completo para Soluções (associando a Códigos de Erro, com upload de imagens/vídeos/link YouTube).
+        *   **Nota:** Uma Solução agora pode ser associada a *múltiplos* Códigos de Erro (relação N:N).
     *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo).
     *   Gerenciamento de Imagens (upload e associação polimórfica).
     *   Gerenciamento de Vídeos (upload de arquivo ou link, associação polimórfica).

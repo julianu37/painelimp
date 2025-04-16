@@ -71,11 +71,11 @@ class CodigoErro extends Model
     }
 
     /**
-     * Define o relacionamento onde um código de erro tem muitas soluções.
+     * Define o relacionamento muitos-para-muitos com soluções.
      */
-    public function solucoes(): HasMany
+    public function solucoes(): BelongsToMany
     {
-        return $this->hasMany(Solucao::class);
+        return $this->belongsToMany(Solucao::class);
     }
 
     /**
@@ -122,10 +122,9 @@ class CodigoErro extends Model
         });
     }
 
-    /* // Removido/Comentado para testar binding por ID
+    // Descomentado para usar 'codigo' como chave de rota
     public function getRouteKeyName(): string
     {
         return 'codigo'; // Usa a coluna 'codigo' para binding
     }
-    */
 }

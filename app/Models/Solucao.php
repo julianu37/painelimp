@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 // Importa os modelos relacionados
 use App\Models\CodigoErro;
@@ -28,17 +29,17 @@ class Solucao extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'codigo_erro_id',
         'titulo',
         'descricao',
     ];
 
     /**
-     * Define o relacionamento onde uma solução pertence a um código de erro.
+     * Define o relacionamento muitos-para-muitos com códigos de erro.
      */
-    public function codigoErro(): BelongsTo
+    public function codigosErro(): BelongsToMany
     {
-        return $this->belongsTo(CodigoErro::class);
+        // Laravel deduz o nome da tabela pivot 'codigo_erro_solucao' (ordem alfabética)
+        return $this->belongsToMany(CodigoErro::class);
     }
 
     /**

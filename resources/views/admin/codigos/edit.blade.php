@@ -12,6 +12,7 @@
                     <x-alert-messages />
 
                     {{-- Formulário de edição de código de erro --}}
+                    {{-- Passando o objeto $codigoErro diretamente para route() --}}
                     <form method="POST" action="{{ route('admin.codigos.update', $codigoErro) }}">
                         @csrf
                         @method('PUT')

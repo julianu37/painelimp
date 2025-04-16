@@ -29,31 +29,22 @@ class UpdateSolucaoRequest extends FormRequest
         // $solucao = $this->route('solucao');
 
         return [
-            // codigo_erro_id não é validado na atualização, pois não permitimos alterar pelo form principal
-            // 'codigo_erro_id' => ['required', 'integer', Rule::exists('codigos_erro', 'id')],
-
-            // título é obrigatório, string, máximo 255 caracteres
-            'titulo' => ['required', 'string', 'max:255'],
-
-            // descrição é opcional, mas se presente, deve ser string
-            'descricao' => ['nullable', 'string'],
-
-            // Validação para imagens (array, cada item é imagem, max 10MB)
-            'imagens' => ['nullable', 'array'],
-            'imagens.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
-
-            // Validação para vídeos (array, cada item é vídeo, max 50MB)
-            'videos' => ['nullable', 'array'],
-            'videos.*' => ['file', 'mimetypes:video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv', 'max:51200'],
-
-            // Validação para link do YouTube (opcional, URL válida do youtube)
-            'youtube_link' => ['nullable', 'string', 'url', function ($attribute, $value, $fail) {
-                if ($value && !preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_\-]+)/i', $value)) {
-                    $fail('O campo :attribute deve ser um link válido do YouTube (youtube.com ou youtu.be).');
-                }
-            }],
-
-            // TODO: Adicionar validação para exclusão de mídias existentes (ex: array de IDs a remover)
+            // \'codigo_erro_id\' => \'required|exists:codigos_erro,id\', // Removido
+            'codigos_erro'   => 'sometimes|required|array|min:1', // Se presente, deve ser array com pelo menos 1
+            'codigos_erro.*' => 'sometimes|required|integer|exists:codigos_erro,id', // Cada ID deve existir
+            'titulo'         => 'sometimes|required|string|max:255',
+            'descricao'      => 'nullable|string',
+            // Validações para uploads (opcional)
+            'imagens'        => 'nullable|array',
+            'imagens.*'      => 'nullable|image|mimes:jpeg,png,gif,webp|max:10240',
+            'videos'         => 'nullable|array',
+            'videos.*'       => 'nullable|file|mimetypes:video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv|max:51200',
+            'youtube_link'   => 'nullable|url|regex:/^(https?:\/\/)?(www\\.)?(youtube\\.com|youtu\\.be)\/.+$/',
+            // Validações para remoção de mídias existentes
+            'remover_imagens' => 'nullable|array',
+            'remover_imagens.*' => 'integer|exists:imagens,id',
+            'remover_videos' => 'nullable|array',
+            'remover_videos.*' => 'integer|exists:videos,id',
         ];
     }
 

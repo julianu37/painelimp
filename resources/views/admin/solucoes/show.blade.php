@@ -16,25 +16,31 @@
             {{-- Detalhes da Solução --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-2">Informações da Solução</h3>
-                    <dl class="divide-y divide-gray-200 dark:divide-gray-700">
-                        <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Título</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">{{ $solucao->titulo }}</dd>
-                        </div>
-                         <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Código de Erro</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                                <a href="{{ route('admin.codigos.show', $solucao->codigoErro) }}" class="underline hover:text-indigo-500">
-                                    {{ $solucao->codigoErro->codigo ?? 'N/A' }}
-                                </a>
-                            </dd>
-                        </div>
-                        <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Descrição</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{{ $solucao->descricao }}</dd>
-                        </div>
-                    </dl>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Detalhes da Solução</h3>
+
+                    {{-- Código(s) de Erro Associado(s) --}}
+                    <div class="mb-4 pb-4 border-b dark:border-gray-700">
+                        <span class="block text-sm font-medium text-gray-500 dark:text-gray-400">Código(s) de Erro Associado(s):</span>
+                         @forelse ($solucao->codigosErro as $codigoErro)
+                            <a href="{{ route('admin.codigos.show', $codigoErro) }}" class="inline-block bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 dark:text-gray-200 mr-2 mb-2 hover:bg-gray-300 dark:hover:bg-gray-500">
+                                {{ $codigoErro->codigo }}
+                            </a>
+                        @empty
+                            <span class="text-sm text-gray-500 dark:text-gray-300">Nenhum código de erro associado.</span>
+                        @endforelse
+                    </div>
+
+                    {{-- Título --}}
+                    <div class="mb-4 pb-4 border-b dark:border-gray-700">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Título</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">{{ $solucao->titulo }}</dd>
+                    </div>
+
+                    {{-- Descrição --}}
+                    <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Descrição</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{{ $solucao->descricao }}</dd>
+                    </div>
                 </div>
             </div>
 

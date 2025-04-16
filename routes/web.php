@@ -95,7 +95,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('modelos', AdminModeloController::class);
 
     // CRUD de Códigos de Erro
-    Route::resource('codigos', AdminCodigoErroController::class);
+    Route::resource('codigos', AdminCodigoErroController::class)->parameters([
+        'codigos' => 'codigo' // Garante que o parâmetro da rota seja {codigo}
+    ]);
 
     // CRUD de Soluções - Especifica o nome do parâmetro como 'solucao'
     Route::resource('solucoes', AdminSolucaoController::class)->parameters([
