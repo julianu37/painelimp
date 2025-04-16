@@ -15,23 +15,42 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        {{-- Wrapper principal com fundo claro e flex column para footer --}}
+        <div class="min-h-screen bg-gray-100 flex flex-col">
             {{-- Inclui a navegação administrativa --}}
             @include('layouts.admin-navigation')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
+                 {{-- Header Ciano Claro --}}
+                <header class="bg-cyan-50 shadow border-b border-gray-200">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                        {{-- Texto do Header Escuro --}}
+                        <h2 class="font-semibold text-xl text-gray-700 leading-tight">
+                             {{ $header }}
+                        </h2>
                     </div>
                 </header>
             @endif
 
             <!-- Page Content -->
-            <main>
+            {{-- Adicionado flex-grow para empurrar o footer --}}
+            <main class="flex-grow">
+                 {{-- Componente para exibir mensagens flash (adicionado por consistência) --}}
+                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <x-alert-messages />
+                 </div>
+                {{-- Fim do container de mensagens --}}
+
                 {{ $slot }}
             </main>
+
+             {{-- Rodapé Escuro --}}
+            <footer class="bg-gray-800 text-white text-center p-4">
+                <div class="max-w-7xl mx-auto">
+                    Feito com ❤️ por JM
+                </div>
+            </footer>
         </div>
     </body>
 </html> 

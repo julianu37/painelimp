@@ -89,16 +89,16 @@
                         </x-slot>
                     </x-dropdown>
                 @else
-                     {{-- Botão Login - Alterado para Cyan para destaque no tema --}}
+                     {{-- Botão Login - Garantir texto branco no hover e manter ciano --}}
                     <a href="{{ route('login') }}"
-                       class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:border-cyan-900 focus:ring ring-cyan-300 disabled:opacity-25 transition ease-in-out duration-150">
+                       class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 hover:text-white active:bg-cyan-800 focus:outline-none focus:border-cyan-900 focus:ring ring-cyan-300 disabled:opacity-25 transition ease-in-out duration-150">
                        {{ __('Log in') }}
                     </a>
 
                     @if (Route::has('register'))
-                         {{-- Botão Registrar - Ajustado para fundo escuro --}}
+                         {{-- Botão Registrar - Estilo Outline Ciano (mais claro) --}}
                          <a href="{{ route('register') }}"
-                           class="ml-4 inline-flex items-center px-4 py-2 bg-gray-700 border border-gray-600 rounded-md font-semibold text-xs text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 transition ease-in-out duration-150">
+                           class="ml-4 inline-flex items-center px-4 py-2 bg-transparent border border-cyan-400 rounded-md font-semibold text-xs text-cyan-400 uppercase tracking-widest shadow-sm hover:bg-cyan-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 transition ease-in-out duration-150">
                             {{ __('Registrar') }}
                         </a>
                     @endif
@@ -190,15 +190,15 @@
         @else
              <div class="pt-4 pb-1 border-t border-gray-700">
                  <div class="mt-3 space-y-1">
-                    {{-- Link/Botão Login Responsivo --}}
+                    {{-- Link/Botão Login Responsivo - Alinhado ao botão desktop (Ciano) --}}
                      <a href="{{ route('login') }}"
-                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-600 focus:outline-none focus:text-white focus:bg-gray-700 focus:border-gray-600 transition duration-150 ease-in-out">
+                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-white bg-cyan-600 hover:bg-cyan-700 hover:text-white focus:outline-none focus:bg-cyan-700 focus:border-cyan-800 transition duration-150 ease-in-out">
                          {{ __('Log in') }}
                     </a>
                     @if (Route::has('register'))
-                         {{-- Link/Botão Registrar Responsivo --}}
+                         {{-- Link/Botão Registrar Responsivo - Estilo Outline Ciano (mais claro) --}}
                          <a href="{{ route('register') }}"
-                            class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 hover:border-gray-600 focus:outline-none focus:text-white focus:bg-gray-700 focus:border-gray-600 transition duration-150 ease-in-out">
+                            class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-cyan-400 hover:text-white hover:bg-cyan-500 hover:border-cyan-500 focus:outline-none focus:text-white focus:bg-cyan-500 focus:border-cyan-500 transition duration-150 ease-in-out">
                              {{ __('Registrar') }}
                         </a>
                     @endif

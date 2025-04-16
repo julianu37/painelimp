@@ -39,13 +39,31 @@ Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento 
 
 ## Tema Visual
 
-O layout público da aplicação (`resources/views/layouts/app.blade.php`) utiliza um tema visual chamado "Printers", caracterizado por:
+A aplicação utiliza um tema visual consistente chamado "Printers" tanto na área pública quanto na administrativa, caracterizado por:
 
-*   Fundo principal: `bg-gray-100`
-*   Cabeçalho: Fundo azul claro (`bg-cyan-50`)
-*   Rodapé: Fundo escuro (`bg-gray-800`) com texto branco.
-*   Barra de Navegação: Fundo escuro (`bg-gray-800`), texto cinza claro (`text-gray-300`), links ativos com destaque em ciano (`border-cyan-400`, `text-white`), e botão de login principal em ciano (`bg-cyan-600`).
-*   Outros elementos podem seguir esta paleta de cores (cinzas, ciano, branco).
+*   Layouts Base (`layouts/app.blade.php`, `components/admin-layout.blade.php`):
+    *   Fundo principal: `bg-gray-100`
+    *   Cabeçalho da página (`<header>` abaixo da navegação): Fundo ciano claro (`bg-cyan-50`), borda inferior e texto escuro (`text-gray-700`).
+    *   Rodapé: Fundo escuro (`bg-gray-800`) com texto branco (`Feito com ❤️ por JM`). Estrutura Flexbox garante que fique fixo embaixo.
+*   Barras de Navegação (`layouts/navigation.blade.php`, `layouts/admin-navigation.blade.php`):
+    *   Fundo escuro (`bg-gray-800`), borda inferior `border-gray-700`.
+    *   Logo/Texto Principal: `text-gray-200`.
+    *   Links de Navegação (`x-nav-link`, `x-responsive-nav-link`): Texto `text-gray-300`, hover `text-white`. Estado ativo com borda ciano (`border-cyan-400`) e texto branco.
+    *   Botões Login/Registrar (Público): Login com fundo ciano (`bg-cyan-600`), Registrar com outline ciano claro (`border-cyan-400`, `text-cyan-400`).
+    *   Dropdown do Usuário: Gatilho com texto `text-gray-300`, conteúdo com fundo `bg-gray-800` e links `text-gray-300`.
+*   Botões Globais:
+    *   Primário (`x-primary-button`): Fundo ciano (`bg-cyan-600`).
+    *   Secundário (`x-secondary-button`): Fundo cinza claro (`bg-gray-200`).
+*   Links (`<a>`): Cor padrão `text-cyan-600` (definido em `app.css` via `@layer base`).
+*   Tipografia:
+    *   Fonte principal: Figtree (via Bunny Fonts).
+    *   Estilos base para `h1-h4`, `p`, `ul`, `ol`, `li` definidos em `app.css` via `@layer base` para hierarquia e legibilidade.
+
+## Histórico de Customizações Recentes
+
+*   **Tema "Printers" (Público):** Aplicado layout base (fundo, header, footer), navegação escura, cores de botões/links e tipografia base.
+*   **Tema "Printers" (Admin):** Identificado o uso de `x-admin-layout` e `layouts/admin-navigation.blade.php`. Aplicado o mesmo tema visual (fundo, header, footer, navegação escura) para consistência.
+*   **Rodapé:** Atualizado texto.
 
 ## TODO / Próximos Passos
 
