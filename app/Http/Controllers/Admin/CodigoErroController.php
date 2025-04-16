@@ -11,6 +11,9 @@ use App\Http\Requests\Admin\UpdateCodigoErroRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class CodigoErroController extends Controller
 {
@@ -123,15 +126,48 @@ class CodigoErroController extends Controller
 
     /**
      * Remove um código de erro do banco de dados.
-     * Associações na tabela pivot serão removidas automaticamente (cascade).
+     * Usa o ID diretamente da rota e Query Builder para bypassar problemas de binding.
+     * @param \Illuminate\Http\Request $request
+     * @param int|string $codigo O parâmetro da rota (contém o ID agora)
+     * @return RedirectResponse
      */
-    public function destroy(CodigoErro $codigoErro): RedirectResponse
+    public function destroy(Request $request, $codigo): RedirectResponse
     {
+        // O parâmetro $codigo agora contém o ID, pois getRouteKeyName foi comentado
+        $codigoErroId = $codigo;
+
+        Log::info("[Direct ID Param] Tentando excluir Código de Erro com ID da rota: {$codigoErroId}");
+
+        // Validação básica do ID recebido
+        if (!$codigoErroId || !is_numeric($codigoErroId)) {
+             Log::error("[Direct ID Param] ID da rota inválido ou não numérico: " . print_r($codigoErroId, true));
+             return redirect()->route('admin.codigos.index')->with('error', 'Erro: ID inválido fornecido para exclusão.');
+        }
+
         try {
-            $codigoErro->delete();
-            return redirect()->route('admin.codigos.index')->with('success', 'Código de erro excluído com sucesso!');
+            // Tenta deletar diretamente via Query Builder usando o ID da rota
+            $numLinhasAfetadas = DB::table('codigos_erro')->where('id', $codigoErroId)->delete();
+
+            Log::debug("[Direct ID Param] Resultado de DB::table(...)->delete(): {$numLinhasAfetadas} linha(s) afetada(s).");
+
+            if ($numLinhasAfetadas > 0) {
+                Log::info("[Direct ID Param] Exclusão bem-sucedida via Query Builder para ID: {$codigoErroId}");
+                return redirect()->route('admin.codigos.index')->with('success', 'Código de erro excluído com sucesso!');
+            } else {
+                 // Se 0 linhas foram afetadas, o ID não existia no momento do DELETE
+                 Log::error("[Direct ID Param] Exclusão via Query Builder não afetou linhas para ID: {$codigoErroId}. O registro pode não existir mais.");
+                return redirect()->route('admin.codigos.index')->with('error', 'Falha ao excluir o código de erro (nenhuma linha afetada no DB, verificado por ID da rota).');
+            }
+
+        } catch (QueryException $e) {
+             Log::error("[Direct ID Param] Erro de Query ao excluir Código de Erro ID: {$codigoErroId}. SQLSTATE: {$e->getCode()}. Mensagem: " . $e->getMessage(), ['exception' => $e]);
+             if (str_contains($e->getMessage(), 'constraint violation')) {
+                 return redirect()->route('admin.codigos.index')->with('error', 'Erro: Não é possível excluir este código de erro pois ele está sendo referenciado em outro lugar (ex: Soluções). Verifique as associações.');
+             }
+            return redirect()->route('admin.codigos.index')->with('error', 'Erro de banco de dados ao excluir código de erro: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return redirect()->route('admin.codigos.index')->with('error', 'Erro ao excluir código de erro: ' . $e->getMessage());
+            Log::error("[Direct ID Param] Erro geral ao excluir Código de Erro ID: {$codigoErroId}. Mensagem: " . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('admin.codigos.index')->with('error', 'Erro inesperado ao excluir código de erro: ' . $e->getMessage());
         }
     }
 }
