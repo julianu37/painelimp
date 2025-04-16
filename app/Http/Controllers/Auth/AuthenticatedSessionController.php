@@ -16,6 +16,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        if (request()->hasSession() && url()->previous() && !str_contains(url()->previous(), '/login') && !str_contains(url()->previous(), '/register') && !str_contains(url()->previous(), '/logout')) {
+            session(['url.intended' => url()->previous()]);
+        }
         return view('auth.login');
     }
 
@@ -28,7 +31,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Obter o usuário autenticado
+        $user = $request->user();
+
+        // Verificar se o usuário é administrador
+        if ($user->isAdmin()) {
+            // Redirecionar admin sempre para o dashboard admin
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Para outros usuários (técnicos), usar o redirecionamento pretendido
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
