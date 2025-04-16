@@ -42,7 +42,7 @@
 
                     
                     
-                    <form method="POST" action="<?php echo e(route('admin.codigos.update', $codigoErro)); ?>">
+                    <form method="POST" action="<?php echo e(route('admin.codigos.update', ['codigo_erro' => $codigoErro])); ?>">
                         <?php echo csrf_field(); ?>
                         <?php echo method_field('PUT'); ?>
 
