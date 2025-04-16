@@ -387,44 +387,67 @@
                                     
                                     <div class="mt-3 border-t pt-2 dark:border-gray-600 flex justify-between items-center">
                                         
-                                        <div class="flex items-center space-x-2">
-                                            <?php if(auth()->guard()->check()): ?> 
-                                                <?php if($comentario->isLikedByAuthUser()): ?>
-                                                    
-                                                    <form action="<?php echo e(route('comments.unlike', $comentario)); ?>" method="POST" class="inline">
-                                                        <?php echo csrf_field(); ?>
-                                                        <?php echo method_field('DELETE'); ?>
-                                                        <button type="submit" class="flex items-center text-xs text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400" title="Remover Curtida">
-                                                            
-                                                            <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                                                            </svg>
-                                                            Descurtir
-                                                        </button>
-                                                    </form>
-                                                <?php else: ?>
-                                                    
-                                                    <form action="<?php echo e(route('comments.like', $comentario)); ?>" method="POST" class="inline">
-                                                        <?php echo csrf_field(); ?>
-                                                        <button type="submit" class="flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500" title="Curtir Comentário">
-                                                            
-                                                            <svg class="w-4 h-4 mr-1 fill-none stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                                                            </svg>
-                                                            Curtir
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
+                                        <div class="flex items-center space-x-4">
                                             
-                                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                                                (<?php echo e($comentario->likers_count ?? 0); ?> curtida<?php echo e(($comentario->likers_count ?? 0) != 1 ? 's' : ''); ?>)
-                                            </span>
+                                            <div class="flex items-center space-x-2">
+                                                <?php if(auth()->guard()->check()): ?> 
+                                                    <?php if($comentario->isLikedByAuthUser()): ?>
+                                                        
+                                                        <form action="<?php echo e(route('comments.unlike', $comentario)); ?>" method="POST" class="inline">
+                                                            <?php echo csrf_field(); ?>
+                                                            <?php echo method_field('DELETE'); ?>
+                                                            <button type="submit" class="flex items-center text-xs text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400" title="Remover Curtida">
+                                                                
+                                                                <svg class="w-4 h-4 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                                                </svg>
+                                                                Descurtir
+                                                            </button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        
+                                                        <form action="<?php echo e(route('comments.like', $comentario)); ?>" method="POST" class="inline">
+                                                            <?php echo csrf_field(); ?>
+                                                            <button type="submit" class="flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500" title="Curtir Comentário">
+                                                                
+                                                                <svg class="w-4 h-4 mr-1 fill-none stroke-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                                                </svg>
+                                                                Curtir
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                
+                                                <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                                                    (<?php echo e($comentario->likers_count ?? 0); ?> curtida<?php echo e(($comentario->likers_count ?? 0) != 1 ? 's' : ''); ?>)
+                                                </span>
+                                            </div>
+                                            
+                                            <span class="text-gray-300 dark:text-gray-600">|</span>
+
+                                            
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('update', $comentario)): ?>
+                                                <a href="<?php echo e(route('comentarios.edit', $comentario)); ?>" class="flex items-center text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300" title="Editar Comentário">
+                                                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                                    Editar
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
 
                                         
                                         
                                         
+                                         
+                                        <?php if(Auth::user()?->isAdmin()): ?>
+                                            <form action="<?php echo e(route('comentarios.destroy', $comentario)); ?>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este comentário?');">
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('DELETE'); ?>
+                                                <button type="submit" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 text-xs" title="Excluir Comentário (Admin)">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

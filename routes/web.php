@@ -68,25 +68,30 @@ Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verifi
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rota para SALVAR comentários (requer ID e tipo do comentavel) - ACESSÍVEL A TODOS LOGADOS
-    // Usa o mesmo controller do Admin, pois a lógica é a mesma
+    // Rotas de Comentários (Store, Edit, Update, Destroy)
+    // Usa o mesmo controller do Admin para consistência
     Route::post('/comentarios/{comentavel_type}/{comentavel_id}', [App\Http\Controllers\Admin\ComentarioController::class, 'store'])
-        ->name('comentarios.store') // Nome genérico para salvar comentários
-        ->where('comentavel_id', '[0-9]+') // Garante que o ID é numérico
-        ->where('comentavel_type', '[a-z_]+'); // Garante que o tipo é uma string (ex: codigo_erro)
+        ->name('comentarios.store')
+        ->where('comentavel_id', '[0-9]+')
+        ->where('comentavel_type', '[a-z_]+');
 
-    // Exclusão de Comentários (qualquer usuário autenticado pode tentar, permissão no controller)
-    Route::delete('/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'destroy'])->name('comentarios.destroy');
+    Route::get('/comentarios/{comentario}/edit', [App\Http\Controllers\Admin\ComentarioController::class, 'edit'])
+        ->name('comentarios.edit'); // Rota para mostrar form de edição
+
+    Route::match(['put', 'patch'], '/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'update'])
+        ->name('comentarios.update'); // Rota para processar a atualização
+
+    Route::delete('/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'destroy'])
+        ->name('comentarios.destroy'); // Rota de exclusão existente
 
     // Download de Manuais (requer autenticação)
     Route::get('/manuais/download/{manual}', [App\Http\Controllers\ManualController::class, 'download'])->name('manuais.download');
 
     // Rotas para Likes/Unlikes de Comentários
-    // Usa Route Model Binding para injetar o Comentario
     Route::post('/comentarios/{comentario}/like', [LikeController::class, 'like'])
-        ->name('comments.like'); // Rota para curtir
+        ->name('comments.like');
     Route::delete('/comentarios/{comentario}/unlike', [LikeController::class, 'unlike'])
-        ->name('comments.unlike'); // Rota para descurtir
+        ->name('comments.unlike');
 });
 
 // Área administrativa (apenas admin logado)

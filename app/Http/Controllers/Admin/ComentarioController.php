@@ -14,9 +14,19 @@ use Illuminate\Support\Facades\DB; // Para usar transações
 use Illuminate\Support\Facades\Log; // Para logs de erro
 use Illuminate\Support\Facades\Storage; // Para manipulação de arquivos
 use Illuminate\Support\Str; // Para extrair ID do YouTube
+use Illuminate\View\View;
+use App\Services\MidiaService; // Se usar o serviço para lidar com uploads
+use App\Http\Requests\Admin\UpdateComentarioRequest; // Criar este Request para validação do update
 
 class ComentarioController extends Controller
 {
+    protected $midiaService;
+
+    public function __construct(MidiaService $midiaService)
+    {
+        $this->midiaService = $midiaService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -141,17 +151,62 @@ class ComentarioController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Comentario $comentario)
+    public function edit(Comentario $comentario): View
     {
-        //
+        // Autoriza a ação usando a ComentarioPolicy
+        $this->authorize('update', $comentario);
+
+        // Retorna a view de edição, passando o comentário
+        return view('comentarios.edit', compact('comentario'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza um comentário existente no banco de dados.
      */
-    public function update(Request $request, Comentario $comentario)
+    public function update(UpdateComentarioRequest $request, Comentario $comentario): RedirectResponse
     {
-        //
+        $this->authorize('update', $comentario);
+        $validated = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            // 1. Atualiza o conteúdo do comentário
+            $comentario->update([
+                'conteudo' => $validated['conteudo'],
+            ]);
+
+            // 2. Processa Mídias para Remoção
+            if (!empty($validated['remover_midias'])) {
+                $midiasParaRemover = MidiaComentario::whereIn('id', $validated['remover_midias'])
+                                                   ->where('comentario_id', $comentario->id) // Garante que pertençam ao comentário
+                                                   ->get();
+
+                foreach ($midiasParaRemover as $midia) {
+                    // Tenta excluir o arquivo físico primeiro
+                    if ($this->midiaService->deleteSingleMediaFile($midia)) {
+                        // Se o arquivo foi excluído (ou não existia), remove o registro do DB
+                        $midia->delete();
+                    } else {
+                        // Se houve erro na exclusão do arquivo, loga e NÃO remove do DB
+                        Log::error("Falha ao excluir arquivo da mídia ID {$midia->id}, registro mantido no DB.");
+                        // Poderia lançar uma exceção ou adicionar uma mensagem de erro específica
+                    }
+                }
+            }
+
+            // 3. Processa Novas Mídias (arquivos e link youtube)
+            // O método handleUploads já contém a lógica para salvar arquivos e link do youtube
+            // Ele também substitui o link do youtube existente, se um novo for fornecido
+            $this->midiaService->handleUploads($request, $comentario);
+
+            DB::commit();
+            return back()->with('success', 'Comentário atualizado com sucesso!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erro ao atualizar comentário ID {$comentario->id}: " . $e->getMessage());
+            return back()->with('error', 'Erro ao atualizar comentário: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -159,6 +214,9 @@ class ComentarioController extends Controller
      */
     public function destroy(Comentario $comentario): RedirectResponse
     {
+        // Autoriza a ação usando a ComentarioPolicy
+        $this->authorize('delete', $comentario);
+
         try {
             $codigoErroSlug = $comentario->codigoErro->slug; // Pega o slug antes de deletar
             $comentario->delete();
