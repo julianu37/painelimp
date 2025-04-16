@@ -50,9 +50,9 @@ class Modelo extends Model
     /**
      * Define o relacionamento onde um modelo pode ter muitos manuais.
      */
-    public function manuais(): HasMany
+    public function manuais(): BelongsToMany
     {
-        return $this->hasMany(Manual::class);
+        return $this->belongsToMany(Manual::class, 'manual_modelo');
     }
 
     /**
@@ -60,7 +60,6 @@ class Modelo extends Model
      */
     public function codigosErro(): BelongsToMany
     {
-        // O nome da tabela pivot é deduzido como 'codigo_erro_modelo' (ordem alfabética)
         return $this->belongsToMany(CodigoErro::class);
     }
 

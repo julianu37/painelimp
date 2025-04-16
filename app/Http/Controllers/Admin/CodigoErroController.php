@@ -46,7 +46,8 @@ class CodigoErroController extends Controller
     public function create(): View
     {
         $modelosAgrupados = $this->getModelosAgrupados();
-        return view('admin.codigos.create', compact('modelosAgrupados'));
+        $selectedModelosIds = [];
+        return view('admin.codigos.create', compact('modelosAgrupados', 'selectedModelosIds'));
     }
 
     /**

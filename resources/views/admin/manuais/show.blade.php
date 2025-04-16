@@ -23,18 +23,6 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nome</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">{{ $manual->nome }}</dd>
                         </div>
-                         <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Modelo Associado</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">
-                                @if($manual->modelo)
-                                <a href="{{ route('admin.modelos.edit', $manual->modelo) }}" class="underline hover:text-indigo-500">
-                                     {{ $manual->modelo->marca->nome ?? '' }} {{ $manual->modelo->nome ?? '' }}
-                                </a>
-                                @else
-                                    Genérico / N/A
-                                @endif
-                            </dd>
-                        </div>
                         <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Descrição</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{{ $manual->descricao ?? '-' }}</dd>
@@ -61,6 +49,18 @@
                         </div>
                     </dl>
                 </div>
+            </div>
+
+            <!-- Modelo(s) Associado(s) -->
+            <div class="mt-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Modelo(s) Associado(s):</h3>
+                @forelse ($manual->modelos as $modelo)
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                       - <a href="{{ route('admin.modelos.show', $modelo) }}" class="underline hover:text-indigo-500">{{ $modelo->marca->nome }} - {{ $modelo->nome }}</a>
+                    </p>
+                @empty
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">Nenhum modelo associado.</p>
+                @endforelse
             </div>
 
             {{-- Imagens Associadas --}}

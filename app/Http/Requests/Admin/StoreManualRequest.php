@@ -24,12 +24,13 @@ class StoreManualRequest extends FormRequest
     {
         return [
             'nome' => ['required', 'string', 'max:255'],
-            // modelo_id é opcional, mas se fornecido, deve existir na tabela modelos
-            'modelo_id' => ['nullable', 'integer', Rule::exists('modelos', 'id')],
+            // modelos é obrigatório e deve ser um array
+            'modelos' => ['required', 'array'],
+            // Cada item em modelos deve ser um inteiro e existir na tabela modelos
+            'modelos.*' => ['integer', Rule::exists('modelos', 'id')],
             'descricao' => ['nullable', 'string'],
-            'equipamentos' => ['nullable', 'string', 'max:255'],
-            // Arquivo é obrigatório na criação, PDF, máx 128MB (131072 KB)
-            'arquivo' => ['required', 'file', 'mimes:pdf', 'max:131072'],
+            // 'equipamentos' => ['nullable', 'string', 'max:255'], // Removido
+            'arquivo' => ['required', 'file', 'mimes:pdf', 'max:131072'], // Mantido limite 128MB
             'publico' => ['sometimes', 'boolean'],
         ];
     }
@@ -48,7 +49,10 @@ class StoreManualRequest extends FormRequest
     {
         return [
             'nome.required' => 'O nome do manual é obrigatório.',
-            'modelo_id.exists' => 'O modelo selecionado é inválido.',
+            'modelos.required' => 'Selecione pelo menos um modelo.',
+            'modelos.array' => 'A seleção de modelos é inválida.',
+            'modelos.*.integer' => 'Um dos modelos selecionados é inválido.',
+            'modelos.*.exists' => 'Um dos modelos selecionados não existe.',
             'arquivo.required' => 'O arquivo PDF é obrigatório.',
             'arquivo.mimes' => 'O arquivo deve ser do tipo PDF.',
             'arquivo.max' => 'O arquivo PDF não pode ser maior que 128MB.',

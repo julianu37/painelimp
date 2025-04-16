@@ -24,8 +24,8 @@
             <optgroup label="{{ $marcaNome }}">
                 @foreach ($modelosDaMarca as $modeloId => $modeloNome)
                     <option value="{{ $modeloId }}"
-                        {{-- Verifica se o ID está no array de IDs antigos ou nos IDs associados atualmente --}}
-                        {{ in_array($modeloId, old('modelos', $codigoErro->modelos->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
+                        {{-- Verifica se o ID está no array de IDs antigos OU nos IDs selecionados atualmente --}}
+                        {{ in_array($modeloId, old('modelos', $selectedModelosIds ?? [])) ? 'selected' : '' }}>
                         {{ $modeloNome }}
                     </option>
                 @endforeach

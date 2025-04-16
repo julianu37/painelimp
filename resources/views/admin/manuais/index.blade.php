@@ -22,7 +22,7 @@
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-6 py-3">Nome</th>
-                                <th scope="col" class="px-6 py-3">Modelo Associado</th>
+                                <th scope="col" class="px-6 py-3">Modelo(s)</th>
                                 <th scope="col" class="px-6 py-3 text-center">Público</th>
                                 <th scope="col" class="px-6 py-3">Criado em</th>
                                 <th scope="col" class="px-6 py-3 text-right">Ações</th>
@@ -35,7 +35,11 @@
                                         {{ $manual->nome }}
                                     </th>
                                     <td class="px-6 py-4">
-                                        {{ $manual->modelo->marca->nome ?? '' }} {{ $manual->modelo->nome ?? 'Genérico' }}
+                                        @forelse ($manual->modelos as $modelo)
+                                            {{ $modelo->nome }}{{ !$loop->last ? ', ' : '' }}
+                                        @empty
+                                            <span class="text-gray-500 italic">Nenhum</span>
+                                        @endforelse
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         @if ($manual->publico)

@@ -22,8 +22,8 @@ class TecnicoDashboardController extends Controller
                            ->take(5)
                            ->get();
 
-        // Busca os 5 últimos manuais adicionados (carregando modelo e marca)
-        $ultimosManuais = Manual::with(['modelo:id,nome,marca_id', 'modelo.marca:id,nome'])
+        // Busca os 5 últimos manuais adicionados (carregando modelos e suas marcas)
+        $ultimosManuais = Manual::with(['modelos:id,nome,marca_id', 'modelos.marca:id,nome'])
                             ->orderBy('created_at', 'desc')
                             ->take(5)
                             ->get();

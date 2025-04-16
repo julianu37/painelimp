@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Cviebrock\EloquentSluggable\Sluggable;
 
 class Manual extends Model
@@ -25,16 +26,14 @@ class Manual extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'modelo_id',
         'nome',
-        'slug',
         'descricao',
-        'equipamentos',
         'arquivo_path',
         'arquivo_nome_original',
         'arquivo_mime_type',
         'arquivo_tamanho',
-        'publicado',
+        'publico',
+        'slug',
     ];
 
     /**
@@ -43,7 +42,7 @@ class Manual extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'publicado' => 'boolean',
+        'publico' => 'boolean',
     ];
 
     /**
@@ -61,11 +60,11 @@ class Manual extends Model
     }
 
     /**
-     * Define o relacionamento onde um manual pertence a um modelo.
+     * Os modelos aos quais este manual pertence (Muitos-para-Muitos).
      */
-    public function modelo(): BelongsTo
+    public function modelos(): BelongsToMany
     {
-        return $this->belongsTo(Modelo::class);
+        return $this->belongsToMany(Modelo::class, 'manual_modelo');
     }
 
     /**

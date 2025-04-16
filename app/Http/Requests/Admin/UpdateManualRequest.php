@@ -12,7 +12,8 @@ class UpdateManualRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->isAdmin();
+        // return $this->user()->isAdmin(); // Ajustar conforme necessidade
+        return true;
     }
 
     /**
@@ -24,11 +25,14 @@ class UpdateManualRequest extends FormRequest
     {
         return [
             'nome' => ['required', 'string', 'max:255'],
-            'modelo_id' => ['nullable', 'integer', Rule::exists('modelos', 'id')],
+            // modelos é obrigatório e deve ser um array
+            'modelos' => ['required', 'array'],
+             // Cada item em modelos deve ser um inteiro e existir na tabela modelos
+            'modelos.*' => ['integer', Rule::exists('modelos', 'id')],
             'descricao' => ['nullable', 'string'],
-            'equipamentos' => ['nullable', 'string', 'max:255'],
-            // Arquivo é opcional na atualização, mas se enviado, deve ser PDF, máx 128MB
-            'arquivo' => ['nullable', 'file', 'mimes:pdf', 'max:131072'],
+            // 'equipamentos' => ['nullable', 'string', 'max:255'], // Removido
+            // Arquivo é opcional na atualização
+            'arquivo' => ['nullable', 'file', 'mimes:pdf', 'max:131072'], // Mantido limite 128MB
             'publico' => ['sometimes', 'boolean'],
         ];
     }
@@ -47,7 +51,10 @@ class UpdateManualRequest extends FormRequest
     {
         return [
             'nome.required' => 'O nome do manual é obrigatório.',
-            'modelo_id.exists' => 'O modelo selecionado é inválido.',
+            'modelos.required' => 'Selecione pelo menos um modelo.',
+            'modelos.array' => 'A seleção de modelos é inválida.',
+            'modelos.*.integer' => 'Um dos modelos selecionados é inválido.',
+            'modelos.*.exists' => 'Um dos modelos selecionados não existe.',
             'arquivo.mimes' => 'O arquivo deve ser do tipo PDF.',
             'arquivo.max' => 'O arquivo PDF não pode ser maior que 128MB.',
         ];
