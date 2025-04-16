@@ -15,7 +15,12 @@
 {{-- Senha --}}
 <div class="mt-4">
     <x-input-label for="password" :value="__('Senha')" />
-    <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" autocomplete="new-password" {{ isset($tecnico) ? '' : 'required' }} />
+    <x-text-input id="password"
+                  class="block mt-1 w-full"
+                  type="password"
+                  name="password"
+                  autocomplete="new-password"
+                   />
     <x-input-error :messages="$errors->get('password')" class="mt-2" />
     @isset($tecnico)
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Deixe em branco para não alterar a senha.</p>
@@ -25,7 +30,12 @@
 {{-- Confirmar Senha --}}
 <div class="mt-4">
     <x-input-label for="password_confirmation" :value="__('Confirmar Senha')" />
-    <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" autocomplete="new-password" {{ isset($tecnico) ? '' : 'required' }} />
+    <x-text-input id="password_confirmation"
+                  class="block mt-1 w-full"
+                  type="password"
+                  name="password_confirmation"
+                  autocomplete="new-password"
+                   />
     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
 </div>
 
