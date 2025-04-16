@@ -151,7 +151,7 @@
                         <?php $__empty_1 = true; $__currentLoopData = $ultimosCodigos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $codigo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <li class="px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <div class="flex justify-between items-center">
-                                    <a href="<?php echo e(route('admin.codigos.show', $codigo)); ?>" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="<?php echo e($codigo->descricao); ?>">
+                                    <a href="<?php echo e(route('codigos.show', $codigo)); ?>" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="<?php echo e($codigo->descricao); ?>">
                                         <?php echo e($codigo->codigo); ?> - <?php echo e(Str::limit($codigo->descricao, 60)); ?>
 
                                     </a>
@@ -178,8 +178,11 @@
                                         <p class="text-gray-700 dark:text-gray-300 mb-1"><?php echo e(Str::limit($comentario->conteudo, 100)); ?></p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             Por: <span class="font-medium"><?php echo e($comentario->user->name ?? 'N/A'); ?></span>
-                                            <?php if($comentario->comentavel): ?>
-                                                em <a href="<?php echo e(route('admin.codigos.show', $comentario->comentavel)); ?>" class="text-indigo-500 hover:underline"><?php echo e($comentario->comentavel->codigo ?? 'Item removido'); ?></a>
+                                            <?php if($comentario->comentavel instanceof \App\Models\CodigoErro): ?>
+                                                em <a href="<?php echo e(route('codigos.show', $comentario->comentavel)); ?>" class="text-indigo-500 hover:underline"><?php echo e($comentario->comentavel->codigo ?? 'Item removido'); ?></a>
+                                            <?php elseif($comentario->comentavel): ?>
+                                                em <?php echo e(class_basename($comentario->comentavel)); ?>
+
                                             <?php endif; ?>
                                         </p>
                                     </div>

@@ -143,7 +143,7 @@
                         @forelse ($ultimosCodigos as $codigo)
                             <li class="px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <div class="flex justify-between items-center">
-                                    <a href="{{ route('admin.codigos.show', $codigo) }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="{{ $codigo->descricao }}">
+                                    <a href="{{ route('codigos.show', $codigo) }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="{{ $codigo->descricao }}">
                                         {{ $codigo->codigo }} - {{ Str::limit($codigo->descricao, 60) }}
                                     </a>
                                     <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $codigo->created_at->diffForHumans(null, true) }}</span>
@@ -169,8 +169,10 @@
                                         <p class="text-gray-700 dark:text-gray-300 mb-1">{{ Str::limit($comentario->conteudo, 100) }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             Por: <span class="font-medium">{{ $comentario->user->name ?? 'N/A' }}</span>
-                                            @if ($comentario->comentavel)
-                                                em <a href="{{ route('admin.codigos.show', $comentario->comentavel) }}" class="text-indigo-500 hover:underline">{{ $comentario->comentavel->codigo ?? 'Item removido' }}</a>
+                                            @if ($comentario->comentavel instanceof \App\Models\CodigoErro)
+                                                em <a href="{{ route('codigos.show', $comentario->comentavel) }}" class="text-indigo-500 hover:underline">{{ $comentario->comentavel->codigo ?? 'Item removido' }}</a>
+                                            @elseif ($comentario->comentavel)
+                                                em {{ class_basename($comentario->comentavel) }}
                                             @endif
                                         </p>
                                     </div>
