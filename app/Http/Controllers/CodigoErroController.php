@@ -7,20 +7,34 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth; // Para verificar se usuário é admin
+use Illuminate\Support\Str;
 
 class CodigoErroController extends Controller
 {
     /**
-     * Exibe uma lista dos códigos de erro públicos.
+     * Exibe a lista de códigos de erro públicos, com busca.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Busca apenas os códigos marcados como publico, ordenados pelo código
-        $codigos = CodigoErro::where('publico', true)
-                             ->orderBy('codigo')
-                             ->paginate(15); // Adiciona paginação
+        // Cria a query base para códigos públicos
+        $query = CodigoErro::where('publico', true);
 
-        // Retorna a view da listagem pública (precisará ser criada)
+        // Obtém o termo de busca, se houver
+        $busca = $request->input('busca_codigo');
+
+        // Se houver termo de busca, aplica o filtro
+        if ($busca) {
+            $query->where(function ($q) use ($busca) {
+                $q->where('codigo', 'LIKE', "%{$busca}%")
+                  ->orWhere('descricao', 'LIKE', "%{$busca}%");
+            });
+        }
+
+        // Executa a query com ordenação e paginação
+        // Anexa os parâmetros da query atual aos links de paginação
+        $codigos = $query->orderBy('codigo')->paginate(15)->appends($request->query());
+
+        // Retorna a view da listagem pública
         return view('public.codigos.index', compact('codigos'));
     }
 

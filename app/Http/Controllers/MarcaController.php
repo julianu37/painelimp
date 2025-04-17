@@ -9,13 +9,24 @@ use Illuminate\View\View;
 class MarcaController extends Controller
 {
     /**
-     * Exibe uma lista pública de todas as marcas.
+     * Exibe a lista de marcas com contagem de modelos, busca e paginação.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $marcas = Marca::withCount('modelos') // Conta quantos modelos cada marca tem
-                       ->orderBy('nome')
-                       ->paginate(20); // Paginação
+        $query = Marca::withCount('modelos'); // Conta quantos modelos cada marca tem
+
+        // Obtém o termo de busca, se houver
+        $busca = $request->input('busca_marca');
+
+        // Se houver termo de busca, aplica o filtro no nome
+        if ($busca) {
+            $query->where('nome', 'LIKE', "%{$busca}%");
+        }
+
+        // Executa a query com ordenação e paginação
+        $marcas = $query->orderBy('nome')
+                       ->paginate(20)
+                       ->appends($request->query()); // Anexa busca à paginação
 
         return view('public.marcas.index', compact('marcas'));
     }

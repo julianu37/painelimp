@@ -9,16 +9,32 @@ use Illuminate\View\View;
 class ModeloController extends Controller
 {
     /**
-     * Exibe uma lista pública de todos os modelos, com suas marcas.
+     * Exibe a lista de modelos com busca e paginação.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $modelos = Modelo::with('marca:id,nome') // Carrega a marca associada (apenas id e nome)
-                         ->orderBy('marca_id') // Ordena primeiro por marca
-                         ->orderBy('nome')      // Depois por nome do modelo
-                         ->paginate(20);
+        $query = Modelo::with('marca:id,nome'); // Carrega a marca associada (apenas id e nome)
 
-        // Poderia agrupar por marca na view se desejado
+        // Obtém o termo de busca, se houver
+        $busca = $request->input('busca_modelo');
+
+        // Se houver termo de busca, aplica o filtro no nome do modelo
+        if ($busca) {
+            $query->where('nome', 'LIKE', "%{$busca}%");
+        }
+
+        // Executa a query com ordenação e paginação
+        $modelos = $query->orderBy(function ($q) {
+                            // Ordena pelo nome da marca relacionada
+                            $q->select('nome')
+                              ->from('marcas')
+                              ->whereColumn('marcas.id', 'modelos.marca_id')
+                              ->limit(1);
+                        })
+                        ->orderBy('nome') // Depois ordena pelo nome do modelo
+                        ->paginate(20)
+                        ->appends($request->query()); // Anexa busca à paginação
+
         return view('public.modelos.index', compact('modelos'));
     }
 

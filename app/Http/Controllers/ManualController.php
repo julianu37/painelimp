@@ -14,16 +14,36 @@ use Illuminate\Support\Facades\Auth; // Para checar auth no download
 class ManualController extends Controller
 {
     /**
-     * Exibe uma lista dos manuais públicos.
+     * Exibe a lista de manuais públicos com busca e paginação.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Busca apenas os manuais públicos, ordenados pelo nome
-        $manuais = Manual::where('publico', true)
-                         ->orderBy('nome')
-                         ->paginate(15);
+        $query = Manual::where('publico', true);
 
-        // Retorna a view da listagem pública (precisará ser criada)
+        // Obtém o termo de busca, se houver
+        $busca = $request->input('busca_manual');
+
+        // Se houver termo de busca, aplica o filtro
+        if ($busca) {
+            $query->where(function ($q) use ($busca) {
+                $q->where('nome', 'LIKE', "%{$busca}%")
+                  ->orWhere('arquivo_nome_original', 'LIKE', "%{$busca}%")
+                  // Busca em modelos relacionados (JOIN necessário para performance ideal,
+                  // mas orWhereHas funciona e é mais simples para começar)
+                  ->orWhereHas('modelos', function($qModelo) use ($busca) {
+                      $qModelo->where('nome', 'LIKE', "%{$busca}%");
+                  });
+            });
+        }
+
+        // Carrega os modelos (incluindo slug) e suas marcas (incluindo slug) para exibição na lista
+        $query->with('modelos:id,nome,marca_id,slug', 'modelos.marca:id,nome,slug');
+
+        // Executa a query com ordenação e paginação
+        $manuais = $query->orderBy('nome')
+                         ->paginate(15)
+                         ->appends($request->query()); // Anexa busca à paginação
+
         return view('public.manuais.index', compact('manuais'));
     }
 
