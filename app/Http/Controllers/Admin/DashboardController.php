@@ -11,7 +11,6 @@ use App\Models\Manual;
 use App\Models\Comentario;
 use App\Models\Marca;
 use App\Models\Modelo;
-use App\Models\Solucao;
 
 class DashboardController extends Controller
 {
@@ -27,16 +26,26 @@ class DashboardController extends Controller
         $totalComentarios = Comentario::count();
         $totalMarcas = Marca::count();
         $totalModelos = Modelo::count();
-        $totalSolucoes = Solucao::count();
 
         // Busca os 5 últimos códigos de erro adicionados
-        $ultimosCodigos = CodigoErro::orderBy('created_at', 'desc')->take(5)->get();
+        $ultimosCodigos = CodigoErro::with('modelos:id,slug,nome')
+                                ->orderBy('created_at', 'desc')
+                                ->take(5)
+                                ->get();
 
         // Busca os 5 últimos comentários adicionados (com usuário e item comentado)
         $ultimosComentarios = Comentario::with(['user:id,name', 'comentavel'])
                                 ->orderBy('created_at', 'desc')
                                 ->take(5)
                                 ->get();
+
+        // Carrega os modelos apenas para os comentários que são de Códigos de Erro
+        $ultimosComentarios->loadMissing([
+            'comentavel' => function ($query) {
+                $query->where('comentavel_type', CodigoErro::class)
+                      ->with('modelos:id,slug,nome'); // Carrega modelos do CodigoErro
+            }
+        ]);
 
         // Retorna a view do dashboard admin
         return view('admin.dashboard', compact(
@@ -46,7 +55,6 @@ class DashboardController extends Controller
             'totalComentarios',
             'totalMarcas',
             'totalModelos',
-            'totalSolucoes',
             'ultimosCodigos',
             'ultimosComentarios'
         ));

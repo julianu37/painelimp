@@ -86,22 +86,6 @@
                 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg p-5 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                             <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.707.707M12 21a5 5 0 110-10 5 5 0 010 10z" /></svg>
-                        </div>
-                        <div class="ml-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Soluções</dt>
-                            <dd class="text-3xl font-semibold text-gray-900 dark:text-gray-100"><?php echo e($totalSolucoes); ?></dd>
-                        </div>
-                    </div>
-                     <div class="mt-4 text-sm">
-                        <a href="<?php echo e(route('admin.solucoes.index')); ?>" class="font-medium text-purple-600 dark:text-purple-400 hover:underline">Gerenciar Soluções &rarr;</a>
-                    </div>
-                </div>
-
-                 
-                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg p-5 border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center">
                         <div class="flex-shrink-0 bg-cyan-500 rounded-md p-3">
                             <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                         </div>
@@ -135,10 +119,6 @@
                         <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                         Novo Código
                     </a>
-                     <a href="<?php echo e(route('admin.solucoes.create')); ?>" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full text-center">
-                        <svg class="w-4 h-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18.75 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L22.5 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /></svg>
-                        Nova Solução
-                    </a>
                 </div>
             </div>
 
@@ -151,10 +131,18 @@
                         <?php $__empty_1 = true; $__currentLoopData = $ultimosCodigos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $codigo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <li class="px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                 <div class="flex justify-between items-center">
-                                    <a href="<?php echo e(route('codigos.show', $codigo)); ?>" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="<?php echo e($codigo->descricao); ?>">
-                                        <?php echo e($codigo->codigo); ?> - <?php echo e(Str::limit($codigo->descricao, 60)); ?>
+                                    <?php if($codigo->modelos->isNotEmpty()): ?>
+                                        <?php $primeiroModelo = $codigo->modelos->first(); ?>
+                                        <a href="<?php echo e(route('modelos.codigos.show', [$primeiroModelo, $codigo])); ?>" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate pr-4" title="<?php echo e($codigo->descricao); ?>">
+                                            <?php echo e($codigo->codigo); ?> - <?php echo e(Str::limit($codigo->descricao, 60)); ?>
 
-                                    </a>
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate pr-4" title="<?php echo e($codigo->descricao); ?> (Sem modelo associado)">
+                                            <?php echo e($codigo->codigo); ?> - <?php echo e(Str::limit($codigo->descricao, 60)); ?>
+
+                                        </span>
+                                    <?php endif; ?>
                                     <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap"><?php echo e($codigo->created_at->diffForHumans(null, true)); ?></span>
                                 </div>
                             </li>
@@ -179,7 +167,12 @@
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                             Por: <span class="font-medium"><?php echo e($comentario->user->name ?? 'N/A'); ?></span>
                                             <?php if($comentario->comentavel instanceof \App\Models\CodigoErro): ?>
-                                                em <a href="<?php echo e(route('codigos.show', $comentario->comentavel)); ?>" class="text-indigo-500 hover:underline"><?php echo e($comentario->comentavel->codigo ?? 'Item removido'); ?></a>
+                                                <?php if($comentario->comentavel->modelos->isNotEmpty()): ?>
+                                                    <?php $primeiroModeloComentario = $comentario->comentavel->modelos->first(); ?>
+                                                    em <a href="<?php echo e(route('modelos.codigos.show', [$primeiroModeloComentario, $comentario->comentavel])); ?>" class="text-indigo-500 hover:underline"><?php echo e($comentario->comentavel->codigo ?? 'Item removido'); ?></a>
+                                                <?php else: ?>
+                                                    em <?php echo e($comentario->comentavel->codigo ?? 'Item removido'); ?> (Sem modelo)
+                                                <?php endif; ?>
                                             <?php elseif($comentario->comentavel): ?>
                                                 em <?php echo e(class_basename($comentario->comentavel)); ?>
 

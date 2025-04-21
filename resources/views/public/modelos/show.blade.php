@@ -48,76 +48,53 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-             {{-- Detalhes do Modelo (se houver) --}}
-             {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"> ... </div> --}}
+             {{-- Grid para os cards --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {{-- Códigos de Erro Associados --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Códigos de Erro Comuns</h3>
-                    @if($modelo->codigosErro->isNotEmpty())
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($modelo->codigosErro as $codigo)
-                                <li class="py-3">
-                                    <a href="{{ route('codigos.show', $codigo) }}" class="hover:underline">
-                                        <span class="font-semibold">{{ $codigo->codigo }}</span> - {{ Str::limit($codigo->descricao, 150) }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum código de erro comum encontrado para este modelo.</p>
-                    @endif
+                {{-- Card Códigos de Erro --}}
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h3 class="text-lg font-medium mb-2">Códigos de Erro</h3>
+                        @if($modelo->codigo_erros_count > 0)
+                            <p class="text-sm text-gray-600 mb-4">
+                                {{ $modelo->codigo_erros_count }} {{ Str::plural('código', $modelo->codigo_erros_count) }} de erro conhecido{{ Str::plural('s', $modelo->codigo_erros_count) }} para este modelo.
+                            </p>
+                            <a href="{{ route('modelos.show.codigos', $modelo) }}" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Ver Códigos de Erro &rarr;
+                            </a>
+                        @else
+                            <p class="text-sm text-gray-500">Nenhum código de erro público encontrado para este modelo.</p>
+                        @endif
+                    </div>
                 </div>
-            </div>
 
-             {{-- Manuais Associados --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Manuais</h3>
-                    @if($modelo->manuais->isNotEmpty())
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($modelo->manuais as $manual)
-                                <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
-                                    <div>
-                                        <span class="text-base font-medium text-gray-900 dark:text-gray-100">{{ $manual->nome }}</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400" title="{{ $manual->arquivo_nome_original }}">({{ Str::limit($manual->arquivo_nome_original, 40) }})</p>
-                                    </div>
-                                    <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
-                                         {{-- Botão Visualizar --}}
-                                         <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
-                                            Visualizar
-                                        </a>
-                                         @auth
-                                            {{-- Botão Download --}}
-                                            <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                                                Download
-                                            </a>
-                                         @else
-                                             {{-- Botão Desabilitado --}}
-                                             <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
-                                                Download
-                                            </span>
-                                         @endauth
-                                     </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado para este modelo.</p>
-                    @endif
+                 {{-- Card Manuais --}}
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h3 class="text-lg font-medium mb-2">Manuais</h3>
+                         @if($modelo->manuais_count > 0)
+                            <p class="text-sm text-gray-600 mb-4">
+                                {{ $modelo->manuais_count }} {{ Str::plural('manual', $modelo->manuais_count) }} disponível{{ Str::plural('s', $modelo->manuais_count) }} para este modelo.
+                            </p>
+                            <a href="{{ route('modelos.show.manuais', $modelo) }}" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Ver Manuais &rarr;
+                            </a>
+                        @else
+                            <p class="text-sm text-gray-500">Nenhum manual encontrado para este modelo.</p>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            </div> {{-- Fim do grid --}}
 
-             {{-- Botão Voltar para a Marca --}}
-            <div class="mt-6">
-                 <a href="{{ route('marcas.show', $modelo->marca) }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    &laquo; Voltar para {{ $modelo->marca->nome }}
+             {{-- Botão Voltar --}}
+            <div class="mt-8">
+                 <a href="{{ route('marcas.show', $modelo->marca) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                    &larr; Voltar para {{ $modelo->marca->nome }}
                 </a>
                  <span class="mx-2 text-gray-400">|</span>
-                 <a href="{{ route('modelos.index') }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                 <a href="{{ route('modelos.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                      Ver Todos Modelos
                 </a>
             </div>

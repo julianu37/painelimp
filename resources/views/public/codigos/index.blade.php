@@ -32,10 +32,23 @@
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($codigos as $codigo)
                                 <li class="py-4">
-                                    <a href="{{ route('codigos.show', $codigo) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-md transition">
-                                        <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400">{{ $codigo->codigo }}</h3>
-                                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ Str::limit($codigo->descricao, 150) }}</p>
-                                    </a>
+                                    {{-- Verifica se há modelo associado --}}
+                                    @if ($codigo->modelos->isNotEmpty())
+                                        @php $primeiroModelo = $codigo->modelos->first(); @endphp
+                                        <a href="{{ route('modelos.codigos.show', [$primeiroModelo, $codigo]) }}" class="block hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-md transition">
+                                            <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400">{{ $codigo->codigo }}</h3>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ Str::limit($codigo->descricao, 150) }}</p>
+                                            {{-- Opcional: Mostrar nome do primeiro modelo --}}
+                                            <span class="text-xs text-gray-400 dark:text-gray-500 mt-1 block">Modelo: {{ $primeiroModelo->nome }} @if($codigo->modelos->count() > 1)(e outros)@endif</span>
+                                        </a>
+                                    @else
+                                        {{-- Exibe sem link se não houver modelo --}}
+                                        <div class="p-3">
+                                            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ $codigo->codigo }}</h3>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ Str::limit($codigo->descricao, 150) }}</p>
+                                            <span class="text-xs text-red-500 dark:text-red-400 mt-1 block">Nenhum modelo associado</span>
+                                        </div>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>

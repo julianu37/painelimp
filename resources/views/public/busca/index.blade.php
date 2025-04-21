@@ -16,9 +16,24 @@
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($codigosErro as $codigo)
                                 <li class="py-3">
-                                    <a href="{{ route('codigos.show', $codigo) }}" class="hover:underline">
+                                    {{-- Verifica se a coleção de modelos não está vazia --}}
+                                    @if ($codigo->modelos->isNotEmpty())
+                                        @php $primeiroModelo = $codigo->modelos->first(); @endphp
+                                        {{-- Usa o primeiro modelo para gerar o link --}}
+                                        <a href="{{ route('modelos.codigos.show', [$primeiroModelo, $codigo]) }}" class="hover:underline">
+                                            <span class="font-semibold">{{ $codigo->codigo }}</span> - {{ Str::limit($codigo->descricao, 150) }}
+                                            {{-- Mostra o nome do primeiro modelo --}}
+                                            <span class="text-xs text-gray-500"> (Modelo: {{ $primeiroModelo->nome }})</span>
+                                            {{-- Opcional: Indicar se há mais modelos --}}
+                                            @if($codigo->modelos->count() > 1)
+                                                <span class="text-xs text-gray-400 italic"> (e outros)</span>
+                                            @endif
+                                        </a>
+                                    @else
+                                        {{-- Código sem modelo associado --}}
                                         <span class="font-semibold">{{ $codigo->codigo }}</span> - {{ Str::limit($codigo->descricao, 150) }}
-                                    </a>
+                                        <span class="text-xs text-red-500"> (Nenhum modelo associado)</span>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>

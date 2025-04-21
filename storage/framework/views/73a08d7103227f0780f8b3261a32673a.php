@@ -42,10 +42,23 @@
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             <?php $__currentLoopData = $codigos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $codigo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <li class="py-4">
-                                    <a href="<?php echo e(route('codigos.show', $codigo)); ?>" class="block hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-md transition">
-                                        <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400"><?php echo e($codigo->codigo); ?></h3>
-                                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400"><?php echo e(Str::limit($codigo->descricao, 150)); ?></p>
-                                    </a>
+                                    
+                                    <?php if($codigo->modelos->isNotEmpty()): ?>
+                                        <?php $primeiroModelo = $codigo->modelos->first(); ?>
+                                        <a href="<?php echo e(route('modelos.codigos.show', [$primeiroModelo, $codigo])); ?>" class="block hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-md transition">
+                                            <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400"><?php echo e($codigo->codigo); ?></h3>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400"><?php echo e(Str::limit($codigo->descricao, 150)); ?></p>
+                                            
+                                            <span class="text-xs text-gray-400 dark:text-gray-500 mt-1 block">Modelo: <?php echo e($primeiroModelo->nome); ?> <?php if($codigo->modelos->count() > 1): ?>(e outros)<?php endif; ?></span>
+                                        </a>
+                                    <?php else: ?>
+                                        
+                                        <div class="p-3">
+                                            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300"><?php echo e($codigo->codigo); ?></h3>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400"><?php echo e(Str::limit($codigo->descricao, 150)); ?></p>
+                                            <span class="text-xs text-red-500 dark:text-red-400 mt-1 block">Nenhum modelo associado</span>
+                                        </div>
+                                    <?php endif; ?>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>

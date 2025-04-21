@@ -25,9 +25,10 @@
                     <x-nav-link :href="route('admin.codigos.index')" :active="request()->routeIs('admin.codigos.*')">
                         {{ __('Códigos') }}
                     </x-nav-link>
-                     <x-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
+                     {{-- Link Soluções Removido --}}
+                     {{-- <x-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
                         {{ __('Soluções') }}
-                    </x-nav-link>
+                    </x-nav-link> --}}
                     <x-nav-link :href="route('admin.manuais.index')" :active="request()->routeIs('admin.manuais.*')">
                         {{ __('Manuais') }}
                     </x-nav-link>
@@ -109,9 +110,10 @@
              <x-responsive-nav-link :href="route('admin.codigos.index')" :active="request()->routeIs('admin.codigos.*')">
                 {{ __('Códigos') }}
             </x-responsive-nav-link>
-             <x-responsive-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
+            {{-- Link Responsivo Soluções Removido --}}
+             {{-- <x-responsive-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
                 {{ __('Soluções') }}
-            </x-responsive-nav-link>
+            </x-responsive-nav-link> --}}
              <x-responsive-nav-link :href="route('admin.manuais.index')" :active="request()->routeIs('admin.manuais.*')">
                 {{ __('Manuais') }}
             </x-responsive-nav-link>

@@ -37,6 +37,7 @@ class BuscaController extends Controller
                     $q->where('codigo', 'LIKE', $searchTerm)
                       ->orWhere('descricao', 'LIKE', $searchTerm);
                 })
+                ->with('modelos:id,slug,nome')
                 ->orderBy('codigo') // Ordena por código
                 ->get();
 

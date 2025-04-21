@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Cviebrock\EloquentSluggable\Sluggable;
 // Importa os modelos relacionados
-use App\Models\Solucao;
+// use App\Models\Solucao; // Removido
 use App\Models\Comentario;
 use App\Models\Imagem;
 use App\Models\Video;
@@ -72,13 +72,13 @@ class CodigoErro extends Model implements HasMedia
         return $this->belongsToMany(Modelo::class);
     }
 
-    /**
-     * Define o relacionamento muitos-para-muitos com soluções.
-     */
-    public function solucoes(): BelongsToMany
-    {
-        return $this->belongsToMany(Solucao::class);
-    }
+    // /**
+    //  * Define o relacionamento muitos-para-muitos com soluções.
+    //  */
+    // public function solucoes(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Solucao::class);
+    // }
 
     /**
      * Define o relacionamento polimórfico onde um Código de Erro pode ter muitos comentários.

@@ -14,7 +14,7 @@ use App\Http\Controllers\TecnicoDashboardController; // Importa o controller do 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\TecnicoController as AdminTecnicoController;
 use App\Http\Controllers\Admin\CodigoErroController as AdminCodigoErroController;
-use App\Http\Controllers\Admin\SolucaoController as AdminSolucaoController;
+// use App\Http\Controllers\Admin\SolucaoController as AdminSolucaoController; // Removido
 use App\Http\Controllers\Admin\ManualController as AdminManualController;
 use App\Http\Controllers\Admin\ImagemController as AdminImagemController;
 use App\Http\Controllers\Admin\VideoController as AdminVideoController;
@@ -32,7 +32,7 @@ use App\Http\Controllers\LikeController;
 Route::get('/', [HomeController::class, 'index'])->name('home'); // Nomeia a rota home
 Route::get('/codigos', [CodigoErroController::class, 'index'])->name('codigos.index');
 // Usa o model binding com slug
-Route::get('/codigo/{codigoErro}', [CodigoErroController::class, 'show'])->name('codigos.show');
+// Route::get('/codigo/{codigoErro}', [CodigoErroController::class, 'show'])->name('codigos.show'); // Rota antiga comentada
 Route::get('/manuais', [ManualController::class, 'index'])->name('manuais.index'); // Rota pública para listar manuais
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index'); // Rota pública para listar vídeos
 // Rota para a página de resultados da busca
@@ -45,6 +45,13 @@ Route::get('/marcas/{marca}', [MarcaController::class, 'show'])->name('marcas.sh
 // Rotas públicas para Modelos
 Route::get('/modelos', [ModeloController::class, 'index'])->name('modelos.index');
 Route::get('/modelos/{modelo}', [ModeloController::class, 'show'])->name('modelos.show'); // Usará o slug se configurado no model
+// Novas rotas para códigos e manuais específicos do modelo
+Route::get('/modelos/{modelo}/codigos', [ModeloController::class, 'showCodigos'])->name('modelos.show.codigos');
+Route::get('/modelos/{modelo}/manuais', [ModeloController::class, 'showManuais'])->name('modelos.show.manuais');
+// Nova rota para exibir um código de erro dentro do contexto de um modelo
+Route::get('/modelos/{modelo}/codigo/{codigoErro}', [CodigoErroController::class, 'show'])
+    ->scopeBindings() // Garante que {codigoErro} pertence a {modelo}
+    ->name('modelos.codigos.show');
 
 // Rota pública para visualizar PDF do Manual
 Route::get('/manuais/view/{manual}', [ManualController::class, 'viewPdf'])->name('manuais.view');
@@ -111,11 +118,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD de Códigos de Erro
     Route::resource('codigos', AdminCodigoErroController::class)->parameters([
         'codigos' => 'codigo_erro' // Alterando o nome do parâmetro da rota
-    ]);
-
-    // CRUD de Soluções - Especifica o nome do parâmetro como 'solucao'
-    Route::resource('solucoes', AdminSolucaoController::class)->parameters([
-        'solucoes' => 'solucao' // Garante que o parâmetro seja {solucao}
     ]);
 
     // CRUD de Manuais - Especifica o nome do parâmetro como 'manual'

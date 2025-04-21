@@ -12,21 +12,15 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-300 hover:text-white focus:text-white">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white focus:text-white">
-                        {{ __('Códigos de Erro') }}
-                    </x-nav-link>
+                    {{-- Removido Home --}}
+                    {{-- Removido Códigos de Erro --}}
                     <x-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Marcas') }}
                     </x-nav-link>
                     <x-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Modelos') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')" class="text-gray-300 hover:text-white focus:text-white">
-                        {{ __('Manuais') }}
-                    </x-nav-link>
+                    {{-- Removido Manuais --}}
                      {{-- TODO: Adicionar link para Vídeos se houver listagem pública --}}
                 </div>
             </div>
@@ -120,21 +114,15 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-800">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
-                {{ __('Home') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
-                {{ __('Códigos de Erro') }}
-            </x-responsive-nav-link>
+             {{-- Removido Home --}}
+             {{-- Removido Códigos de Erro --}}
             <x-responsive-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Marcas') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('modelos.index')" :active="request()->routeIs('modelos.index') || request()->routeIs('modelos.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Modelos') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('manuais.index')" :active="request()->routeIs('manuais.index')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
-                {{ __('Manuais') }}
-            </x-responsive-nav-link>
+             {{-- Removido Manuais --}}
              {{-- TODO: Adicionar link responsivo para Vídeos --}}
         </div>
 

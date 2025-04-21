@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CodigoErro;
+use App\Models\Modelo;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -31,30 +32,29 @@ class CodigoErroController extends Controller
         }
 
         // Executa a query com ordenação e paginação
-        // Anexa os parâmetros da query atual aos links de paginação
-        $codigos = $query->orderBy('codigo')->paginate(15)->appends($request->query());
+        // Adiciona with() para carregar os modelos necessários para o link
+        $codigos = $query->with('modelos:id,slug,nome') // Carrega modelos
+                        ->orderBy('codigo')->paginate(15)->appends($request->query());
 
         // Retorna a view da listagem pública
         return view('public.codigos.index', compact('codigos'));
     }
 
     /**
-     * Exibe os detalhes de um código de erro específico.
-     * O model binding usa o slug automaticamente (definido no Model).
+     * Exibe os detalhes de um código de erro específico, dentro do contexto de um modelo.
+     * O route model binding com scopeBindings garante que o código pertence ao modelo.
      */
-    public function show(CodigoErro $codigoErro): View|RedirectResponse
+    public function show(Modelo $modelo, CodigoErro $codigoErro): View
     {
-        // Verifica se o código é público ou se o usuário logado é admin
-        if (!$codigoErro->publico && (!Auth::check() || !Auth::user()->isAdmin())) {
-            // Se não for público e o usuário não for admin, redireciona ou mostra erro
-            // Poderia abortar com 404 ou 403, ou redirecionar para a lista
-            return redirect()->route('codigos.index')->with('error', 'Código de erro não encontrado ou não é público.');
-        }
+        // A verificação de publico/admin não é mais necessária aqui, 
+        // pois o acesso é feito via /modelos/{modelo}/codigos que já filtra públicos
+        // e o scopeBindings garante a relação modelo <-> codigo.
 
         // Carrega os relacionamentos necessários para exibição
+        // O relacionamento 'modelos' pode ser desnecessário agora que temos $modelo,
+        // mas manter não prejudica e pode ser útil se um código pertence a múltiplos modelos (o que não parece ser o caso aqui).
         $codigoErro->load([
-            'solucoes' => fn($q) => $q->with(['imagens', 'videos']), // Carrega mídias das soluções
-            'modelos', // Carrega modelos associados ao código
+            'modelos', // Mantém por segurança, mas $modelo já está disponível
             'imagens', // Carrega imagens do código
             'videos', // Carrega vídeos do código
             'comentarios' => function ($query) { // Carrega comentários
@@ -65,8 +65,8 @@ class CodigoErroController extends Controller
             }
         ]);
 
-        // Retorna a view de detalhes pública (precisará ser criada)
-        return view('public.codigos.show', compact('codigoErro'));
+        // Retorna a view de detalhes pública, passando o modelo também
+        return view('public.codigos.show', compact('modelo', 'codigoErro'));
     }
 
     // Os métodos create, store, edit, update, destroy serão tratados

@@ -38,7 +38,7 @@ class CodigoErroController extends Controller
      */
     public function index(): View
     {
-        $codigosErro = CodigoErro::withCount('solucoes', 'modelos')
+        $codigosErro = CodigoErro::with('modelos:id,slug,nome')->withCount('modelos')
                         ->orderBy('codigo')->paginate(15);
         return view('admin.codigos.index', compact('codigosErro'));
     }
@@ -85,7 +85,6 @@ class CodigoErroController extends Controller
         // - comentarios.user: O usuário que fez cada comentário
         // - comentarios.midias: As mídias (arquivos/youtube) de cada comentário
         $codigo->load([
-            'solucoes',
             'imagens',
             'videos',
             'comentarios' => function ($query) {

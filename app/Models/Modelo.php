@@ -56,9 +56,10 @@ class Modelo extends Model
     }
 
     /**
-     * Define o relacionamento N:N com codigos_erro.
+     * Define o relacionamento N:N com CodigoErro.
+     * Renomeado para 'codigoErros' para compatibilidade com scopeBindings.
      */
-    public function codigosErro(): BelongsToMany
+    public function codigoErros(): BelongsToMany
     {
         return $this->belongsToMany(CodigoErro::class);
     }

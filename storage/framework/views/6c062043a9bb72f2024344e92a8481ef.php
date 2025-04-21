@@ -58,78 +58,54 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
              
-             
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Códigos de Erro Comuns</h3>
-                    <?php if($modelo->codigosErro->isNotEmpty()): ?>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <?php $__currentLoopData = $modelo->codigosErro; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $codigo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="py-3">
-                                    <a href="<?php echo e(route('codigos.show', $codigo)); ?>" class="hover:underline">
-                                        <span class="font-semibold"><?php echo e($codigo->codigo); ?></span> - <?php echo e(Str::limit($codigo->descricao, 150)); ?>
-
-                                    </a>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
-                    <?php else: ?>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum código de erro comum encontrado para este modelo.</p>
-                    <?php endif; ?>
+                
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h3 class="text-lg font-medium mb-2">Códigos de Erro</h3>
+                        <?php if($modelo->codigo_erros_count > 0): ?>
+                            <p class="text-sm text-gray-600 mb-4">
+                                <?php echo e($modelo->codigo_erros_count); ?> <?php echo e(Str::plural('código', $modelo->codigo_erros_count)); ?> de erro conhecido<?php echo e(Str::plural('s', $modelo->codigo_erros_count)); ?> para este modelo.
+                            </p>
+                            <a href="<?php echo e(route('modelos.show.codigos', $modelo)); ?>" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Ver Códigos de Erro &rarr;
+                            </a>
+                        <?php else: ?>
+                            <p class="text-sm text-gray-500">Nenhum código de erro público encontrado para este modelo.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </div>
 
-             
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Manuais</h3>
-                    <?php if($modelo->manuais->isNotEmpty()): ?>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <?php $__currentLoopData = $modelo->manuais; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $manual): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
-                                    <div>
-                                        <span class="text-base font-medium text-gray-900 dark:text-gray-100"><?php echo e($manual->nome); ?></span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400" title="<?php echo e($manual->arquivo_nome_original); ?>">(<?php echo e(Str::limit($manual->arquivo_nome_original, 40)); ?>)</p>
-                                    </div>
-                                    <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
-                                         
-                                         <a href="<?php echo e(route('manuais.view', $manual)); ?>" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
-                                            Visualizar
-                                        </a>
-                                         <?php if(auth()->guard()->check()): ?>
-                                            
-                                            <a href="<?php echo e(route('manuais.download', $manual)); ?>" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                                                Download
-                                            </a>
-                                         <?php else: ?>
-                                             
-                                             <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
-                                                Download
-                                            </span>
-                                         <?php endif; ?>
-                                     </div>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
-                    <?php else: ?>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado para este modelo.</p>
-                    <?php endif; ?>
+                 
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h3 class="text-lg font-medium mb-2">Manuais</h3>
+                         <?php if($modelo->manuais_count > 0): ?>
+                            <p class="text-sm text-gray-600 mb-4">
+                                <?php echo e($modelo->manuais_count); ?> <?php echo e(Str::plural('manual', $modelo->manuais_count)); ?> disponível<?php echo e(Str::plural('s', $modelo->manuais_count)); ?> para este modelo.
+                            </p>
+                            <a href="<?php echo e(route('modelos.show.manuais', $modelo)); ?>" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Ver Manuais &rarr;
+                            </a>
+                        <?php else: ?>
+                            <p class="text-sm text-gray-500">Nenhum manual encontrado para este modelo.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            </div> 
 
              
-            <div class="mt-6">
-                 <a href="<?php echo e(route('marcas.show', $modelo->marca)); ?>" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    &laquo; Voltar para <?php echo e($modelo->marca->nome); ?>
+            <div class="mt-8">
+                 <a href="<?php echo e(route('marcas.show', $modelo->marca)); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                    &larr; Voltar para <?php echo e($modelo->marca->nome); ?>
 
                 </a>
                  <span class="mx-2 text-gray-400">|</span>
-                 <a href="<?php echo e(route('modelos.index')); ?>" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                 <a href="<?php echo e(route('modelos.index')); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                      Ver Todos Modelos
                 </a>
             </div>

@@ -13,6 +13,60 @@
         </div>
     </x-slot>
 
+    {{-- Breadcrumbs --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4 text-sm">
+                {{-- Home --}}
+                <li>
+                    <div>
+                        <a href="{{ route('home') }}" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-300">
+                            <svg class="flex-shrink-0 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" /></svg>
+                            <span class="sr-only">Home</span>
+                        </a>
+                    </div>
+                </li>
+                {{-- Marcas --}}
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-4 w-4 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" /></svg>
+                        <a href="{{ route('marcas.index') }}" class="ml-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Marcas</a>
+                    </div>
+                </li>
+                {{-- Marca Específica --}}
+                @if ($modelo->marca)
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-4 w-4 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" /></svg>
+                        <a href="{{ route('marcas.show', $modelo->marca) }}" class="ml-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">{{ $modelo->marca->nome }}</a>
+                    </div>
+                </li>
+                @endif
+                {{-- Modelo Específico --}}
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-4 w-4 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" /></svg>
+                        <a href="{{ route('modelos.show', $modelo) }}" class="ml-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">{{ $modelo->nome }}</a>
+                    </div>
+                </li>
+                 {{-- Códigos do Modelo --}}
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-4 w-4 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" /></svg>
+                        <a href="{{ route('modelos.show.codigos', $modelo) }}" class="ml-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Códigos</a>
+                    </div>
+                </li>
+                {{-- Código Atual --}}
+                <li>
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 h-4 w-4 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" /></svg>
+                        <span class="ml-4 text-sm font-medium text-gray-700 dark:text-gray-200">{{ $codigoErro->codigo }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             {{-- Detalhes do Código --}}
@@ -74,85 +128,7 @@
                 </div>
             @endif
 
-            {{-- Soluções --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
-                <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-xl font-semibold mb-6">Possíveis Soluções</h3>
-                    @if ($codigoErro->solucoes->isNotEmpty())
-                        <div class="space-y-8">
-                            @foreach ($codigoErro->solucoes->load('imagens', 'videos') as $index => $solucao)
-                                {{-- Card da Solução Individual --}}
-                                <div class="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                                    <h4 class="text-lg font-bold mb-2 text-indigo-700 dark:text-indigo-400">Solução {{ $index + 1 }}: {{ $solucao->titulo }}</h4>
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-5">{{ $solucao->descricao }}</p>
-
-                                    {{-- Exibição das Mídias da Solução --}}
-                                    @if ($solucao->imagens->isNotEmpty() || $solucao->videos->isNotEmpty())
-                                        <div class="mt-3 border-t pt-3 dark:border-gray-600">
-                                            <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Mídias da Solução:</p>
-
-                                             {{-- Imagens --}}
-                                            @if ($solucao->imagens->isNotEmpty())
-                                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-3">
-                                                    @foreach ($solucao->imagens as $imagem)
-                                                        <a href="{{ $imagem->url }}" target="_blank" title="{{ $imagem->titulo ?? $imagem->nome_original }}" class="block relative group">
-                                                            <img src="{{ $imagem->url }}" alt="{{ $imagem->titulo ?? 'Imagem anexa' }}" class="w-full h-20 object-cover rounded-md shadow border dark:border-gray-700 group-hover:opacity-80 transition-opacity">
-                                                            <p class="text-xs text-center mt-1 truncate text-gray-500 dark:text-gray-400" title="{{ $imagem->titulo ?? $imagem->nome_original }}">{{ $imagem->titulo ?? $imagem->nome_original }}</p>
-                                                        </a>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-
-                                            {{-- Vídeos --}}
-                                            @if ($solucao->videos->isNotEmpty())
-                                                <div class="space-y-2">
-                                                    @foreach ($solucao->videos as $video)
-                                                        <div>
-                                                            @if ($video->tipo === 'link' && Str::contains($video->url_ou_path, ['youtube.com', 'youtu.be']))
-                                                                {{-- Player Embutido YouTube --}}
-                                                                @php
-                                                                    parse_str(parse_url($video->url_ou_path, PHP_URL_QUERY), $query);
-                                                                    $videoId = $query['v'] ?? Str::afterLast($video->url_ou_path, '/');
-                                                                @endphp
-                                                                <div class="aspect-w-16 aspect-h-9 max-w-sm mb-1">
-                                                                     <iframe src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="rounded-md shadow border dark:border-gray-700"></iframe>
-                                                                </div>
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $video->titulo ?? 'Vídeo YouTube' }}</p>
-                                                             @elseif ($video->tipo === 'upload')
-                                                                {{-- Player Embutido Upload --}}
-                                                                <video controls preload="metadata" class="max-w-sm w-full rounded-md shadow border dark:border-gray-700 bg-black mb-1">
-                                                                    <source src="{{ $video->url_ou_path }}#t=0.1" type="{{ Storage::disk('public')->mimeType($video->path) ?? 'video/mp4' }}"> {{-- #t=0.1 for thumbnail --}}
-                                                                    Seu navegador não suporta o vídeo.
-                                                                </video>
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $video->titulo ?? $video->nome_original }} (Upload)</p>
-                                                             @else {{-- Outros tipos de link ou fallback --}}
-                                                                <a href="{{ $video->url_ou_path }}" target="_blank" class="inline-flex items-center text-xs text-blue-600 hover:underline dark:text-blue-400">
-                                                                    <svg class="w-3 h-3 mr-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
-                                                                    {{ $video->titulo ?? $video->url_ou_path }}
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-6">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                            </svg>
-                            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Nenhuma solução encontrada</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ainda não há soluções cadastradas para este código.</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-             {{-- Comentários --}}
+            {{-- Comentários --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100">
                     <h3 class="text-xl font-semibold mb-6">Comentários Técnicos</h3>

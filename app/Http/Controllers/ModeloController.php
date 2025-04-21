@@ -39,20 +39,64 @@ class ModeloController extends Controller
     }
 
     /**
-     * Exibe os detalhes públicos de um modelo específico.
-     * Assume que o Model Binding usa o ID ou o slug (se getRouteKeyName estiver definido no Model).
+     * Exibe os detalhes públicos de um modelo específico (página principal do modelo).
      */
     public function show(Modelo $modelo): View
     {
-        // Carrega a marca, códigos de erro públicos e manuais associados
-        $modelo->load([
-            'marca',
-            'codigosErro' => function ($query) {
-                $query->where('publico', true)->orderBy('codigo'); // Apenas públicos
-            },
-            'manuais' // Carrega manuais
+        // Carrega a marca e as contagens de códigos de erro públicos e manuais
+        $modelo->load('marca'); // Carrega a marca completa
+        $modelo->loadCount([
+            'codigoErros' => fn($q) => $q->where('publico', true), // Conta apenas públicos
+            'manuais' // Conta manuais (assumindo que são todos públicos ou lógica de acesso está na rota/view)
         ]);
 
         return view('public.modelos.show', compact('modelo'));
+    }
+
+    /**
+     * Exibe a lista de códigos de erro públicos para um modelo específico.
+     */
+    public function showCodigos(Modelo $modelo, Request $request): View
+    {
+        // Carrega a marca para exibir no título da página
+        $modelo->load('marca:id,nome,slug');
+
+        // Obtém o termo de busca, se houver
+        $buscaCodigo = $request->input('busca_codigo');
+
+        // Query base para os códigos de erro públicos do modelo
+        $query = $modelo->codigoErros()->where('publico', true);
+
+        // Se houver termo de busca, aplica o filtro no código ou descrição
+        if ($buscaCodigo) {
+            $query->where(function ($q) use ($buscaCodigo) {
+                $q->where('codigo', 'LIKE', "%{$buscaCodigo}%")
+                  ->orWhere('descricao', 'LIKE', "%{$buscaCodigo}%");
+            });
+        }
+
+        // Executa a query com ordenação e paginação
+        $codigosErro = $query->orderBy('codigo')
+                             ->paginate(15, ['*'], 'codigos_page')
+                             ->appends($request->query()); // Anexa query string atual (incluindo busca_codigo) à paginação
+
+        // Passa o termo de busca para a view também, para preencher o campo
+        return view('public.modelos.show_codigos', compact('modelo', 'codigosErro', 'buscaCodigo'));
+    }
+
+    /**
+     * Exibe a lista de manuais para um modelo específico.
+     */
+    public function showManuais(Modelo $modelo): View
+    {
+         // Carrega a marca para exibir no título da página
+         $modelo->load('marca:id,nome,slug');
+
+        // Busca os manuais associados a este modelo, paginados
+        $manuais = $modelo->manuais()
+                           ->orderBy('nome')
+                           ->paginate(15, ['*'], 'manuais_page'); // Nomeia a página
+
+        return view('public.modelos.show_manuais', compact('modelo', 'manuais'));
     }
 }
