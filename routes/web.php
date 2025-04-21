@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\VideoController as AdminVideoController;
 use App\Http\Controllers\Admin\ComentarioController as AdminComentarioController;
 use App\Http\Controllers\Admin\MarcaController as AdminMarcaController;
 use App\Http\Controllers\Admin\ModeloController as AdminModeloController;
+use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\LikeController;
@@ -127,4 +128,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // CRUD de Vídeos (sem create/store autônomo)
     Route::resource('videos', AdminVideoController::class)->except(['create', 'store', 'show']);
+
+    // Rotas para Importação
+    Route::prefix('importar')->name('import.')->group(function () {
+        Route::get('/codigos', [ImportController::class, 'create'])->name('codigos.form'); // Exibe o formulário
+        Route::post('/codigos', [ImportController::class, 'store'])->name('codigos.process'); // Processa a importação
+    });
 });

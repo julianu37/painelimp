@@ -34,6 +34,10 @@
                     <x-nav-link :href="route('admin.tecnicos.index')" :active="request()->routeIs('admin.tecnicos.*')">
                         {{ __('Técnicos') }}
                     </x-nav-link>
+                    {{-- Link para Importação --}}
+                    <x-nav-link :href="route('admin.import.codigos.form')" :active="request()->routeIs('admin.import.codigos.form')">
+                        {{ __('Importar Códigos') }}
+                    </x-nav-link>
                      {{-- Links para Imagens/Vídeos podem ser adicionados se fizer sentido uma gestão centralizada --}}
                 </div>
             </div>
@@ -113,6 +117,10 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.tecnicos.index')" :active="request()->routeIs('admin.tecnicos.*')">
                 {{ __('Técnicos') }}
+            </x-responsive-nav-link>
+            {{-- Link Responsivo para Importação --}}
+            <x-responsive-nav-link :href="route('admin.import.codigos.form')" :active="request()->routeIs('admin.import.codigos.form')">
+                {{ __('Importar Códigos') }}
             </x-responsive-nav-link>
         </div>
 

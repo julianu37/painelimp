@@ -112,6 +112,26 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        // Conexão para importação de dados de outra base no mesmo servidor
+        'mysql_import' => [
+            'driver' => 'mysql',
+            'host' => '127.0.0.1', // Host da base de origem
+            'port' => '3306', // Porta da base de origem
+            'database' => 'extratorpdf', // Nome da base de origem
+            'username' => 'root', // Usuário da base de origem
+            'password' => '', // Senha da base de origem
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => null, // Ou configure SSL se necessário
+            ]) : [],
+        ],
+
     ],
 
     /*
