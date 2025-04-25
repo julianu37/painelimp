@@ -30,10 +30,9 @@ class Manual extends Model
         'descricao',
         'arquivo_path',
         'arquivo_nome_original',
-        'arquivo_mime_type',
-        'arquivo_tamanho',
         'publico',
         'slug',
+        'indexing_status',
     ];
 
     /**

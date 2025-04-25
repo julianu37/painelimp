@@ -15,16 +15,36 @@
              {{-- Detalhes do Manual --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-2">Informações do Manual</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {{ $manual->nome }}
+                    </h3>
+
+                    <!-- Status da Indexação -->
+                    <div class="mt-1">
+                        @php
+                            $statusClass = match($manual->indexing_status) {
+                                'processing' => 'bg-yellow-200 text-yellow-800',
+                                'completed' => 'bg-green-200 text-green-800',
+                                'failed' => 'bg-red-200 text-red-800',
+                                default => 'bg-gray-200 text-gray-800', // pending ou null
+                            };
+                            $statusText = match($manual->indexing_status) {
+                                'processing' => 'Indexando...',
+                                'completed' => 'Indexado',
+                                'failed' => 'Falha',
+                                default => 'Indexação Pendente',
+                            };
+                        @endphp
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                            {{ $statusText }}
+                        </span>
+                    </div>
+
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        {{ $manual->descricao ?? 'Sem descrição.' }}
+                    </p>
+
                     <dl class="divide-y divide-gray-200 dark:divide-gray-700">
-                        <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nome</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">{{ $manual->nome }}</dd>
-                        </div>
-                        <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Descrição</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{{ $manual->descricao ?? '-' }}</dd>
-                        </div>
                         <div class="py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Arquivo</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0 sm:col-span-2">

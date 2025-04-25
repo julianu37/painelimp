@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Video;
 use App\Models\CodigoErro;
-use App\Models\Solucao;
 use App\Models\Marca;
 use App\Models\Modelo;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +28,6 @@ class VideoSeeder extends Seeder
 
         // Pega alguns registros existentes
         $codigoErroW001 = CodigoErro::where('codigo', 'W001')->first();
-        $solucaoW001_1 = Solucao::where('titulo', 'LIKE', '%Limpar roletes%')->first();
         $modeloL3250 = Modelo::where('nome', 'EcoTank L3250')->first();
 
         // Cria vídeos de exemplo
@@ -43,17 +41,7 @@ class VideoSeeder extends Seeder
             ]);
         }
 
-        if ($solucaoW001_1) {
-            Video::create([
-                'titulo' => 'Tutorial Limpeza Roletes',
-                'tipo' => 'upload',
-                'url_ou_path' => 'videos/exemplo_limpeza_roletes.mp4', // Fictício
-                'videoable_id' => $solucaoW001_1->id,
-                'videoable_type' => Solucao::class,
-            ]);
-        }
-
-         if ($modeloL3250) {
+        if ($modeloL3250) {
             Video::create([
                 'titulo' => 'Review Epson L3250',
                 'tipo' => 'link',

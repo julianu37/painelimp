@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Imagem;
 use App\Models\CodigoErro;
-use App\Models\Solucao;
 use App\Models\Marca;
 use App\Models\Modelo;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +28,6 @@ class ImagemSeeder extends Seeder
 
         // Pega alguns registros existentes para associar imagens
         $codigoErroE101 = CodigoErro::where('codigo', 'E101')->first();
-        $solucaoE101_1 = Solucao::where('titulo', 'LIKE', '%Verificar toner%')->first();
         $marcaHP = Marca::where('nome', 'HP')->first();
         $modeloM404dn = Modelo::where('nome', 'LaserJet Pro M404dn')->first();
 
@@ -40,15 +38,6 @@ class ImagemSeeder extends Seeder
                 'path' => 'imagens/exemplo_toner.jpg', // Caminho fictício
                 'imageable_id' => $codigoErroE101->id,
                 'imageable_type' => CodigoErro::class,
-            ]);
-        }
-
-        if ($solucaoE101_1) {
-            Imagem::create([
-                'titulo' => 'Detalhe da Alavanca',
-                'path' => 'imagens/exemplo_alavanca.png', // Caminho fictício
-                'imageable_id' => $solucaoE101_1->id,
-                'imageable_type' => Solucao::class,
             ]);
         }
 

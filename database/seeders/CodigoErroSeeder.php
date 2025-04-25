@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\CodigoErro;
-use App\Models\Solucao;
+// use App\Models\Solucao; // Removido
 use App\Models\Comentario;
 use App\Models\User;
 use App\Models\Modelo;
@@ -23,7 +23,7 @@ class CodigoErroSeeder extends Seeder
         // Limpar tabelas relacionadas antes de popular
         Schema::disableForeignKeyConstraints();
         CodigoErro::query()->delete();
-        Solucao::query()->delete();
+        // Solucao::query()->delete(); // Removido
         Comentario::query()->delete();
         DB::table('codigo_erro_modelo')->truncate();
         Schema::enableForeignKeyConstraints();
@@ -60,7 +60,8 @@ class CodigoErroSeeder extends Seeder
             'publico' => false,
         ]);
 
-        // Cria soluções para o erro E101
+        // Cria soluções para o erro E101 - REMOVIDO
+        /*
         Solucao::create(
             [
                 'codigo_erro_id' => $erro1->id,
@@ -75,8 +76,10 @@ class CodigoErroSeeder extends Seeder
                 'descricao' => 'Se a verificação do cabo não resolver, o sensor pode estar danificado. Siga o manual para substituição (PN: 12345-TEMP).'
             ]
         );
+        */
 
-        // Cria solução para o erro W001
+        // Cria solução para o erro W001 - REMOVIDO
+        /*
         Solucao::create(
             [
                 'codigo_erro_id' => $erro2->id,
@@ -84,6 +87,7 @@ class CodigoErroSeeder extends Seeder
                 'descricao' => 'Limpe os rolos de alimentação de papel com um pano úmido.'
             ]
         );
+        */
 
         // Adiciona comentários do técnico (se o técnico existir)
         if ($tecnico && isset($erro1)) {

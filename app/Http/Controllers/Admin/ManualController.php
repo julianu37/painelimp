@@ -13,6 +13,8 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage; // Para lidar com arquivos
 use Illuminate\Support\Facades\DB; // Para transações
+use App\Jobs\IndexarManualPdf; // Importa o Job
+use Illuminate\Support\Facades\Log; // Adicionado para log de erro
 
 class ManualController extends Controller
 {
@@ -78,7 +80,11 @@ class ManualController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.manuais.index')->with('success', 'Manual criado com sucesso!');
+
+            // Dispara o job para indexar o PDF em background
+            IndexarManualPdf::dispatch($manual);
+
+            return redirect()->route('admin.manuais.index')->with('success', 'Manual criado com sucesso! Indexação iniciada.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -86,6 +92,8 @@ class ManualController extends Controller
                  Storage::disk('public')->delete($path);
             }
             // Log::error("Erro ao criar manual: ". $e->getMessage()); // Boa prática: logar o erro
+            // Log detalhado do erro ANTES de retornar a mensagem genérica
+            Log::error("Erro ao criar manual: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return back()->with('error', 'Erro ao criar manual. Verifique os dados e tente novamente.')
                      ->withInput(); // Mantém os dados do formulário
         }
@@ -122,6 +130,7 @@ class ManualController extends Controller
         $validated = $request->validated();
         $oldFilePath = $manual->arquivo_path;
         $newPath = null;
+        $arquivoAlterado = false; // Flag para saber se o arquivo mudou
 
         DB::beginTransaction();
         try {
@@ -136,6 +145,7 @@ class ManualController extends Controller
                 $newPath = $request->file('arquivo')->store($this->uploadPath, 'public');
                 $dataToUpdate['arquivo_path'] = $newPath;
                 $dataToUpdate['arquivo_nome_original'] = $request->file('arquivo')->getClientOriginalName();
+                $arquivoAlterado = true; // Marca que o arquivo foi alterado
             }
 
             $manual->update($dataToUpdate);
@@ -150,7 +160,15 @@ class ManualController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.manuais.index')->with('success', 'Manual atualizado com sucesso!');
+
+            // Dispara o job de indexação se o arquivo foi alterado
+            if ($arquivoAlterado) {
+                // Reseta o status para indicar que a nova indexação está pendente
+                $manual->updateQuietly(['indexing_status' => 'pending']);
+                IndexarManualPdf::dispatch($manual);
+            }
+
+            return redirect()->route('admin.manuais.index')->with('success', 'Manual atualizado com sucesso!' . ($arquivoAlterado ? ' Reindexação iniciada.' : ''));
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -159,6 +177,8 @@ class ManualController extends Controller
                  Storage::disk('public')->delete($newPath);
             }
             // Log::error("Erro ao atualizar manual: ". $e->getMessage()); // Boa prática: logar o erro
+            // Log detalhado do erro ANTES de retornar a mensagem genérica
+            Log::error("Erro ao atualizar manual ID {$manual->id}: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return back()->with('error', 'Erro ao atualizar manual. Verifique os dados e tente novamente.')
                      ->withInput();
         }
@@ -181,6 +201,8 @@ class ManualController extends Controller
             return redirect()->route('admin.manuais.index')->with('success', 'Manual excluído com sucesso!');
         } catch (\Exception $e) {
             // Log::error("Erro ao excluir manual: ". $e->getMessage()); // Boa prática: logar o erro
+            // Log detalhado do erro ANTES de retornar a mensagem genérica
+            Log::error("Erro ao excluir manual ID {$manual->id}: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return redirect()->route('admin.manuais.index')->with('error', 'Erro ao excluir manual.');
         }
     }

@@ -32,6 +32,7 @@
                                 <th scope="col" class="px-6 py-3">Modelo(s)</th>
                                 <th scope="col" class="px-6 py-3 text-center">Público</th>
                                 <th scope="col" class="px-6 py-3">Criado em</th>
+                                <th scope="col" class="px-6 py-3">Status</th>
                                 <th scope="col" class="px-6 py-3 text-right">Ações</th>
                             </tr>
                         </thead>
@@ -60,6 +61,26 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <?php echo e($manual->created_at->format('d/m/Y')); ?>
 
+                                    </td>
+                                    <td class="px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-sm">
+                                        <?php
+                                            $statusClass = match($manual->indexing_status) {
+                                                'processing' => 'bg-yellow-200 text-yellow-800',
+                                                'completed' => 'bg-green-200 text-green-800',
+                                                'failed' => 'bg-red-200 text-red-800',
+                                                default => 'bg-gray-200 text-gray-800', // pending ou null
+                                            };
+                                            $statusText = match($manual->indexing_status) {
+                                                'processing' => 'Indexando...',
+                                                'completed' => 'Indexado',
+                                                'failed' => 'Falha',
+                                                default => 'Pendente',
+                                            };
+                                        ?>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo e($statusClass); ?>">
+                                            <?php echo e($statusText); ?>
+
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
                                         
