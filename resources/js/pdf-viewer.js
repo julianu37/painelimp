@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const pdfjsWorkerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.mjs`;
             pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
 
-            // Pega a URL do PDF do atributo data-* no body
+            // Pega a URL do PDF e a página inicial do atributo data-* no body
             const pdfUrl = document.body.dataset.pdfUrl;
-            console.log("DOM Carregado. URL do PDF:", pdfUrl);
+            const initialPage = parseInt(document.body.dataset.initialPage || '1', 10);
+            console.log("DOM Carregado. URL do PDF:", pdfUrl, "Página Inicial:", initialPage);
 
             if (pdfUrl) {
                 const container = document.getElementById('viewerContainer');
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         pdfViewer.setDocument(pdfDocument);
                         pdfLinkService.setDocument(pdfDocument, null);
                         console.log("Documento definido no viewer PDF.js.");
+
                     } catch (reason) {
                         console.error(`Erro ao carregar PDF (${reason?.name || 'Error'}): ${reason?.message || reason}`);
                         alert("Erro ao carregar o PDF. Verifique o console.");
@@ -52,6 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 eventBus.on('pagesinit', function () {
                     console.log("Páginas PDF.js inicializadas.");
                     pdfViewer.currentScaleValue = 'page-width';
+
+                    // Definir a página inicial AQUI, quando as páginas estiverem prontas
+                    if (initialPage > 0 && initialPage <= pdfViewer.pagesCount) {
+                        console.log("Definindo página inicial (pagesinit) para", initialPage);
+                        pdfViewer.currentPageNumber = initialPage;
+                    } else {
+                         console.warn("Número da página inicial inválido (pagesinit):", initialPage, "Total de páginas:", pdfViewer.pagesCount);
+                         // Mantém a primeira página como padrão se inválido
+                         pdfViewer.currentPageNumber = 1; // Garante que sempre vá para a pág 1 se inválido
+                    }
                 });
 
                 console.log("Chamando loadPdf...");

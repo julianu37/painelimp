@@ -44,16 +44,9 @@
 
             
             <h2 class="text-2xl font-semibold mb-6 text-gray-700 dark:text-gray-300">Ou explore por categoria:</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 
-                <a href="<?php echo e(route('codigos.index')); ?>" class="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                    <div class="flex items-center mb-3">
-                        
-                        <svg class="w-8 h-8 text-red-500 dark:text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Códigos de Erro</h3>
-                    </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Pesquise por códigos e encontre soluções detalhadas.</p>
-                </a>
+                
                 
                 <a href="<?php echo e(route('manuais.index')); ?>" class="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                      <div class="flex items-center mb-3">
@@ -64,7 +57,7 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400">Faça o download de manuais de serviço e de usuário.</p>
                 </a>
                  
-                 <a href="<?php echo e(route('marcas.index')); ?>" class="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 sm:col-span-2 lg:col-span-1"> 
+                 <a href="<?php echo e(route('marcas.index')); ?>" class="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                      <div class="flex items-center mb-3">
                         
                         <svg class="w-8 h-8 text-green-500 dark:text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 8V5c0-1.1.9-2 2-2h2z"></path></svg>

@@ -13,7 +13,10 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     {{-- Removido Home --}}
-                    {{-- Removido Códigos de Erro --}}
+                    {{-- REMOVIDO: Códigos de Erro --}}
+                    {{-- <x-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white focus:text-white">
+                        {{ __('Códigos') }}
+                    </x-nav-link> --}}
                     <x-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white focus:text-white">
                         {{ __('Marcas') }}
                     </x-nav-link>
@@ -115,7 +118,10 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-800">
         <div class="pt-2 pb-3 space-y-1">
              {{-- Removido Home --}}
-             {{-- Removido Códigos de Erro --}}
+             {{-- REMOVIDO: Códigos de Erro --}}
+             {{-- <x-responsive-nav-link :href="route('codigos.index')" :active="request()->routeIs('codigos.index') || request()->routeIs('codigos.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
+                {{ __('Códigos') }}
+            </x-responsive-nav-link> --}}
             <x-responsive-nav-link :href="route('marcas.index')" :active="request()->routeIs('marcas.index') || request()->routeIs('marcas.show')" class="text-gray-300 hover:text-white hover:bg-gray-700 focus:text-white focus:bg-gray-700">
                 {{ __('Marcas') }}
             </x-responsive-nav-link>

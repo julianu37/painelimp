@@ -51,7 +51,7 @@ class ManualController extends Controller
      * Exibe uma view com o visualizador PDF.js embutido.
      * Acessível publicamente.
      */
-    public function viewPdf(Manual $manual): View|RedirectResponse
+    public function viewPdf(Request $request, Manual $manual): View|RedirectResponse
     {
         // Verifica se o arquivo existe no storage público
         if (!Storage::disk('public')->exists($manual->arquivo_path)) {
@@ -61,10 +61,14 @@ class ManualController extends Controller
         // Obtém a URL pública do arquivo PDF
         $pdfUrl = Storage::disk('public')->url($manual->arquivo_path);
 
+        // Obtém o número da página da query string, padrão 1
+        $initialPage = max(1, intval($request->input('page', 1)));
+
         // Retorna a view do visualizador, passando a URL e o nome do manual
         return view('public.manuais.viewer', [
             'manual' => $manual,      // Para exibir o nome, etc.
             'pdfUrl' => $pdfUrl, // URL para o PDF.js carregar
+            'initialPage' => $initialPage // <-- Passa a página inicial para a view
         ]);
     }
 

@@ -59,10 +59,10 @@ class Modelo extends Model
      * Define o relacionamento N:N com CodigoErro.
      * Renomeado para 'codigoErros' para compatibilidade com scopeBindings.
      */
-    public function codigoErros(): BelongsToMany
-    {
-        return $this->belongsToMany(CodigoErro::class);
-    }
+    // public function codigoErros(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(CodigoErro::class);
+    // }
 
     /**
      * Define o relacionamento polimórfico para imagens associadas a este modelo.

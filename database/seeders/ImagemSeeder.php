@@ -5,10 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Imagem;
-use App\Models\CodigoErro;
 use App\Models\Marca;
 use App\Models\Modelo;
+use App\Models\Manual;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Schema;
 
 class ImagemSeeder extends Seeder
@@ -26,43 +27,56 @@ class ImagemSeeder extends Seeder
         // Storage::disk('public')->deleteDirectory('imagens');
         // Storage::disk('public')->makeDirectory('imagens');
 
+        // Cria o diretório se não existir
+        if (!Storage::disk('public')->exists('imagens')) {
+            Storage::disk('public')->makeDirectory('imagens');
+        }
+
         // Pega alguns registros existentes para associar imagens
-        $codigoErroE101 = CodigoErro::where('codigo', 'E101')->first();
+        // $codigoErroE101 = CodigoErro::where('codigo', 'E101')->first();
         $marcaHP = Marca::where('nome', 'HP')->first();
         $modeloM404dn = Modelo::where('nome', 'LaserJet Pro M404dn')->first();
 
         // Cria imagens de exemplo associadas
-        if ($codigoErroE101) {
-            Imagem::create([
-                'titulo' => 'Localização do Toner',
-                'path' => 'imagens/exemplo_toner.jpg', // Caminho fictício
-                'imageable_id' => $codigoErroE101->id,
-                'imageable_type' => CodigoErro::class,
-            ]);
+        if ($modeloM404dn) {
+            $placeholderPath = database_path('seeders/placeholders/placeholder_image.jpg'); // Cria um placeholder se não tiver imagem real
+            if (file_exists($placeholderPath)) {
+                $path = Storage::disk('public')->putFile('imagens', new File($placeholderPath));
+                Imagem::create([
+                    'imageable_id' => $modeloM404dn->id,
+                    'imageable_type' => Modelo::class,
+                    'path' => $path,
+                    'alt_text' => 'Imagem do Modelo HP M404dn'
+                ]);
+            }
         }
 
         if ($marcaHP) {
-             Imagem::create([
-                'titulo' => 'Logo HP Antigo',
-                'path' => 'imagens/exemplo_logo_hp.gif', // Caminho fictício
-                'imageable_id' => $marcaHP->id,
-                'imageable_type' => Marca::class,
-            ]);
+             $placeholderPath = database_path('seeders/placeholders/placeholder_image.jpg');
+            if (file_exists($placeholderPath)) {
+                $path = Storage::disk('public')->putFile('imagens', new File($placeholderPath));
+                Imagem::create([
+                    'imageable_id' => $marcaHP->id,
+                    'imageable_type' => Marca::class,
+                    'path' => $path,
+                    'alt_text' => 'Logo HP'
+                ]);
+            }
         }
 
-         if ($modeloM404dn) {
-             Imagem::create([
-                'titulo' => 'Painel Frontal M404dn',
-                'path' => 'imagens/exemplo_painel_m404.webp', // Caminho fictício
-                'imageable_id' => $modeloM404dn->id,
-                'imageable_type' => Modelo::class,
-            ]);
+        // Associar imagem a um manual (se existir)
+        $manualGenerico = Manual::where('nome', 'Manual de Serviço Genérico')->first();
+        if ($manualGenerico) {
+            $placeholderPath = database_path('seeders/placeholders/placeholder_image.jpg');
+            if (file_exists($placeholderPath)) {
+                $path = Storage::disk('public')->putFile('imagens', new File($placeholderPath));
+                Imagem::create([
+                    'imageable_id' => $manualGenerico->id,
+                    'imageable_type' => Manual::class,
+                    'path' => $path,
+                    'alt_text' => 'Capa do Manual Genérico'
+                ]);
+            }
         }
-
-        // Garante que a pasta exista, mesmo que os arquivos sejam fictícios
-         if (!Storage::disk('public')->exists('imagens')) {
-            Storage::disk('public')->makeDirectory('imagens');
-        }
-
     }
 } 

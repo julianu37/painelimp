@@ -8,42 +8,41 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Seção de Códigos de Erro --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Códigos de Erro Encontrados ({{ $codigosErro->count() }})</h3>
-                    @if ($codigosErro->isNotEmpty())
+            {{-- Seção de Códigos Indexados nos PDFs --}}
+            @if ($referenciasPdf->isNotEmpty())
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">Códigos Encontrados em Manuais ({{ $referenciasPdf->count() }})</h3>
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($codigosErro as $codigo)
-                                <li class="py-3">
-                                    {{-- Verifica se a coleção de modelos não está vazia --}}
-                                    @if ($codigo->modelos->isNotEmpty())
-                                        @php $primeiroModelo = $codigo->modelos->first(); @endphp
-                                        {{-- Usa o primeiro modelo para gerar o link --}}
-                                        <a href="{{ route('modelos.codigos.show', [$primeiroModelo, $codigo]) }}" class="hover:underline">
-                                            <span class="font-semibold">{{ $codigo->codigo }}</span> - {{ Str::limit($codigo->descricao, 150) }}
-                                            {{-- Mostra o nome do primeiro modelo --}}
-                                            <span class="text-xs text-gray-500"> (Modelo: {{ $primeiroModelo->nome }})</span>
-                                            {{-- Opcional: Indicar se há mais modelos --}}
-                                            @if($codigo->modelos->count() > 1)
-                                                <span class="text-xs text-gray-400 italic"> (e outros)</span>
-                                            @endif
-                                        </a>
-                                    @else
-                                        {{-- Código sem modelo associado --}}
-                                        <span class="font-semibold">{{ $codigo->codigo }}</span> - {{ Str::limit($codigo->descricao, 150) }}
-                                        <span class="text-xs text-red-500"> (Nenhum modelo associado)</span>
-                                    @endif
-                                </li>
+                            @foreach ($referenciasPdf as $ref)
+                                @if ($ref->manual) {{-- Verifica se o manual associado existe --}}
+                                    <li class="py-3">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $ref->codigo_encontrado }}</span>
+                                                encontrado em
+                                                <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" {{-- Assumindo rota manuais.view --}}
+                                                   target="_blank" {{-- Abrir em nova aba --}}
+                                                   class="font-semibold underline hover:text-indigo-500">
+                                                    {{ $ref->manual->nome }}
+                                                </a>
+                                                (página {{ $ref->numero_pagina }})
+                                            </div>
+                                            <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" {{-- Assumindo rota manuais.view --}}
+                                                target="_blank"
+                                                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                                Abrir PDF &rarr;
+                                            </a>
+                                        </div>
+                                    </li>
+                                @endif
                             @endforeach
                         </ul>
-                    @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum código de erro encontrado.</p>
-                    @endif
+                    </div>
                 </div>
-            </div>
+            @endif {{-- Fim da exibição da seção de refs PDF --}}
 
-             {{-- SEÇÃO DE MODELOS ENCONTRADOS --}}
+            {{-- SEÇÃO DE MODELOS ENCONTRADOS --}}
             <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Modelos Encontrados ({{ $modelos->count() }})</h2>
                 @if ($modelos->isNotEmpty())
@@ -61,28 +60,37 @@
                 @endif
             </div>
 
-            {{-- Seção de Manuais --}}
+            {{-- Seção de Manuais (Busca Geral) --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">Manuais Encontrados ({{ $manuais->count() }})</h3>
-                     @if ($manuais->isNotEmpty())
+                    @if ($manuais->isNotEmpty())
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($manuais as $manual)
                                 <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
                                     <div>
                                         <span class="text-base font-medium text-gray-900 dark:text-gray-100">{{ $manual->nome }}</span>
                                         <p class="text-xs text-gray-500 dark:text-gray-400" title="{{ $manual->arquivo_nome_original }}">({{ Str::limit($manual->arquivo_nome_original, 40) }})</p>
-                                         {{-- Mostrar Modelo/Marca se carregado --}}
-                                        @if($manual->modelo)
+                                         {{-- Mostrar Modelo/Marca se carregado (mantido como estava) --}}
+                                         @if($manual->modelos->isNotEmpty())
+                                            @php $primeiroModeloManual = $manual->modelos->first(); @endphp
                                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                Modelo: <a href="{{ route('modelos.show', $manual->modelo) }}" class="hover:underline">{{ $manual->modelo->nome }}</a>
-                                                @if($manual->modelo->marca)
-                                                (<a href="{{ route('marcas.show', $manual->modelo->marca) }}" class="hover:underline">{{ $manual->modelo->marca->nome }}</a>)
+                                                @if($manual->modelos->count() > 1)
+                                                    Modelos:
+                                                @else
+                                                    Modelo:
+                                                @endif
+                                                <a href="{{ route('modelos.show', $primeiroModeloManual) }}" class="hover:underline">{{ $primeiroModeloManual->nome }}</a>
+                                                @if($primeiroModeloManual->marca)
+                                                (<a href="{{ route('marcas.show', $primeiroModeloManual->marca) }}" class="hover:underline">{{ $primeiroModeloManual->marca->nome }}</a>)
+                                                @endif
+                                                @if($manual->modelos->count() > 1)
+                                                    <span class="text-xs text-gray-400 italic"> (e outros)</span>
                                                 @endif
                                             </p>
                                         @endif
                                     </div>
-                                   <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
+                                    <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
                                         {{-- Botão Visualizar --}}
                                         <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
                                             Visualizar
@@ -108,25 +116,7 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO DE MARCAS ENCONTRADAS --}}
-            <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Marcas Encontradas ({{ $marcas->count() }})</h2>
-                @if ($marcas->isNotEmpty())
-                    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                        @foreach ($marcas as $marca)
-                            <li>
-                                <a href="{{ route('marcas.show', $marca) }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
-                                    {{ $marca->nome }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                @else
-                    <p class="text-gray-500 dark:text-gray-400">Nenhuma marca encontrada.</p>
-                @endif
-            </div>
-
-            {{-- Link Voltar (opcional) --}}
+            {{-- Link Voltar (mantido) --}}
             <div class="mt-6">
                  <a href="{{ url()->previous() }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
                     &laquo; Voltar

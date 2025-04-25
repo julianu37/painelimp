@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,      // Cria usuários (admin, tecnicos)
             MarcaSeeder::class,     // Cria Marcas
             ModeloSeeder::class,    // Cria Modelos (depende de Marcas)
-            CodigoErroSeeder::class, // Cria Códigos de Erro (pode depender de Modelos)
+            // CodigoErroSeeder::class, // REMOVIDO
             // SolucaoSeeder::class,   // Removido - Cria Soluções (depende de Códigos de Erro)
             ManualSeeder::class,    // Cria Manuais (pode depender de Modelos)
             ImagemSeeder::class,    // Cria Imagens de exemplo (depende dos anteriores)

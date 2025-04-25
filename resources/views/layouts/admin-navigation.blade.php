@@ -22,11 +22,8 @@
                     <x-nav-link :href="route('admin.modelos.index')" :active="request()->routeIs('admin.modelos.*')">
                         {{ __('Modelos') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.codigos.index')" :active="request()->routeIs('admin.codigos.*')">
-                        {{ __('Códigos') }}
-                    </x-nav-link>
-                     {{-- Link Soluções Removido --}}
-                     {{-- <x-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
+                    {{-- Link Soluções Removido --}}
+                    {{-- <x-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
                         {{ __('Soluções') }}
                     </x-nav-link> --}}
                     <x-nav-link :href="route('admin.manuais.index')" :active="request()->routeIs('admin.manuais.*')">
@@ -36,9 +33,9 @@
                         {{ __('Técnicos') }}
                     </x-nav-link>
                     {{-- Link para Importação --}}
-                    <x-nav-link :href="route('admin.import.codigos.form')" :active="request()->routeIs('admin.import.codigos.form')">
+                    {{-- <x-nav-link :href="route('admin.import.codigos.form')" :active="request()->routeIs('admin.import.codigos.form')">
                         {{ __('Importar Códigos') }}
-                    </x-nav-link>
+                    </x-nav-link> --}}
                      {{-- Links para Imagens/Vídeos podem ser adicionados se fizer sentido uma gestão centralizada --}}
                 </div>
             </div>
@@ -107,12 +104,9 @@
              <x-responsive-nav-link :href="route('admin.modelos.index')" :active="request()->routeIs('admin.modelos.*')">
                 {{ __('Modelos') }}
             </x-responsive-nav-link>
+             {{-- REMOVIDO:
              <x-responsive-nav-link :href="route('admin.codigos.index')" :active="request()->routeIs('admin.codigos.*')">
                 {{ __('Códigos') }}
-            </x-responsive-nav-link>
-            {{-- Link Responsivo Soluções Removido --}}
-             {{-- <x-responsive-nav-link :href="route('admin.solucoes.index')" :active="request()->routeIs('admin.solucoes.*')">
-                {{ __('Soluções') }}
             </x-responsive-nav-link> --}}
              <x-responsive-nav-link :href="route('admin.manuais.index')" :active="request()->routeIs('admin.manuais.*')">
                 {{ __('Manuais') }}
@@ -120,10 +114,10 @@
             <x-responsive-nav-link :href="route('admin.tecnicos.index')" :active="request()->routeIs('admin.tecnicos.*')">
                 {{ __('Técnicos') }}
             </x-responsive-nav-link>
-            {{-- Link Responsivo para Importação --}}
+            {{-- REMOVIDO:
             <x-responsive-nav-link :href="route('admin.import.codigos.form')" :active="request()->routeIs('admin.import.codigos.form')">
                 {{ __('Importar Códigos') }}
-            </x-responsive-nav-link>
+            </x-responsive-nav-link> --}}
         </div>
 
         <!-- Responsive Settings Options -->

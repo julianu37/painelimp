@@ -26,7 +26,7 @@
     <?php echo app('Illuminate\Foundation\Vite')(['resources/js/pdf-viewer.js']); ?>
 </head>
 
-<body data-pdf-url="<?php echo e($pdfUrl); ?>">
+<body data-pdf-url="<?php echo e($pdfUrl); ?>" data-initial-page="<?php echo e($initialPage); ?>">
     
     <div id="viewerContainer">
         <div id="viewer" class="pdfViewer"></div>

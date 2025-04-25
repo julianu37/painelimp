@@ -1,24 +1,22 @@
 # Painel Impressoras - Base de Conhecimento
 
-Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento sobre códigos de erro, soluções, manuais e informações relacionadas a impressoras e multifuncionais.
+Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento sobre manuais e informações relacionadas a impressoras e multifuncionais, com foco na indexação e busca de conteúdo em PDFs.
 
 ## Escopo do Projeto
 
 *   **Área Pública:**
     *   Listagem e visualização de Marcas (com busca).
     *   Listagem e visualização de Modelos (com busca).
-    *   Visualização de detalhes do Modelo, com links para páginas separadas de códigos e manuais (nova estrutura).
-    *   Visualização de Códigos de Erro por Modelo (URL: `/modelos/{modelo}/codigos`, com busca interna por código/descrição e sistema de comentários/likes para usuários logados).
-    *   Visualização de detalhes de um Código de Erro (URL: `/modelos/{modelo}/codigo/{codigoErro}`).
+    *   Visualização de detalhes do Modelo, com busca interna nos manuais indexados do modelo e link para página de manuais.
     *   Visualização/Download de Manuais por Modelo (acessível via link da página do Modelo, download requer login).
-    *   Sistema de Busca Global (em Códigos de Erro, Manuais, Marcas e Modelos).
+    *   Visualização de PDF de manual com abertura em página específica e busca interna.
+    *   Sistema de Busca Global (em Manuais, Marcas, Modelos e conteúdo indexado de PDFs).
 *   **Área Administrativa (requer login de admin):**
     *   Dashboard com visão geral.
     *   CRUD completo para Técnicos (usuários com role 'tecnico').
     *   CRUD completo para Marcas.
     *   CRUD completo para Modelos (associando a Marcas).
-    *   CRUD completo para Códigos de Erro (associando a Modelos).
-    *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo).
+    *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo e indexação automática de PDF).
     *   Gerenciamento de Imagens (upload e associação polimórfica).
     *   Gerenciamento de Vídeos (upload de arquivo ou link, associação polimórfica).
     *   Gerenciamento de Comentários (exclusão).

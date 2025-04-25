@@ -60,53 +60,107 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Buscar em Manuais de <?php echo e($modelo->nome); ?></h3>
+                
+                <form action="<?php echo e(route('modelos.show', $modelo)); ?>" method="GET" class="flex items-center space-x-3 mb-6 max-w-xl">
+                    <input type="search"
+                           name="q_modelo"
+                           placeholder="Digite código ou termo para buscar nos manuais..."
+                           value="<?php echo e($queryBuscaManual ?? ''); ?>"
+                           
+                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:border-indigo-600 dark:focus:ring-indigo-500/50">
+                    <button type="submit"
+                            
+                            class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        Buscar
+                    </button>
+                    
+                    <?php if($queryBuscaManual): ?>
+                        <a href="<?php echo e(route('modelos.show', $modelo)); ?>" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 whitespace-nowrap">Limpar</a>
+                    <?php endif; ?>
+                </form>
+                
+                
 
                 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h3 class="text-lg font-medium mb-2">Códigos de Erro</h3>
-                        <?php if($modelo->codigo_erros_count > 0): ?>
-                            <p class="text-sm text-gray-600 mb-4">
-                                <?php echo e($modelo->codigo_erros_count); ?> <?php echo e(Str::plural('código', $modelo->codigo_erros_count)); ?> de erro conhecido<?php echo e(Str::plural('s', $modelo->codigo_erros_count)); ?> para este modelo.
-                            </p>
-                            <a href="<?php echo e(route('modelos.show.codigos', $modelo)); ?>" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Ver Códigos de Erro &rarr;
-                            </a>
-                        <?php else: ?>
-                            <p class="text-sm text-gray-500">Nenhum código de erro público encontrado para este modelo.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php if(isset($queryBuscaManual) && !empty($queryBuscaManual)): ?>
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg max-w-xl"> 
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            <h4 class="text-lg font-medium mb-4">Resultados da busca por "<?php echo e($queryBuscaManual); ?>" (<?php echo e($resultadosBuscaManualModelo->count()); ?>)</h4>
+                            <?php if($resultadosBuscaManualModelo->isNotEmpty()): ?>
+                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <?php $__currentLoopData = $resultadosBuscaManualModelo; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ref): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if($ref->manual): ?> 
+                                            <li class="py-3">
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <span class="font-semibold text-indigo-600 dark:text-indigo-400"><?php echo e($ref->codigo_encontrado); ?></span>
+                                                        encontrado em
+                                                        <a href="<?php echo e(route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina])); ?>"
+                                                           target="_blank"
+                                                           class="font-semibold underline hover:text-indigo-500">
+                                                            <?php echo e($ref->manual->nome); ?>
 
-                 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                                                        </a>
+                                                        (página <?php echo e($ref->numero_pagina); ?>)
+                                                    </div>
+                                                    <a href="<?php echo e(route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina])); ?>"
+                                                        target="_blank"
+                                                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                                        Abrir PDF &rarr;
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </ul>
+                            <?php else: ?>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 italic">Nenhuma ocorrência encontrada nos PDFs indexados para este modelo.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+
+                
+                
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-2">Manuais</h3>
-                         <?php if($modelo->manuais_count > 0): ?>
+                        <?php if($modelo->manuais_count > 0): ?>
                             <p class="text-sm text-gray-600 mb-4">
                                 <?php echo e($modelo->manuais_count); ?> <?php echo e(Str::plural('manual', $modelo->manuais_count)); ?> disponível<?php echo e(Str::plural('s', $modelo->manuais_count)); ?> para este modelo.
                             </p>
+                            
                             <a href="<?php echo e(route('modelos.show.manuais', $modelo)); ?>" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Ver Manuais &rarr;
                             </a>
                         <?php else: ?>
-                            <p class="text-sm text-gray-500">Nenhum manual encontrado para este modelo.</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado para este modelo.</p>
                         <?php endif; ?>
                     </div>
                 </div>
+
+                
+                <div></div>
+
             </div> 
 
-             
+            
             <div class="mt-8">
-                 <a href="<?php echo e(route('marcas.show', $modelo->marca)); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                <a href="<?php echo e(route('marcas.show', $modelo->marca)); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                     &larr; Voltar para <?php echo e($modelo->marca->nome); ?>
 
                 </a>
-                 <span class="mx-2 text-gray-400">|</span>
-                 <a href="<?php echo e(route('modelos.index')); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                     Ver Todos Modelos
+                <span class="mx-2 text-gray-400">|</span>
+                <a href="<?php echo e(route('modelos.index')); ?>" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                    Ver Todos Modelos
                 </a>
             </div>
 

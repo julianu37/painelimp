@@ -25,8 +25,8 @@
     {{-- Inclui o JS usando Vite --}}
     @vite(['resources/js/pdf-viewer.js'])
 </head>
-{{-- Adiciona a URL do PDF como um atributo data-* --}}
-<body data-pdf-url="{{ $pdfUrl }}">
+{{-- Adiciona a URL do PDF e a página inicial como atributos data-* --}}
+<body data-pdf-url="{{ $pdfUrl }}" data-initial-page="{{ $initialPage }}">
     {{-- Container onde o PDF será renderizado --}}
     <div id="viewerContainer">
         <div id="viewer" class="pdfViewer"></div>

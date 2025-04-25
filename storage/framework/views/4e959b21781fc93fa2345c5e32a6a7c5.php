@@ -18,43 +18,41 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">Códigos de Erro Encontrados (<?php echo e($codigosErro->count()); ?>)</h3>
-                    <?php if($codigosErro->isNotEmpty()): ?>
+            <?php if($referenciasPdf->isNotEmpty()): ?>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">Códigos Encontrados em Manuais (<?php echo e($referenciasPdf->count()); ?>)</h3>
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <?php $__currentLoopData = $codigosErro; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $codigo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="py-3">
-                                    
-                                    <?php if($codigo->modelos->isNotEmpty()): ?>
-                                        <?php $primeiroModelo = $codigo->modelos->first(); ?>
-                                        
-                                        <a href="<?php echo e(route('modelos.codigos.show', [$primeiroModelo, $codigo])); ?>" class="hover:underline">
-                                            <span class="font-semibold"><?php echo e($codigo->codigo); ?></span> - <?php echo e(Str::limit($codigo->descricao, 150)); ?>
+                            <?php $__currentLoopData = $referenciasPdf; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ref): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php if($ref->manual): ?> 
+                                    <li class="py-3">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <span class="font-semibold text-indigo-600 dark:text-indigo-400"><?php echo e($ref->codigo_encontrado); ?></span>
+                                                encontrado em
+                                                <a href="<?php echo e(route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina])); ?>" 
+                                                   target="_blank" 
+                                                   class="font-semibold underline hover:text-indigo-500">
+                                                    <?php echo e($ref->manual->nome); ?>
 
-                                            
-                                            <span class="text-xs text-gray-500"> (Modelo: <?php echo e($primeiroModelo->nome); ?>)</span>
-                                            
-                                            <?php if($codigo->modelos->count() > 1): ?>
-                                                <span class="text-xs text-gray-400 italic"> (e outros)</span>
-                                            <?php endif; ?>
-                                        </a>
-                                    <?php else: ?>
-                                        
-                                        <span class="font-semibold"><?php echo e($codigo->codigo); ?></span> - <?php echo e(Str::limit($codigo->descricao, 150)); ?>
-
-                                        <span class="text-xs text-red-500"> (Nenhum modelo associado)</span>
-                                    <?php endif; ?>
-                                </li>
+                                                </a>
+                                                (página <?php echo e($ref->numero_pagina); ?>)
+                                            </div>
+                                            <a href="<?php echo e(route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina])); ?>" 
+                                                target="_blank"
+                                                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                                Abrir PDF &rarr;
+                                            </a>
+                                        </div>
+                                    </li>
+                                <?php endif; ?>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
-                    <?php else: ?>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum código de erro encontrado.</p>
-                    <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?> 
 
-             
+            
             <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Modelos Encontrados (<?php echo e($modelos->count()); ?>)</h2>
                 <?php if($modelos->isNotEmpty()): ?>
@@ -76,7 +74,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">Manuais Encontrados (<?php echo e($manuais->count()); ?>)</h3>
-                     <?php if($manuais->isNotEmpty()): ?>
+                    <?php if($manuais->isNotEmpty()): ?>
                         <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             <?php $__currentLoopData = $manuais; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $manual): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
@@ -84,16 +82,25 @@
                                         <span class="text-base font-medium text-gray-900 dark:text-gray-100"><?php echo e($manual->nome); ?></span>
                                         <p class="text-xs text-gray-500 dark:text-gray-400" title="<?php echo e($manual->arquivo_nome_original); ?>">(<?php echo e(Str::limit($manual->arquivo_nome_original, 40)); ?>)</p>
                                          
-                                        <?php if($manual->modelo): ?>
+                                         <?php if($manual->modelos->isNotEmpty()): ?>
+                                            <?php $primeiroModeloManual = $manual->modelos->first(); ?>
                                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                Modelo: <a href="<?php echo e(route('modelos.show', $manual->modelo)); ?>" class="hover:underline"><?php echo e($manual->modelo->nome); ?></a>
-                                                <?php if($manual->modelo->marca): ?>
-                                                (<a href="<?php echo e(route('marcas.show', $manual->modelo->marca)); ?>" class="hover:underline"><?php echo e($manual->modelo->marca->nome); ?></a>)
+                                                <?php if($manual->modelos->count() > 1): ?>
+                                                    Modelos:
+                                                <?php else: ?>
+                                                    Modelo:
+                                                <?php endif; ?>
+                                                <a href="<?php echo e(route('modelos.show', $primeiroModeloManual)); ?>" class="hover:underline"><?php echo e($primeiroModeloManual->nome); ?></a>
+                                                <?php if($primeiroModeloManual->marca): ?>
+                                                (<a href="<?php echo e(route('marcas.show', $primeiroModeloManual->marca)); ?>" class="hover:underline"><?php echo e($primeiroModeloManual->marca->nome); ?></a>)
+                                                <?php endif; ?>
+                                                <?php if($manual->modelos->count() > 1): ?>
+                                                    <span class="text-xs text-gray-400 italic"> (e outros)</span>
                                                 <?php endif; ?>
                                             </p>
                                         <?php endif; ?>
                                     </div>
-                                   <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
+                                    <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
                                         
                                         <a href="<?php echo e(route('manuais.view', $manual)); ?>" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
                                             Visualizar
@@ -117,25 +124,6 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado.</p>
                     <?php endif; ?>
                 </div>
-            </div>
-
-            
-            <div class="mb-8 p-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Marcas Encontradas (<?php echo e($marcas->count()); ?>)</h2>
-                <?php if($marcas->isNotEmpty()): ?>
-                    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                        <?php $__currentLoopData = $marcas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li>
-                                <a href="<?php echo e(route('marcas.show', $marca)); ?>" class="text-indigo-600 hover:underline dark:text-indigo-400">
-                                    <?php echo e($marca->nome); ?>
-
-                                </a>
-                            </li>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </ul>
-                <?php else: ?>
-                    <p class="text-gray-500 dark:text-gray-400">Nenhuma marca encontrada.</p>
-                <?php endif; ?>
             </div>
 
             
