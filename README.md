@@ -19,7 +19,6 @@ Este projeto é uma aplicação Laravel para gerenciar uma base de conhecimento 
     *   CRUD completo para Manuais (associando a Modelos, com upload de arquivo e indexação automática de PDF).
     *   Gerenciamento de Imagens (upload e associação polimórfica).
     *   Gerenciamento de Vídeos (upload de arquivo ou link, associação polimórfica).
-    *   Gerenciamento de Comentários (exclusão).
 *   **Autenticação:**
     *   Login/Registro/Logout (usando Laravel Breeze).
     *   Diferenciação de papéis (Admin vs Técnico).

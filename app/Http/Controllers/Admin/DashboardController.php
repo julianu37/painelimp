@@ -8,7 +8,7 @@ use Illuminate\View\View;
 use App\Models\User;
 // use App\Models\CodigoErro; // Removido
 use App\Models\Manual;
-use App\Models\Comentario;
+// use App\Models\Comentario; // Já removido
 use App\Models\Marca;
 use App\Models\Modelo;
 
@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $totalTecnicos = User::where('role', 'tecnico')->count();
         // $totalCodigos = CodigoErro::count(); // Removido
         $totalManuais = Manual::count();
-        $totalComentarios = Comentario::count();
+        // $totalComentarios = Comentario::count(); // REMOVIDO
         $totalMarcas = Marca::count();
         $totalModelos = Modelo::count();
 
@@ -39,23 +39,23 @@ class DashboardController extends Controller
                                 ->take(5)
                                 ->get();
 
-        // Busca os 5 últimos comentários adicionados
-        $ultimosComentarios = Comentario::with(['user:id,name', 'comentavel']) // Carrega usuário e item comentado
-                                        ->orderBy('created_at', 'desc')
-                                        ->take(5)
-                                        ->get();
+        // REMOVIDO: Busca os 5 últimos comentários adicionados
+        // $ultimosComentarios = Comentario::with(['user:id,name', 'comentavel'])
+        //                                 ->orderBy('created_at', 'desc')
+        //                                 ->take(5)
+        //                                 ->get();
 
         // Passa os dados para a view
         return view('admin.dashboard', compact(
             'totalTecnicos',
             // 'totalCodigos', // Removido
             'totalManuais',
-            'totalComentarios',
+            // 'totalComentarios', // REMOVIDO
             'totalMarcas',
             'totalModelos',
             // 'ultimosCodigos', // Removido
-            'ultimosManuais',
-            'ultimosComentarios'
+            'ultimosManuais'
+            // 'ultimosComentarios' // REMOVIDO
         ));
     }
 }

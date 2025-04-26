@@ -6,7 +6,7 @@ use App\Http\Controllers\HomeController;
 // use App\Http\Controllers\CodigoErroController; // Removido
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\VideoController;
-use App\Http\Controllers\ComentarioController;
+// use App\Http\Controllers\ComentarioController; // Removido
 use App\Http\Controllers\ProfileController; // Controller do Breeze
 use App\Http\Controllers\BuscaController; // Importa o novo controller
 use App\Http\Controllers\TecnicoDashboardController; // Importa o controller do dashboard do técnico
@@ -18,13 +18,13 @@ use App\Http\Controllers\Admin\TecnicoController as AdminTecnicoController;
 use App\Http\Controllers\Admin\ManualController as AdminManualController;
 use App\Http\Controllers\Admin\ImagemController as AdminImagemController;
 use App\Http\Controllers\Admin\VideoController as AdminVideoController;
-use App\Http\Controllers\Admin\ComentarioController as AdminComentarioController;
+// use App\Http\Controllers\Admin\ComentarioController as AdminComentarioController; // Removido
 use App\Http\Controllers\Admin\MarcaController as AdminMarcaController;
 use App\Http\Controllers\Admin\ModeloController as AdminModeloController;
 // use App\Http\Controllers\Admin\ImportController; // Removido (por enquanto)
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ModeloController;
-use App\Http\Controllers\LikeController;
+// use App\Http\Controllers\LikeController; // Removido
 // Nota: Os controllers de Código de Erro, Manual e Vídeo do Admin usarão os mesmos controllers
 // da área pública, mas dentro do grupo de rotas admin.
 
@@ -71,30 +71,18 @@ Route::middleware(['auth', 'verified'])->group(function () { // Adiciona 'verifi
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rotas de Comentários (Store, Edit, Update, Destroy)
-    // Usa o mesmo controller do Admin para consistência
-    Route::post('/comentarios/{comentavel_type}/{comentavel_id}', [App\Http\Controllers\Admin\ComentarioController::class, 'store'])
-        ->name('comentarios.store')
-        ->where('comentavel_id', '[0-9]+')
-        ->where('comentavel_type', '[a-z_]+');
-
-    Route::get('/comentarios/{comentario}/edit', [App\Http\Controllers\Admin\ComentarioController::class, 'edit'])
-        ->name('comentarios.edit'); // Rota para mostrar form de edição
-
-    Route::match(['put', 'patch'], '/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'update'])
-        ->name('comentarios.update'); // Rota para processar a atualização
-
-    Route::delete('/comentarios/{comentario}', [App\Http\Controllers\Admin\ComentarioController::class, 'destroy'])
-        ->name('comentarios.destroy'); // Rota de exclusão existente
+    // REMOVIDO: Rotas de Comentários
+    // Route::post('/comentarios/{comentavel_type}/{comentavel_id}', ...
+    // Route::get('/comentarios/{comentario}/edit', ...
+    // Route::match(['put', 'patch'], '/comentarios/{comentario}', ...
+    // Route::delete('/comentarios/{comentario}', ...
 
     // Download de Manuais (requer autenticação)
     Route::get('/manuais/download/{manual}', [App\Http\Controllers\ManualController::class, 'download'])->name('manuais.download');
 
-    // Rotas para Likes/Unlikes de Comentários
-    Route::post('/comentarios/{comentario}/like', [LikeController::class, 'like'])
-        ->name('comments.like');
-    Route::delete('/comentarios/{comentario}/unlike', [LikeController::class, 'unlike'])
-        ->name('comments.unlike');
+    // REMOVIDO: Rotas para Likes/Unlikes de Comentários
+    // Route::post('/comentarios/{comentario}/like', ...
+    // Route::delete('/comentarios/{comentario}/unlike', ...
 });
 
 // Área administrativa (apenas admin logado)

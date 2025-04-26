@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 // Importa a classe Comentario
-use App\Models\Comentario;
+// use App\Models\Comentario;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -55,10 +55,10 @@ class User extends Authenticatable
     /**
      * Obtém todos os comentários feitos por este usuário.
      */
-    public function comentarios(): HasMany
-    {
-        return $this->hasMany(Comentario::class);
-    }
+    // public function comentarios(): HasMany
+    // {
+    //     return $this->hasMany(Comentario::class);
+    // }
 
     /**
      * Verifica se o usuário tem a role de administrador.
@@ -73,8 +73,8 @@ class User extends Authenticatable
     /**
      * Os comentários que o usuário curtiu.
      */
-    public function likedComments(): BelongsToMany
-    {
-        return $this->belongsToMany(Comentario::class, 'comentario_user_likes', 'user_id', 'comentario_id');
-    }
+    // public function likedComments(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Comentario::class, 'comentario_user_likes', 'user_id', 'comentario_id');
+    // }
 }

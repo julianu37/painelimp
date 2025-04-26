@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Models\Comentario; // Importar o modelo Comentario
-use App\Policies\ComentarioPolicy; // Importar a ComentarioPolicy
+// use App\Models\Comentario; // REMOVIDO
+// use App\Policies\ComentarioPolicy; // REMOVIDO
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,7 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // Mapeia o modelo Comentario para a sua Policy
-        Comentario::class => ComentarioPolicy::class,
+        // Comentario::class => ComentarioPolicy::class, // REMOVIDO
     ];
 
     /**

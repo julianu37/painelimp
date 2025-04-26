@@ -73,23 +73,7 @@
                     </div>
                 </div>
 
-                {{-- Card Comentários --}}
-                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg p-5 border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-pink-500 rounded-md p-3">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                        </div>
-                        <div class="ml-4">
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Comentários</dt>
-                            <dd class="text-3xl font-semibold text-gray-900 dark:text-gray-100">{{ $totalComentarios }}</dd>
-                        </div>
-                    </div>
-                    {{-- <div class="mt-4 text-sm">
-                        <a href="#" class="font-medium text-pink-600 dark:text-pink-400 hover:underline">Gerenciar Comentários &rarr;</a>
-                    </div> --}}
-                 </div>
-
-                 {{-- Card Adicionar Rápido Manual --}}
+                {{-- Card Adicionar Rápido Manual --}}
                  <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg p-5 border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
                     <a href="{{ route('admin.manuais.create') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full text-center">
                        <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
@@ -124,42 +108,6 @@
                     <div class="px-6 py-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 text-right">
                         <a href="{{ route('admin.manuais.index') }}" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Ver Todos &rarr;</a>
                     </div>
-                </div>
-
-                {{-- Últimos Comentários --}}
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg border border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 px-6 py-4 border-b dark:border-gray-700">Últimos Comentários</h3>
-                     <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($ultimosComentarios as $comentario)
-                             <li class="px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                <div class="flex justify-between items-start">
-                                    <div class="text-sm flex-1 pr-4">
-                                        <p class="text-gray-700 dark:text-gray-300 mb-1">{{ Str::limit($comentario->conteudo, 100) }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Por: <span class="font-medium">{{ $comentario->user->name ?? 'N/A' }}</span>
-                                            {{-- Removida lógica que verificava CodigoErro --}}
-                                            @if ($comentario->comentavel)
-                                                 em {{ class_basename($comentario->comentavel) }} {{-- Mostra o tipo de item comentado --}}
-                                                {{-- Adicionar link se for Manual ou Modelo? --}}
-                                                @if ($comentario->comentavel instanceof \App\Models\Manual)
-                                                    {{-- <a href="{{ route('admin.manuais.edit', $comentario->comentavel) }}" class="text-indigo-500 hover:underline">{{ $comentario->comentavel->nome ?? 'Item removido' }}</a> --}}
-                                                @elseif ($comentario->comentavel instanceof \App\Models\Modelo)
-                                                     {{-- <a href="{{ route('admin.modelos.edit', $comentario->comentavel) }}" class="text-indigo-500 hover:underline">{{ $comentario->comentavel->nome ?? 'Item removido' }}</a> --}}
-                                                @endif
-                                            @endif
-                                        </p>
-                                    </div>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $comentario->created_at->diffForHumans(null, true) }}</span>
-                                </div>
-                            </li>
-                        @empty
-                             <li class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">Nenhum comentário recente.</li>
-                        @endforelse
-                    </ul>
-                    {{-- Link para gerenciar comentários pode ser adicionado se houver uma rota --}}
-                    {{-- <div class="px-6 py-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 text-right">
-                        <a href="#" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Gerenciar Comentários &rarr;</a>
-                    </div> --}}
                 </div>
             </div>
 
