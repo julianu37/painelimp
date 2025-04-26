@@ -91,25 +91,32 @@ class IndexarManualPdf implements ShouldQueue
                     $textoPagina = Pdf::getText($pdfPath, $binPathToUse, ["f {$numeroPagina}", "l {$numeroPagina}"]);
 
                     if (!empty(trim($textoPagina))) {
-                        // Encontra TODOS os códigos SCXXX ou SCXXX-XX na página
-                        // Regex: \b(SC\d{3}(-\d{2})?)\b
-                        //   \b : word boundary
-                        //   SC : literal "SC"
-                        //   \d{3} : exatamente 3 dígitos
-                        //   (-\d{2})? : opcionalmente, um hífen seguido por 2 dígitos
-                        //   Parênteses externos capturam o código completo encontrado (ex: "SC101", "SC670-01")
-                        if (preg_match_all('/\b(SC\d{3}(-\d{2})?)\b/i', $textoPagina, $matches)) {
-                            // $matches[1] contém todos os códigos encontrados na página
-                            $codigosNestaPagina = array_unique(array_map('strtoupper', $matches[1])); // Pega apenas códigos únicos e em maiúsculas
+                        $codigosUnicosPagina = [];
 
-                            foreach ($codigosNestaPagina as $codigoEncontrado) {
-                                $referenciasParaInserir[] = [
-                                    'manual_id' => $this->manual->id,
-                                    'codigo_encontrado' => $codigoEncontrado,
-                                    'numero_pagina' => $numeroPagina
-                                ];
-                                // Log::debug("Encontrado código {$codigoEncontrado} na página {$numeroPagina} do manual {$this->manual->id}");
+                        // 1. Busca por códigos Ricoh (SCxxx ou SCxxx-xx)
+                        if (preg_match_all('/(SC\d{3}(-\d{2})?)/i', $textoPagina, $matchesRicoh)) {
+                            // $matchesRicoh[0] contém os códigos completos encontrados (ex: SC101, SC670-01)
+                            foreach ($matchesRicoh[0] as $codigoRicoh) {
+                                $codigosUnicosPagina[strtoupper($codigoRicoh)] = true;
                             }
+                        }
+
+                        // 2. Busca por códigos Epson (6 dígitos após "error code:")
+                        if (preg_match_all('/error\s+code:\s*(\d{6})/i', $textoPagina, $matchesEpson)) {
+                            // $matchesEpson[1] contém apenas os 6 dígitos capturados
+                            foreach ($matchesEpson[1] as $codigoEpson) {
+                                $codigosUnicosPagina[$codigoEpson] = true;
+                            }
+                        }
+
+                        // Agora itera sobre os códigos únicos encontrados
+                        foreach (array_keys($codigosUnicosPagina) as $codigoEncontrado) {
+                            $referenciasParaInserir[] = [
+                                'manual_id' => $this->manual->id,
+                                'codigo_encontrado' => $codigoEncontrado,
+                                'numero_pagina' => $numeroPagina
+                            ];
+                            // Log::debug("Encontrado código {$codigoEncontrado} na página {$numeroPagina} do manual {$this->manual->id}");
                         }
                     }
 
