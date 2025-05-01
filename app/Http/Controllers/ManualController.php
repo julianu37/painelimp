@@ -90,6 +90,24 @@ class ManualController extends Controller
     }
 
     /**
+     * Redireciona para o index.html público do manual HTML.
+     * Acessível publicamente.
+     */
+    public function viewHtml(Manual $manual): RedirectResponse
+    {
+        // Garante que só manuais do tipo HTML e com caminho definido acessem esta rota
+        if ($manual->tipo !== 'html' || empty($manual->caminho_html)) {
+            abort(404);
+        }
+
+        // Gera a URL pública para o arquivo index.html usando asset()
+        $publicHtmlUrl = asset($manual->caminho_html);
+
+        // Redireciona o navegador do usuário para a URL do manual HTML
+        return redirect()->away($publicHtmlUrl);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

@@ -20,7 +20,7 @@ return new class extends Migration
             // Equipamentos relacionados (simplificado como texto por enquanto).
             $table->string('equipamentos')->nullable();
             // Caminho do arquivo no storage.
-            $table->string('arquivo_path');
+            $table->string('arquivo_path')->nullable();
             // Nome original do arquivo.
             $table->string('arquivo_nome_original')->nullable();
             // Flag para indicar se é visível publicamente (listagem).

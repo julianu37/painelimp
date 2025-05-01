@@ -21,18 +21,36 @@
                                             <div>
                                                 <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $ref->codigo_encontrado }}</span>
                                                 encontrado em
-                                                <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" {{-- Assumindo rota manuais.view --}}
-                                                   target="_blank" {{-- Abrir em nova aba --}}
-                                                   class="font-semibold underline hover:text-indigo-500">
-                                                    {{ $ref->manual->nome }}
-                                                </a>
-                                                (página {{ $ref->numero_pagina }})
+                                                {{-- Link condicional para Visualizar Manual na busca PDF --}}
+                                                @if($ref->manual->tipo === 'html')
+                                                    <a href="{{ route('manuais.html.view', $ref->manual) }}"
+                                                       target="_blank"
+                                                       class="font-semibold underline hover:text-indigo-500">
+                                                        {{ $ref->manual->nome }} (HTML)
+                                                    </a>
+                                                @else {{-- Assume PDF --}}
+                                                    <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}"
+                                                       target="_blank"
+                                                       class="font-semibold underline hover:text-indigo-500">
+                                                        {{ $ref->manual->nome }}
+                                                    </a>
+                                                    (página {{ $ref->numero_pagina }})
+                                                @endif
                                             </div>
-                                            <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" {{-- Assumindo rota manuais.view --}}
-                                                target="_blank"
-                                                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                                Abrir PDF &rarr;
-                                            </a>
+                                            {{-- Botão condicional para Abrir na busca PDF --}}
+                                            @if($ref->manual->tipo === 'html')
+                                                <a href="{{ route('manuais.html.view', $ref->manual) }}"
+                                                    target="_blank"
+                                                    class="text-sm text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300">
+                                                    Abrir HTML &rarr;
+                                                </a>
+                                            @else {{-- Assume PDF --}}
+                                                <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}"
+                                                    target="_blank"
+                                                    class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                                    Abrir PDF &rarr;
+                                                </a>
+                                            @endif
                                         </div>
                                     </li>
                                 @endif
@@ -70,7 +88,9 @@
                                 <li class="py-3 flex flex-col sm:flex-row justify-between sm:items-center">
                                     <div>
                                         <span class="text-base font-medium text-gray-900 dark:text-gray-100">{{ $manual->nome }}</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400" title="{{ $manual->arquivo_nome_original }}">({{ Str::limit($manual->arquivo_nome_original, 40) }})</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" title="{{ $manual->tipo === 'pdf' ? $manual->arquivo_nome_original : 'Manual HTML' }}">
+                                            ({{ $manual->tipo === 'pdf' ? Str::limit($manual->arquivo_nome_original, 40) : 'HTML' }})
+                                        </p>
                                          {{-- Mostrar Modelo/Marca se carregado (mantido como estava) --}}
                                          @if($manual->modelos->isNotEmpty())
                                             @php $primeiroModeloManual = $manual->modelos->first(); @endphp
@@ -91,20 +111,39 @@
                                         @endif
                                     </div>
                                     <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
-                                        {{-- Botão Visualizar --}}
-                                        <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
-                                            Visualizar
-                                        </a>
-                                         @auth
-                                             {{-- Botão Download --}}
-                                             <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                                                Download
-                                            </a>
+                                         {{-- Botão Visualizar (condicional) na busca geral --}}
+                                         @if ($manual->tipo === 'html')
+                                             <a href="{{ route('manuais.html.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800">
+                                                 Ver HTML
+                                             </a>
+                                         @elseif ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                             <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
+                                                 Visualizar PDF
+                                             </a>
                                          @else
-                                             {{-- Botão Desabilitado --}}
-                                             <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
-                                                Download
-                                            </span>
+                                            {{-- Caso fallback ou tipo inválido --}}
+                                            <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">Visualizar</span>
+                                         @endif
+
+                                         @auth
+                                            {{-- Botão Download (apenas para PDF) na busca geral --}}
+                                            @if ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                                <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
+                                                    Download PDF
+                                                </a>
+                                            @else
+                                                {{-- Desabilita/oculta download para HTML --}}
+                                                 <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Download não aplicável para HTML">Download</span>
+                                            @endif
+                                         @else
+                                             {{-- Botão Desabilitado (Download apenas para PDF) na busca geral --}}
+                                             @if ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                                <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
+                                                    Download PDF
+                                                </span>
+                                             @else
+                                                 <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">Download</span>
+                                             @endif
                                          @endauth
                                      </div>
                                 </li>

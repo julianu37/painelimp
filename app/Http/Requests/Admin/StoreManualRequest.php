@@ -30,8 +30,21 @@ class StoreManualRequest extends FormRequest
             'modelos.*' => ['integer', Rule::exists('modelos', 'id')],
             'descricao' => ['nullable', 'string'],
             // 'equipamentos' => ['nullable', 'string', 'max:255'], // Removido
-            'arquivo' => ['required', 'file', 'mimes:pdf', 'max:131072'], // Mantido limite 128MB
-            'publico' => ['sometimes', 'boolean'],
+            'publico' => ['nullable', 'boolean'],
+            'tipo' => ['required', Rule::in(['pdf', 'html'])],
+            'arquivo' => [
+                Rule::requiredIf(fn () => $this->input('tipo') === 'pdf'),
+                'nullable',
+                'file',
+                'mimes:pdf',
+                'max:131072'
+            ],
+            'caminho_html' => [
+                Rule::requiredIf(fn () => $this->input('tipo') === 'html'),
+                'nullable',
+                'string',
+                'max:255'
+            ],
         ];
     }
 
@@ -53,9 +66,14 @@ class StoreManualRequest extends FormRequest
             'modelos.array' => 'A seleção de modelos é inválida.',
             'modelos.*.integer' => 'Um dos modelos selecionados é inválido.',
             'modelos.*.exists' => 'Um dos modelos selecionados não existe.',
-            'arquivo.required' => 'O arquivo PDF é obrigatório.',
+            'tipo.required' => 'Selecione o tipo de manual (PDF ou HTML).',
+            'tipo.in' => 'Tipo de manual inválido.',
+            'arquivo.required' => 'O upload do arquivo PDF é obrigatório para manuais do tipo PDF.',
             'arquivo.mimes' => 'O arquivo deve ser do tipo PDF.',
             'arquivo.max' => 'O arquivo PDF não pode ser maior que 128MB.',
+            'caminho_html.required' => 'O caminho relativo para o index.html é obrigatório para manuais do tipo HTML.',
+            'caminho_html.string' => 'O caminho HTML deve ser um texto.',
+            'caminho_html.max' => 'O caminho HTML não pode ter mais que 255 caracteres.',
         ];
     }
 }

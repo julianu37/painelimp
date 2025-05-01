@@ -49,22 +49,39 @@
                                          @endif
                                     </div>
                                     <div class="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0 flex space-x-2">
-                                         {{-- Botão Visualizar --}}
-                                         <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
-                                            Visualizar
-                                        </a>
-                                         @auth
-                                            {{-- Botão Download --}}
-                                            <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
-                                                Download
-                                            </a>
+                                         {{-- Botão Visualizar (condicional) --}}
+                                         @if ($manual->tipo === 'html')
+                                             <a href="{{ route('manuais.html.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800">
+                                                 Ver HTML
+                                             </a>
+                                         @elseif ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                             <a href="{{ route('manuais.view', $manual) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800">
+                                                 Visualizar PDF
+                                             </a>
                                          @else
-                                             {{-- Texto para não logado (pode ser um botão desabilitado) --}}
-                                             <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
-                                                Download
-                                             </span>
-                                             {{-- Ou apenas texto: --}}
-                                             {{-- <span class="text-sm text-gray-400 dark:text-gray-500">(Login p/ Download)</span> --}}
+                                            {{-- Caso fallback ou tipo inválido --}}
+                                            <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">Visualizar</span>
+                                         @endif
+
+                                         @auth
+                                            {{-- Botão Download (apenas para PDF) --}}
+                                            @if ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                                <a href="{{ route('manuais.download', $manual) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
+                                                    Download PDF
+                                                </a>
+                                            @else
+                                                {{-- Desabilita/oculta download para HTML --}}
+                                                 <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Download não aplicável para HTML">Download</span>
+                                            @endif
+                                         @else
+                                             {{-- Texto para não logado (pode ser um botão desabilitado) - Download apenas para PDF --}}
+                                             @if ($manual->tipo === 'pdf' && $manual->arquivo_path)
+                                                <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" title="Faça login para baixar">
+                                                    Download PDF
+                                                </span>
+                                             @else
+                                                 <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 cursor-not-allowed">Download</span>
+                                             @endif
                                          @endauth
                                      </div>
                                  </li>

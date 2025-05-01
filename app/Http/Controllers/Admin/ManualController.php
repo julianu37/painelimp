@@ -49,28 +49,45 @@ class ManualController extends Controller
     }
 
     /**
-     * Salva um novo manual no banco de dados, incluindo o upload do arquivo
-     * e sincroniza os modelos associados.
+     * Salva um novo manual (PDF ou HTML) no banco de dados.
      */
     public function store(StoreManualRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        $path = null;
+        $pathPdf = null;
+        $caminhoHtml = null;
+        $nomeOriginal = null;
+        $tipo = $validated['tipo'];
 
         DB::beginTransaction();
         try {
-            if ($request->hasFile('arquivo')) {
-                $path = $request->file('arquivo')->store($this->uploadPath, 'public');
-            }
-
             $dataToSave = [
                 'nome' => $validated['nome'],
                 'descricao' => $validated['descricao'] ?? null,
-                'arquivo_path' => $path,
-                'arquivo_nome_original' => $request->file('arquivo') ? $request->file('arquivo')->getClientOriginalName() : null,
+                'tipo' => $tipo,
                 'publico' => $request->boolean('publico'),
-                // Slug será gerado automaticamente pelo Sluggable
+                // Slug será gerado automaticamente
+                'arquivo_path' => null, // Inicia nulo
+                'caminho_html' => null, // Inicia nulo
+                'arquivo_nome_original' => null, // Inicia nulo
+                'indexing_status' => 'pending', // Define como pendente
             ];
+
+            if ($tipo === 'pdf' && $request->hasFile('arquivo')) {
+                $pathPdf = $request->file('arquivo')->store($this->uploadPath, 'public');
+                $nomeOriginal = $request->file('arquivo')->getClientOriginalName();
+                $dataToSave['arquivo_path'] = $pathPdf;
+                $dataToSave['arquivo_nome_original'] = $nomeOriginal;
+            } elseif ($tipo === 'html' && !empty($validated['caminho_html'])) {
+                $caminhoHtml = $validated['caminho_html'];
+                $dataToSave['caminho_html'] = $caminhoHtml;
+                $dataToSave['indexing_status'] = 'n/a'; // Indexação não se aplica a HTML
+            } else {
+                // Se tipo for PDF, arquivo é obrigatório (já validado no Request)
+                // Se tipo for HTML, caminho é obrigatório (já validado no Request)
+                // Esta condição não deve ser atingida devido à validação, mas é uma segurança
+                 throw new \Exception("Dados inválidos para o tipo de manual selecionado.");
+            }
 
             $manual = Manual::create($dataToSave);
 
@@ -81,21 +98,22 @@ class ManualController extends Controller
 
             DB::commit();
 
-            // Dispara o job para indexar o PDF em background
-            IndexarManualPdf::dispatch($manual);
-
-            return redirect()->route('admin.manuais.index')->with('success', 'Manual criado com sucesso! Indexação iniciada.');
+            // Dispara o job apenas se for PDF
+            if ($tipo === 'pdf') {
+                IndexarManualPdf::dispatch($manual);
+                return redirect()->route('admin.manuais.index')->with('success', 'Manual PDF criado com sucesso! Indexação iniciada.');
+            } else {
+                return redirect()->route('admin.manuais.index')->with('success', 'Manual HTML criado com sucesso!');
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
-            if ($path && Storage::disk('public')->exists($path)) {
-                 Storage::disk('public')->delete($path);
+            if ($pathPdf && Storage::disk('public')->exists($pathPdf)) {
+                 Storage::disk('public')->delete($pathPdf);
             }
-            // Log::error("Erro ao criar manual: ". $e->getMessage()); // Boa prática: logar o erro
-            // Log detalhado do erro ANTES de retornar a mensagem genérica
             Log::error("Erro ao criar manual: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return back()->with('error', 'Erro ao criar manual. Verifique os dados e tente novamente.')
-                     ->withInput(); // Mantém os dados do formulário
+                     ->withInput();
         }
     }
 
@@ -122,62 +140,88 @@ class ManualController extends Controller
     }
 
     /**
-     * Atualiza um manual existente, incluindo o arquivo (se enviado)
-     * e sincroniza os modelos associados.
+     * Atualiza um manual existente (PDF ou HTML).
      */
     public function update(UpdateManualRequest $request, Manual $manual): RedirectResponse
     {
         $validated = $request->validated();
         $oldFilePath = $manual->arquivo_path;
-        $newPath = null;
-        $arquivoAlterado = false; // Flag para saber se o arquivo mudou
+        $newPathPdf = null;
+        $newCaminhoHtml = null;
+        $arquivoAlterado = false;
+        $tipo = $validated['tipo'];
 
         DB::beginTransaction();
         try {
             $dataToUpdate = [
-                 'nome' => $validated['nome'],
+                'nome' => $validated['nome'],
                 'descricao' => $validated['descricao'] ?? null,
+                'tipo' => $tipo,
                 'publico' => $request->boolean('publico'),
-                // Slug será atualizado automaticamente se o nome mudar
+                // Slug será atualizado automaticamente
             ];
 
-            if ($request->hasFile('arquivo')) {
-                $newPath = $request->file('arquivo')->store($this->uploadPath, 'public');
-                $dataToUpdate['arquivo_path'] = $newPath;
-                $dataToUpdate['arquivo_nome_original'] = $request->file('arquivo')->getClientOriginalName();
-                $arquivoAlterado = true; // Marca que o arquivo foi alterado
+            // Lógica condicional para PDF vs HTML
+            if ($tipo === 'pdf') {
+                $dataToUpdate['caminho_html'] = null; // Limpa o campo HTML
+                $dataToUpdate['indexing_status'] = $manual->indexing_status ?? 'pending'; // Mantém ou define como pendente
+
+                if ($request->hasFile('arquivo')) {
+                    $newPathPdf = $request->file('arquivo')->store($this->uploadPath, 'public');
+                    $dataToUpdate['arquivo_path'] = $newPathPdf;
+                    $dataToUpdate['arquivo_nome_original'] = $request->file('arquivo')->getClientOriginalName();
+                    $arquivoAlterado = true;
+                     $dataToUpdate['indexing_status'] = 'pending'; // Marca para reindexar
+                } else {
+                    // Mantém o arquivo PDF existente se nenhum novo foi enviado
+                    $dataToUpdate['arquivo_path'] = $manual->arquivo_path;
+                    $dataToUpdate['arquivo_nome_original'] = $manual->arquivo_nome_original;
+                }
+            } elseif ($tipo === 'html') {
+                $dataToUpdate['arquivo_path'] = null; // Limpa o campo PDF
+                $dataToUpdate['arquivo_nome_original'] = null;
+                $dataToUpdate['indexing_status'] = 'n/a'; // Indexação não aplicável
+
+                // Validação garante que caminho_html não está vazio se tipo for HTML
+                $newCaminhoHtml = $validated['caminho_html'];
+                $dataToUpdate['caminho_html'] = $newCaminhoHtml;
+
+                // Verifica se o caminho HTML mudou (para evitar apagar PDF desnecessariamente)
+                if($manual->tipo === 'pdf' || $manual->caminho_html !== $newCaminhoHtml){
+                    $arquivoAlterado = true; // Considera alterado se mudou de PDF para HTML ou se o caminho HTML mudou
+                }
             }
 
             $manual->update($dataToUpdate);
 
             // Sincroniza os modelos selecionados
-            // Usa sync() que adiciona/remove conforme necessário
             $manual->modelos()->sync($validated['modelos'] ?? []);
 
-            // Se um novo arquivo foi salvo com sucesso, remove o antigo
-            if ($newPath && $oldFilePath && Storage::disk('public')->exists($oldFilePath)) {
-                Storage::disk('public')->delete($oldFilePath);
+            // Se mudou de tipo (HTML para PDF, ou vice-versa), ou se um novo PDF foi salvo,
+            // remove o arquivo antigo (se era PDF)
+            if ($arquivoAlterado && $oldFilePath && Storage::disk('public')->exists($oldFilePath)) {
+                 // Remove o PDF antigo apenas se o novo tipo é HTML ou se um novo PDF foi enviado
+                 if($tipo === 'html' || $newPathPdf){
+                     Storage::disk('public')->delete($oldFilePath);
+                 }
             }
 
             DB::commit();
 
-            // Dispara o job de indexação se o arquivo foi alterado
-            if ($arquivoAlterado) {
-                // Reseta o status para indicar que a nova indexação está pendente
-                $manual->updateQuietly(['indexing_status' => 'pending']);
+            // Dispara o job apenas se for PDF e o arquivo foi alterado
+            if ($tipo === 'pdf' && $arquivoAlterado) {
                 IndexarManualPdf::dispatch($manual);
+                 return redirect()->route('admin.manuais.index')->with('success', 'Manual PDF atualizado! Reindexação iniciada.');
+            } else {
+                 return redirect()->route('admin.manuais.index')->with('success', 'Manual atualizado com sucesso!');
             }
-
-            return redirect()->route('admin.manuais.index')->with('success', 'Manual atualizado com sucesso!' . ($arquivoAlterado ? ' Reindexação iniciada.' : ''));
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Se um novo arquivo foi salvo, mas houve erro depois, remove o novo arquivo
-            if ($newPath && Storage::disk('public')->exists($newPath)) {
-                 Storage::disk('public')->delete($newPath);
+            // Se um novo arquivo PDF foi salvo, mas houve erro depois, remove-o
+            if ($newPathPdf && Storage::disk('public')->exists($newPathPdf)) {
+                 Storage::disk('public')->delete($newPathPdf);
             }
-            // Log::error("Erro ao atualizar manual: ". $e->getMessage()); // Boa prática: logar o erro
-            // Log detalhado do erro ANTES de retornar a mensagem genérica
             Log::error("Erro ao atualizar manual ID {$manual->id}: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return back()->with('error', 'Erro ao atualizar manual. Verifique os dados e tente novamente.')
                      ->withInput();
@@ -185,23 +229,23 @@ class ManualController extends Controller
     }
 
     /**
-     * Remove um manual do banco de dados e seu arquivo associado do storage.
-     * A tabela pivô é tratada pelo onDelete('cascade').
+     * Remove um manual do banco de dados e seu arquivo/pasta associado.
      */
     public function destroy(Manual $manual): RedirectResponse
     {
         try {
             $filePath = $manual->arquivo_path;
-            $manual->delete(); // O relacionamento na tabela pivô é removido em cascata
+            // A pasta HTML não é removida automaticamente, apenas o registro no DB
 
+            $manual->delete();
+
+            // Remove o arquivo PDF se existir
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
             }
 
             return redirect()->route('admin.manuais.index')->with('success', 'Manual excluído com sucesso!');
         } catch (\Exception $e) {
-            // Log::error("Erro ao excluir manual: ". $e->getMessage()); // Boa prática: logar o erro
-            // Log detalhado do erro ANTES de retornar a mensagem genérica
             Log::error("Erro ao excluir manual ID {$manual->id}: Arquivo: {$e->getFile()}, Linha: {$e->getLine()}, Mensagem: " . $e->getMessage());
             return redirect()->route('admin.manuais.index')->with('error', 'Erro ao excluir manual.');
         }

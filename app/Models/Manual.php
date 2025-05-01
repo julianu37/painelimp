@@ -33,6 +33,8 @@ class Manual extends Model
         'publico',
         'slug',
         'indexing_status',
+        'tipo',
+        'caminho_html',
     ];
 
     /**

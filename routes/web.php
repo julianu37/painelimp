@@ -32,7 +32,7 @@ use App\Http\Controllers\ModeloController;
 Route::get('/', [HomeController::class, 'index'])->name('home'); // Nomeia a rota home
 // Route::get('/codigos', [CodigoErroController::class, 'index'])->name('codigos.index'); // Removido
 // Route::get('/codigo/{codigoErro}', [CodigoErroController::class, 'show'])->name('codigos.show'); // Removido
-Route::get('/manuais', [ManualController::class, 'index'])->name('manuais.index'); // Rota pública para listar manuais
+Route::get('/manuais', [ManualController::class, 'indexPublic'])->name('manuais.index'); // Rota pública para listar manuais
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index'); // Rota pública para listar vídeos
 // Rota para a página de resultados da busca
 Route::get('/busca', [BuscaController::class, 'index'])->name('busca.index');
@@ -48,8 +48,11 @@ Route::get('/modelos/{modelo}', [ModeloController::class, 'show'])->name('modelo
 Route::get('/modelos/{modelo}/manuais', [ModeloController::class, 'showManuais'])->name('modelos.show.manuais');
 // Route::get('/modelos/{modelo}/codigo/{codigoErro}', [CodigoErroController::class, 'show'])->scopeBindings()->name('modelos.codigos.show'); // Removido
 
-// Rota pública para visualizar PDF do Manual
+// Rotas públicas - Manuais
 Route::get('/manuais/view/{manual}', [ManualController::class, 'viewPdf'])->name('manuais.view');
+Route::get('/manuais/download/{manual}', [ManualController::class, 'download'])->name('manuais.download');
+// Nova rota para visualização de manuais HTML
+Route::get('/manuais/html/{manual}', [ManualController::class, 'viewHtml'])->name('manuais.html.view');
 
 // Rotas de autenticação geradas pelo Breeze (não mexer diretamente aqui)
 require __DIR__.'/auth.php';

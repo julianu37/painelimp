@@ -50,100 +50,109 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- MOVIDO P/ CIMA: Formulário de Busca nos Manuais do Modelo --}}
-            <div class="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Buscar em Manuais de {{ $modelo->nome }}</h3>
-                {{-- Voltando ao estilo anterior: flex com input e botão --}}
-                <form action="{{ route('modelos.show', $modelo) }}" method="GET" class="flex items-center space-x-3 mb-6 max-w-xl">
-                    <input type="search"
-                           name="q_modelo"
-                           placeholder="Digite código ou termo para buscar nos manuais..."
-                           value="{{ $queryBuscaManual ?? '' }}"
-                           {{-- Restaurando classes anteriores --}}
-                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:border-indigo-600 dark:focus:ring-indigo-500/50">
-                    <button type="submit"
-                            {{-- Restaurando classes do botão de texto --}}
-                            class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                        Buscar
-                    </button>
-                    {{-- Restaurando link Limpar dentro do form --}}
-                    @if($queryBuscaManual)
-                        <a href="{{ route('modelos.show', $modelo) }}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 whitespace-nowrap">Limpar</a>
-                    @endif
-                </form>
-                {{-- Removido: Link limpar separado --}}
-                {{-- @if($queryBuscaManual)
-                    <div class="max-w-xl text-right">
-                        <a href="{{ route('modelos.show', $modelo) }}" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 whitespace-nowrap">Limpar busca</a>
-                    </div>
-                @endif --}}
+            {{-- Verifica se deve mostrar a view simplificada --}}
+            @php
+                // Carrega a relação manuais APENAS se a contagem for 1, para eficiência
+                if ($modelo->manuais_count === 1) {
+                    $modelo->load('manuais'); // Carrega a coleção de manuais
+                }
+                $manualUnico = ($modelo->manuais_count === 1) ? $modelo->manuais->first() : null;
+                $mostrarViewSimplificada = ($manualUnico && $manualUnico->tipo === 'html');
+            @endphp
 
-                {{-- Resultados da Busca (removendo mt-4 adicionado) --}}
-                @if(isset($queryBuscaManual) && !empty($queryBuscaManual))
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg max-w-xl"> {{-- Mantendo max-w-xl para consistência --}}
-                        <div class="p-6 text-gray-900 dark:text-gray-100">
-                            <h4 class="text-lg font-medium mb-4">Resultados da busca por "{{ $queryBuscaManual }}" ({{ $resultadosBuscaManualModelo->count() }})</h4>
-                            @if ($resultadosBuscaManualModelo->isNotEmpty())
-                                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach ($resultadosBuscaManualModelo as $ref)
-                                        @if ($ref->manual) {{-- Segurança extra --}}
-                                            <li class="py-3">
-                                                <div class="flex justify-between items-center">
-                                                    <div>
-                                                        <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $ref->codigo_encontrado }}</span>
-                                                        encontrado em
-                                                        <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}"
-                                                           target="_blank"
-                                                           class="font-semibold underline hover:text-indigo-500">
-                                                            {{ $ref->manual->nome }}
-                                                        </a>
-                                                        (página {{ $ref->numero_pagina }})
-                                                    </div>
-                                                    <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}"
-                                                        target="_blank"
-                                                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                                                        Abrir PDF &rarr;
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p class="text-sm text-gray-500 dark:text-gray-400 italic">Nenhuma ocorrência encontrada nos PDFs indexados para este modelo.</p>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            {{-- Grid para os cards (agora só Manuais) --}}
-            {{-- Adicionei mt-8 para separar da busca --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-
-                {{-- Card Manuais --}}
-                {{-- Verificando o botão Ver Manuais --}}
+            @if($mostrarViewSimplificada)
+                {{-- View Simplificada: Acesso Direto ao Manual HTML --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-medium mb-2">Manuais</h3>
-                        @if($modelo->manuais_count > 0)
-                            <p class="text-sm text-gray-600 mb-4">
-                                {{ $modelo->manuais_count }} {{ Str::plural('manual', $modelo->manuais_count) }} disponível{{ Str::plural('s', $modelo->manuais_count) }} para este modelo.
-                            </p>
-                            {{-- Botão Ver Manuais --}}
-                            <a href="{{ route('modelos.show.manuais', $modelo) }}" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Ver Manuais &rarr;
-                            </a>
-                        @else
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado para este modelo.</p>
-                        @endif
+                        <h3 class="text-lg font-medium mb-2">Manual Interativo</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Este modelo possui um manual HTML completo.
+                        </p>
+                        <a href="{{ route('manuais.html.view', $manualUnico) }}" target="_blank"
+                           class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 hover:text-white focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            Acessar Manual HTML &rarr;
+                        </a>
                     </div>
                 </div>
 
-                {{-- Espaço vazio ou outro card informativo --}}
-                <div></div>
+            @else
+                {{-- View Padrão: Busca e Card de Manuais --}}
 
-            </div> {{-- Fim do grid --}}
+                {{-- Seção de Busca nos Manuais do Modelo --}}
+                <div class="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Buscar em Manuais de {{ $modelo->nome }}</h3>
+                    {{-- Formulário de busca... --}}
+                    <form action="{{ route('modelos.show', $modelo) }}" method="GET" class="flex items-center space-x-3 mb-6 max-w-xl">
+                        {{-- ... input, botão, link limpar ... --}}
+                         <input type="search" name="q_modelo" placeholder="Digite código ou termo para buscar nos manuais..." value="{{ $queryBuscaManual ?? '' }}" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:border-indigo-600 dark:focus:ring-indigo-500/50">
+                         <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Buscar</button>
+                         @if($queryBuscaManual)
+                            <a href="{{ route('modelos.show', $modelo) }}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 whitespace-nowrap">Limpar</a>
+                         @endif
+                    </form>
+
+                    {{-- Resultados da Busca --}}
+                    @if(isset($queryBuscaManual) && !empty($queryBuscaManual))
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg max-w-xl">
+                            <div class="p-6 text-gray-900 dark:text-gray-100">
+                                {{-- ... loop de resultados da busca ... --}}
+                                 <h4 class="text-lg font-medium mb-4">Resultados da busca por "{{ $queryBuscaManual }}" ({{ $resultadosBuscaManualModelo->count() }})</h4>
+                                 @if ($resultadosBuscaManualModelo->isNotEmpty())
+                                    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach ($resultadosBuscaManualModelo as $ref)
+                                            @if ($ref->manual) {{-- Segurança extra --}}
+                                                <li class="py-3">
+                                                    <div class="flex justify-between items-center">
+                                                        {{-- ... conteúdo do resultado da busca ... --}}
+                                                         <div>
+                                                            <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $ref->codigo_encontrado }}</span>
+                                                            encontrado em
+                                                            {{-- Link condicional --}}
+                                                            @if($ref->manual->tipo === 'html')
+                                                                <a href="{{ route('manuais.html.view', $ref->manual) }}" target="_blank" class="font-semibold underline hover:text-indigo-500">{{ $ref->manual->nome }} (HTML)</a>
+                                                            @else {{-- Assume PDF --}}
+                                                                <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" target="_blank" class="font-semibold underline hover:text-indigo-500">{{ $ref->manual->nome }}</a> (página {{ $ref->numero_pagina }})
+                                                            @endif
+                                                        </div>
+                                                        {{-- Botão condicional --}}
+                                                        @if($ref->manual->tipo === 'html')
+                                                            <a href="{{ route('manuais.html.view', $ref->manual) }}" target="_blank" class="text-sm text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300">Abrir HTML &rarr;</a>
+                                                        @else {{-- Assume PDF --}}
+                                                            <a href="{{ route('manuais.view', ['manual' => $ref->manual->slug, 'page' => $ref->numero_pagina]) }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Abrir PDF &rarr;</a>
+                                                        @endif
+                                                    </div>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 italic">Nenhuma ocorrência encontrada nos PDFs indexados para este modelo.</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Grid para os cards --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    {{-- Card Manuais --}}
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            {{-- ... conteúdo do card de manuais ... --}}
+                             <h3 class="text-lg font-medium mb-2">Manuais</h3>
+                            @if($modelo->manuais_count > 0)
+                                <p class="text-sm text-gray-600 mb-4">{{ $modelo->manuais_count }} {{ Str::plural('manual', $modelo->manuais_count) }} disponível{{ Str::plural('s', $modelo->manuais_count) }} para este modelo.</p>
+                                <a href="{{ route('modelos.show.manuais', $modelo) }}" class="inline-flex items-center px-4 py-2 bg-cyan-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-cyan-700 hover:text-white focus:bg-cyan-700 active:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition ease-in-out duration-150">Ver Manuais &rarr;</a>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum manual encontrado para este modelo.</p>
+                            @endif
+                        </div>
+                    </div>
+                    {{-- Espaço vazio ou outro card informativo --}}
+                    <div></div>
+                </div> {{-- Fim do grid --}}
+
+            @endif {{-- Fim da condição if/else principal --}}
 
             {{-- Botão Voltar --}}
             <div class="mt-8">

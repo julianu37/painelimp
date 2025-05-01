@@ -40,17 +40,44 @@
     <x-input-error :messages="$errors->get('descricao')" class="mt-2" />
 </div>
 
-{{-- Arquivo PDF --}}
+{{-- Tipo de Manual --}}
 <div class="mt-4">
+    <x-input-label for="tipo" :value="__('Tipo de Manual')" />
+    <select id="tipo" name="tipo"
+            class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+            onchange="toggleManualFields(this.value)" {{-- Chama a função JS na mudança --}}
+            required>
+        <option value="pdf" {{ old('tipo', $manual->tipo ?? 'pdf') == 'pdf' ? 'selected' : '' }}>PDF</option>
+        <option value="html" {{ old('tipo', $manual->tipo ?? '') == 'html' ? 'selected' : '' }}>HTML (Pasta)</option>
+    </select>
+    <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+</div>
+
+{{-- Campo Arquivo PDF (condicional) --}}
+<div class="mt-4" id="campo-arquivo-pdf">
     <x-input-label for="arquivo" :value="__('Arquivo PDF')" />
     <input id="arquivo" name="arquivo" type="file" accept=".pdf"
-           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-           {{ empty($manual->arquivo_path) ? 'required' : '' }}>
+           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+            {{-- A validação 'required' será feita no controller --}}
     <x-input-error :messages="$errors->get('arquivo')" class="mt-2" />
-    @if (!empty($manual->arquivo_path))
+    @if (!empty($manual->arquivo_path) && $manual->tipo == 'pdf')
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Arquivo atual: <a href="{{ Storage::url($manual->arquivo_path) }}" target="_blank" class="underline">{{ $manual->arquivo_nome_original ?? basename($manual->arquivo_path) }}</a>.
             Deixe em branco para manter o arquivo atual.
+        </p>
+    @endif
+</div>
+
+{{-- Campo Caminho HTML (condicional) --}}
+<div class="mt-4" id="campo-caminho-html" style="display: none;"> {{-- Começa escondido --}}
+    <x-input-label for="caminho_html" :value="__('Caminho Relativo para index.html')" />
+    <x-text-input id="caminho_html" class="block mt-1 w-full" type="text" name="caminho_html" :value="old('caminho_html', $manual->caminho_html ?? '')"
+                  placeholder="Ex: html-manuais/manual-xyz/index.html" />
+    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Caminho a partir da pasta 'public'. Ex: html-manuais/nome-da-pasta-manual/index.html</p>
+    <x-input-error :messages="$errors->get('caminho_html')" class="mt-2" />
+     @if (!empty($manual->caminho_html) && $manual->tipo == 'html')
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Caminho atual: <a href="{{ asset($manual->caminho_html) }}" target="_blank" class="underline">{{ $manual->caminho_html }}</a>.
         </p>
     @endif
 </div>
@@ -83,5 +110,27 @@
                 }
             });
         });
+    });
+</script>
+
+{{-- Script para mostrar/ocultar campos PDF/HTML --}}
+<script>
+    function toggleManualFields(tipoSelecionado) {
+        const campoPdf = document.getElementById('campo-arquivo-pdf');
+        const campoHtml = document.getElementById('campo-caminho-html');
+
+        if (tipoSelecionado === 'html') {
+            campoPdf.style.display = 'none';
+            campoHtml.style.display = 'block';
+        } else { // pdf ou outro valor
+            campoPdf.style.display = 'block';
+            campoHtml.style.display = 'none';
+        }
+    }
+
+    // Chama a função no carregamento inicial da página para ajustar os campos
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoInicial = document.getElementById('tipo').value;
+        toggleManualFields(tipoInicial);
     });
 </script> 
