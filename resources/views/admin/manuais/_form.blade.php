@@ -16,7 +16,7 @@
     {{-- Lista de Checkboxes --}}
     <div id="modelo-checkbox-list" class="max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-700 rounded-md p-2 space-y-1">
         @forelse($modelos as $modelo)
-            <div class="modelo-item" data-nome="{{ strtolower($modelo->marca->nome ?? '' . ' ' . $modelo->nome) }}">
+            <div class="modelo-item" data-nome="{{ strtolower(($modelo->marca->nome ?? '') . ' ' . $modelo->nome) }}">
                 <label for="modelo-{{ $modelo->id }}" class="flex items-center">
                     <input type="checkbox" id="modelo-{{ $modelo->id }}" name="modelos[]" value="{{ $modelo->id }}"
                            class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
