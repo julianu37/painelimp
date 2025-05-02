@@ -38,17 +38,36 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <?php if($marcas->isNotEmpty()): ?>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             <?php $__currentLoopData = $marcas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="py-4 flex justify-between items-center">
-                                    <a href="<?php echo e(route('marcas.show', $marca)); ?>" class="text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                        <?php echo e($marca->nome); ?>
+                                <a href="<?php echo e(route('marcas.show', $marca)); ?>"
+                                   class="block bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-4 text-center hover:shadow-lg hover:scale-105 transition duration-300 ease-in-out flex flex-col justify-between">
+                                    <div> 
+                                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate" title="<?php echo e($marca->nome); ?>">
+                                            <?php echo e($marca->nome); ?>
 
-                                    </a>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">(<?php echo e($marca->modelos_count); ?> <?php echo e(Str::plural('modelo', $marca->modelos_count)); ?>)</span>
-                                </li>
+                                        </h3>
+                                        
+                                        <div class="h-16 flex items-center justify-center mb-2"> 
+                                            <?php if($marca->logo_path && Storage::disk('public')->exists($marca->logo_path)): ?>
+                                                <img src="<?php echo e(Storage::url($marca->logo_path)); ?>" alt="Logo <?php echo e($marca->nome); ?>"
+                                                     class="max-h-full max-w-full object-contain">
+                                            <?php else: ?>
+                                                <div class="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded">
+                                                    <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-auto">
+                                        <?php echo e($marca->modelos_count); ?> <?php echo e(Str::plural('modelo', $marca->modelos_count)); ?>
+
+                                    </span>
+                                </a>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
+                        </div>
 
                         
                         <div class="mt-6">

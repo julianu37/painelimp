@@ -29,6 +29,8 @@ class StoreMarcaRequest extends FormRequest
             // O nome é obrigatório, deve ser uma string, ter no máximo 255 caracteres
             // e ser único na tabela 'marcas', coluna 'nome'
             'nome' => 'required|string|max:255|unique:marcas,nome',
+            // Logo é opcional, deve ser uma imagem, e ter no máximo 2MB
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
         ];
     }
 
@@ -44,6 +46,9 @@ class StoreMarcaRequest extends FormRequest
             'nome.string'   => 'O nome da marca deve ser um texto.',
             'nome.max'      => 'O nome da marca não pode ter mais que 255 caracteres.',
             'nome.unique'   => 'Esta marca já está cadastrada.',
+            'logo.image' => 'O arquivo enviado deve ser uma imagem.',
+            'logo.mimes' => 'A imagem do logo deve ser dos tipos: jpg, jpeg, png, webp, svg.',
+            'logo.max' => 'A imagem do logo não pode ter mais que 2MB.',
         ];
     }
 } 

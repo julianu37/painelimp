@@ -54,16 +54,29 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-medium mb-4">Modelos da {{ $marca->nome }}</h3>
+
+                    {{-- Adiciona campo de filtro --}}
+                    <div class="mb-4">
+                        <label for="filtro-modelo-marca" class="sr-only">Filtrar modelos</label>
+                        <input type="search"
+                               id="filtro-modelo-marca"
+                               placeholder="Filtrar modelos desta marca..."
+                               class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                    </div>
+
+                    {{-- Adiciona ID ao container UL e data-nome aos LI --}}
                     @if($marca->modelos->isNotEmpty())
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700" id="lista-modelos-marca">
                             @foreach ($marca->modelos as $modelo)
-                                <li class="py-3">
+                                <li class="py-3 item-modelo-marca" data-modelo-nome="{{ strtolower($modelo->nome) }}">
                                     <a href="{{ route('modelos.show', $modelo) }}" class="hover:underline">
                                         {{ $modelo->nome }}
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
+                        {{-- Mensagem a ser exibida se o filtro não encontrar nada --}}
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4" id="mensagem-filtro-vazio" style="display: none;">Nenhum modelo encontrado com este filtro.</p>
                     @else
                         <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum modelo encontrado para esta marca.</p>
                     @endif
@@ -79,4 +92,39 @@
 
         </div>
     </div>
+
+{{-- Script para filtro em tempo real --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filtroInput = document.getElementById('filtro-modelo-marca');
+        const listaModelos = document.getElementById('lista-modelos-marca');
+        const mensagemFiltroVazio = document.getElementById('mensagem-filtro-vazio');
+
+        // Certifica-se que a lista existe antes de adicionar o listener
+        if (listaModelos && filtroInput) {
+            const itensModelo = listaModelos.querySelectorAll('.item-modelo-marca');
+
+            filtroInput.addEventListener('input', function() {
+                const termoFiltro = filtroInput.value.toLowerCase().trim();
+                let algumVisivel = false;
+
+                itensModelo.forEach(function(item) {
+                    const nomeModelo = item.dataset.modeloNome || '';
+
+                    if (nomeModelo.includes(termoFiltro)) {
+                        item.style.display = ''; // Mostra o item li
+                        algumVisivel = true;
+                    } else {
+                        item.style.display = 'none'; // Esconde o item li
+                    }
+                });
+
+                // Mostra/esconde a mensagem de filtro vazio
+                if (mensagemFiltroVazio) {
+                    mensagemFiltroVazio.style.display = algumVisivel ? 'none' : 'block';
+                }
+            });
+        }
+    });
+</script>
 </x-app-layout>

@@ -10,9 +10,13 @@ use App\Http\Requests\Admin\UpdateMarcaRequest;
 use Illuminate\Http\Request; // Usaremos Request simples por enquanto
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class MarcaController extends Controller
 {
+    private string $logoStoragePath = 'logos/marcas';
+
     /**
      * Exibe uma lista paginada das marcas.
      */
@@ -31,22 +35,32 @@ class MarcaController extends Controller
     }
 
     /**
-     * Salva uma nova marca no banco de dados.
-     * Usa StoreMarcaRequest para validação.
+     * Salva uma nova marca, incluindo o logo se enviado.
      */
     public function store(StoreMarcaRequest $request): RedirectResponse
     {
-        // A validação é feita automaticamente pelo StoreMarcaRequest
-        // Obtém os dados validados
         $validated = $request->validated();
+        $logoPath = null;
 
         try {
-            Marca::create($validated);
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store($this->logoStoragePath, 'public');
+            }
+
+            Marca::create([
+                'nome' => $validated['nome'],
+                'logo_path' => $logoPath,
+                // Slug será gerado automaticamente
+            ]);
+
             return redirect()->route('admin.marcas.index')->with('success', 'Marca criada com sucesso!');
         } catch (\Exception $e) {
-            // Log do erro pode ser útil aqui
-            // Log::error("Erro ao criar marca: " . $e->getMessage());
-            return back()->with('error', 'Erro ao criar marca. Por favor, tente novamente.')->withInput(); // Mensagem mais genérica para o usuário
+            // Remove o logo se o DB falhar
+            if ($logoPath && Storage::disk('public')->exists($logoPath)) {
+                 Storage::disk('public')->delete($logoPath);
+            }
+            Log::error("Erro ao criar marca: " . $e->getMessage());
+            return back()->with('error', 'Erro ao criar marca. Por favor, tente novamente.')->withInput();
         }
     }
 
@@ -68,38 +82,64 @@ class MarcaController extends Controller
     }
 
     /**
-     * Atualiza uma marca existente no banco de dados.
-     * Usa UpdateMarcaRequest para validação.
+     * Atualiza uma marca existente, incluindo o logo se enviado.
      */
     public function update(UpdateMarcaRequest $request, Marca $marca): RedirectResponse
     {
-        // A validação é feita automaticamente pelo UpdateMarcaRequest
-        // Obtém os dados validados
         $validated = $request->validated();
+        $oldLogoPath = $marca->logo_path;
+        $newLogoPath = null;
 
         try {
-            $marca->update($validated);
+            $dataToUpdate = [
+                'nome' => $validated['nome'],
+                // Slug será atualizado automaticamente se o nome mudar
+            ];
+
+            if ($request->hasFile('logo')) {
+                $newLogoPath = $request->file('logo')->store($this->logoStoragePath, 'public');
+                $dataToUpdate['logo_path'] = $newLogoPath;
+            } else {
+                 // Se nenhum novo logo foi enviado, mantém o antigo
+                 // Não precisa incluir logo_path em $dataToUpdate
+            }
+
+            $marca->update($dataToUpdate);
+
+            // Se um novo logo foi salvo com sucesso E existia um antigo, remove o antigo
+            if ($newLogoPath && $oldLogoPath && Storage::disk('public')->exists($oldLogoPath)) {
+                Storage::disk('public')->delete($oldLogoPath);
+            }
+
             return redirect()->route('admin.marcas.index')->with('success', 'Marca atualizada com sucesso!');
         } catch (\Exception $e) {
-            // Log do erro pode ser útil aqui
-            // Log::error("Erro ao atualizar marca {$marca->id}: " . $e->getMessage());
-            return back()->with('error', 'Erro ao atualizar marca. Por favor, tente novamente.')->withInput(); // Mensagem mais genérica
+            // Remove o novo logo se o DB falhar
+            if ($newLogoPath && Storage::disk('public')->exists($newLogoPath)) {
+                 Storage::disk('public')->delete($newLogoPath);
+            }
+            Log::error("Erro ao atualizar marca {$marca->id}: " . $e->getMessage());
+            return back()->with('error', 'Erro ao atualizar marca. Por favor, tente novamente.')->withInput();
         }
     }
 
     /**
-     * Remove uma marca do banco de dados.
-     * ATENÇÃO: Modelos associados serão excluídos (cascadeOnDelete na migration).
-     * Mídias associadas (imagens/vídeos) NÃO serão excluídas automaticamente.
+     * Remove uma marca e seu logo associado.
      */
     public function destroy(Marca $marca): RedirectResponse
     {
         try {
-            // TODO: Lógica opcional para excluir mídias associadas à marca
-            $marca->delete();
+            $logoPath = $marca->logo_path;
+            $marca->delete(); // Modelos associados são excluídos por cascade
+
+            // Remove o arquivo do logo se existir
+            if ($logoPath && Storage::disk('public')->exists($logoPath)) {
+                Storage::disk('public')->delete($logoPath);
+            }
+
             return redirect()->route('admin.marcas.index')->with('success', 'Marca e seus modelos associados foram excluídos com sucesso!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.marcas.index')->with('error', 'Erro ao excluir marca: ' . $e->getMessage());
+             Log::error("Erro ao excluir marca {$marca->id}: " . $e->getMessage());
+            return redirect()->route('admin.marcas.index')->with('error', 'Erro ao excluir marca.');
         }
     }
 }

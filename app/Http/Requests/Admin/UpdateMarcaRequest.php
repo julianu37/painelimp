@@ -38,6 +38,8 @@ class UpdateMarcaRequest extends FormRequest
                 'max:255',
                 Rule::unique('marcas', 'nome')->ignore($marcaId),
             ],
+            // Logo é opcional na atualização, mesmas regras
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
         ];
     }
 
@@ -53,6 +55,9 @@ class UpdateMarcaRequest extends FormRequest
             'nome.string'   => 'O nome da marca deve ser um texto.',
             'nome.max'      => 'O nome da marca não pode ter mais que 255 caracteres.',
             'nome.unique'   => 'Esta marca já está cadastrada.',
+            'logo.image' => 'O arquivo enviado deve ser uma imagem.',
+            'logo.mimes' => 'A imagem do logo deve ser dos tipos: jpg, jpeg, png, webp, svg.',
+            'logo.max' => 'A imagem do logo não pode ter mais que 2MB.',
         ];
     }
 } 

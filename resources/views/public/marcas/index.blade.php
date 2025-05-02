@@ -28,16 +28,34 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if($marcas->isNotEmpty())
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {{-- Grid de Cards --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             @foreach ($marcas as $marca)
-                                <li class="py-4 flex justify-between items-center">
-                                    <a href="{{ route('marcas.show', $marca) }}" class="text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                        {{ $marca->nome }}
-                                    </a>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">({{ $marca->modelos_count }} {{ Str::plural('modelo', $marca->modelos_count) }})</span>
-                                </li>
+                                <a href="{{ route('marcas.show', $marca) }}"
+                                   class="block bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-4 text-center hover:shadow-lg hover:scale-105 transition duration-300 ease-in-out flex flex-col justify-between">
+                                    <div> {{-- Container para nome e logo --}}
+                                        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate" title="{{ $marca->nome }}">
+                                            {{ $marca->nome }}
+                                        </h3>
+                                        {{-- Exibe o logo ou um placeholder --}}
+                                        <div class="h-16 flex items-center justify-center mb-2"> {{-- Altura fixa para alinhar --}}
+                                            @if ($marca->logo_path && Storage::disk('public')->exists($marca->logo_path))
+                                                <img src="{{ Storage::url($marca->logo_path) }}" alt="Logo {{ $marca->nome }}"
+                                                     class="max-h-full max-w-full object-contain">
+                                            @else
+                                                <div class="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded">
+                                                    <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    {{-- Contagem de Modelos --}}
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-auto">
+                                        {{ $marca->modelos_count }} {{ Str::plural('modelo', $marca->modelos_count) }}
+                                    </span>
+                                </a>
                             @endforeach
-                        </ul>
+                        </div>
 
                         {{-- Links de Paginação --}}
                         <div class="mt-6">
